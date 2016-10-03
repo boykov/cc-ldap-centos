@@ -1,0 +1,14 @@
+dn: uid=username,ou=people,dc=tuleap,dc=local
+cn: User Name
+userPassword: p@ssw0rd
+uid: username
+uidNumber: 1050
+loginShell: /bin/bash
+homeDirectory: /home/webminder
+gidNumber: 1030
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: person
+objectClass: inetOrgPerson
+gecos: User Name
+sn: User Name

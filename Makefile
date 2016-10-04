@@ -1,3 +1,7 @@
+tangle: docs/index.org
+	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (eab/tangle-init))" > /dev/null
+	chmod 0755 ldap-server/run.sh
+
 build-server:
 	cd ldap-server && docker build -t cc-ldap-dev5 .
 	docker run --name cc-ldap-data5 -v /data busybox true || true

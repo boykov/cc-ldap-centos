@@ -2,7 +2,7 @@
 #+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 
-Конфигурационные файлы: https://github.com/boykov/cc-ldap-centos
+В данном документе применяется управление конфигурациями при помощи [[https://www.docker.com/what-docker][Docker]]. Все документируемые команды и конфигурационные файлы прошли проверку на работоспособность в воспроизводимом программном окружении, которое доступно в проекте [[https://github.com/boykov/cc-ldap-centos][cc-ldap-centos]].
 
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
@@ -15,7 +15,107 @@
 
 ** OpenLDAP 2.3 и CentOS 5
 
-#+INCLUDE: "/home/eab/data/gitno/github/docker-ldap/Dockerfile" src dockerfile :lines "17-20"
+#+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
+
+В CentOS 5 из базового репозитория устанавливается 2.3.43 версия OpenLDAP.
+#+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
+#+begin_tip
+Там, где это не вызывает недоразумений, вместо синтаксиса обычных команд иногда будет использоваться синтакс Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
+#+end_tip
+#+name: run-prefix
+#+begin_src sh :exports none
+#!/bin/bash
+
+# for testing purpose
+LDAP_ROOT_PASSWORD=root
+LDAP_MANAGER_PASSWORD=manager
+
+set -e
+
+if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
+    if [ -z "$LDAP_ROOT_PASSWORD" -o -z "$LDAP_MANAGER_PASSWORD" ]; then
+	echo "Need LDAP_ROOT_PASSWORD and LDAP_MANAGER_PASSWORD"
+	exit
+    fi
+
+#+end_src
+Для запуска сервиса src_sh[:exports code]{ldap} необходимо подготовить каталог и файл конфигурации базы данных.
+#+name: run-db-config
+#+begin_src sh :exports none
+    cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
+    chown ldap. /var/lib/ldap/DB_CONFIG
+
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-db-config>>
+#+end_src
+
+#+name: run-slapd-conf
+#+begin_src sh :exports none
+    rm -f /etc/openldap/slapd.conf
+    cp /root/slapd.conf /etc/openldap/slapd.conf
+    chown ldap. /etc/openldap/slapd.conf
+
+    service ldap start
+    sleep 3
+
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf>>
+#+end_src
+
+#+name: run-slapd-d
+#+begin_src sh :exports code
+    killall slapd
+    oldpath=`pwd`
+    cd /etc/openldap
+    mkdir slapd.d
+    slaptest -f slapd.conf -F slapd.d
+    chown -R ldap:ldap slapd.d
+    chmod -R 0750 slapd.d
+    mv slapd.conf slapd.conf.bak
+    cd $oldpath
+    service ldap start
+    sleep 3
+
+#+end_src
+
+#+name: run-postfix
+#+begin_src sh :exports none
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
+    ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
+
+    MANAGER_PWD=$(slappasswd -s $LDAP_MANAGER_PASSWORD)
+    sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" /root/domain.ldif
+    ldapmodify  -v -D cn=Manager,cn=config -f /root/domain.ldif -x -w $LDAP_ROOT_PASSWORD
+
+    ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
+
+    # kill -INT `cat /var/run/openldap/slapd.pid`
+    # service ldap stop
+    killall slapd
+    sleep 3
+
+    mkdir /data/lib /data/etc
+    cp -ar /var/lib/ldap /data/lib
+    cp -ar /etc/openldap /data/etc
+fi
+
+rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
+rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
+
+exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
+#+end_src
+
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
+<<run-prefix>>
+<<run-db-config>>
+<<run-slapd-conf>>
+<<run-slapd-d>>
+<<run-postfix>>
+#+end_src
 
 ** OpenLDAP 2.4 и CentOS 6
 
@@ -35,19 +135,23 @@
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
-* Разработать схему БД LDAP
+* Схемы БД LDAP
 :PROPERTIES:
 :ID:       b64d7c36-b2b3-49ac-9620-d7c94eb9ea31
 :END:
 
+#+begin_quote
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
+#+end_quote
 
-* Разработать документацию по процессу добавления нового пользователя в систему
+* Процесс добавления нового пользователя в систему
 :PROPERTIES:
 :ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
 :END:
 
+#+begin_quote
 Необходимо разработать документацию по процессу добавления нового пользователя в систему, использующего аутентификацию посредством LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной операции. Ориентироваться на использование в ОС CentOS 5/6.
+#+end_quote
 
 * Перевести аутентификацию пользователей кластера на использование LDAP
 :PROPERTIES:

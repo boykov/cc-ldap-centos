@@ -6,6 +6,7 @@
 
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
+:CUSTOM_ID: install-and-config
 :ID:       f3a148ae-26f4-4c54-a25c-532d2b9086ba
 :END:
 
@@ -14,6 +15,10 @@
 #+end_quote
 
 ** OpenLDAP 2.3 и CentOS 5
+:PROPERTIES:
+:CUSTOM_ID: ldap2.3-centos5
+:ID:       cdb77a09-a1eb-4db8-ad05-e45c3b49418c
+:END:
 
 #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
 
@@ -118,10 +123,15 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 ** OpenLDAP 2.4 и CentOS 6
+:PROPERTIES:
+:CUSTOM_ID: ldap2.4-centos6
+:ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
+:END:
 
 
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:
+:CUSTOM_ID: authentification
 :ID:       49b5e2df-0c06-445a-ae9e-66bcd6cc9e40
 :END:
 
@@ -135,8 +145,9 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
-* Схемы БД LDAP
+* Схема БД LDAP
 :PROPERTIES:
+:CUSTOM_ID: schema
 :ID:       b64d7c36-b2b3-49ac-9620-d7c94eb9ea31
 :END:
 
@@ -146,6 +157,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 
 * Процесс добавления нового пользователя в систему
 :PROPERTIES:
+:CUSTOM_ID: new-user
 :ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
 :END:
 
@@ -155,6 +167,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 
 * Перевести аутентификацию пользователей кластера на использование LDAP
 :PROPERTIES:
+:CUSTOM_ID: cluster
 :ID:       db5bc4cf-74c3-40e0-b8b3-d57f3f32e338
 :END:
 

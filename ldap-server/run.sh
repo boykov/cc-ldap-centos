@@ -23,7 +23,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     sleep 3
 
     killall slapd
-
     oldpath=`pwd`
     cd /etc/openldap
     mkdir slapd.d
@@ -32,7 +31,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chmod -R 0750 slapd.d
     mv slapd.conf slapd.conf.bak
     cd $oldpath
-
     service ldap start
     sleep 3
 

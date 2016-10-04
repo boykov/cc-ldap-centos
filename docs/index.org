@@ -70,7 +70,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 
 #+name: run-slapd-d
-#+begin_src sh :exports code
+#+begin_src sh :exports none
     killall slapd
     oldpath=`pwd`
     cd /etc/openldap
@@ -83,6 +83,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
     sleep 3
 
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-d>>
 #+end_src
 
 #+name: run-postfix

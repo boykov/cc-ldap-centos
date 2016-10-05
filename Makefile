@@ -13,6 +13,13 @@ build-server:
 	docker run --name cc-ldap-centos6 --volumes-from cc-ldap-data6 cc-ldap-dev6 &
 	sleep 15
 
+build-client:
+	cd ldap-client && docker build -t cc-ldap-cli5 .
+	docker run --rm cc-ldap-cli5
+
+	cd ldap-client && docker build -f ./Dockerfile-centos6 -t cc-ldap-cli6 .
+	docker run --rm cc-ldap-cli6
+
 start:
 	docker start cc-ldap-centos5
 	docker start cc-ldap-centos6

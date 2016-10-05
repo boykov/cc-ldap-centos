@@ -28,7 +28,7 @@
 # Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
 # #+end_tip
 #+begin_src sh
-yum -y install openldap-server openldap-clients
+yum -y install openldap-servers openldap-clients
 #+end_src
 #+name: run-prefix
 #+begin_src sh :exports none

@@ -32,7 +32,7 @@ test: start
 	cd ldap-server && ldapadd -h $(IPcentos5) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true
 	ldapsearch -x -h $(IPcentos5) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
 
-	$(eval IPcentos6 := $(shell docker inspect -f {{.NetworkSettings.IPAddress}} cc-ldap-centos6))
+	$(eval IPcentos6 = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} cc-ldap-centos6))
 	echo $(IPcentos6)
 	cd ldap-server && ldapadd -h $(IPcentos6) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f bob.ldif || true
 	cd ldap-server && ldapadd -h $(IPcentos6) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true

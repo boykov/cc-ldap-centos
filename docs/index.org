@@ -76,7 +76,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <a href="javascript:toggleDiv('myContent');" class="fa">slapd.conf</a>
 #+end_html
 
-#+HTML: <div id="myContent" style="display:true">
+#+HTML: <div id="myContent" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space
 #+HTML: </div>
 
@@ -136,18 +136,28 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 #+begin_html
-<a href="javascript:toggleDiv('myContent-manager');" class="fa">manager.ldif</a>
+<br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">manager.ldif</a>
 #+end_html
 
 #+HTML: <div id="myContent-manager" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
 #+HTML: </div>
 
-Файл src_raw[:exports code]{domain.ldif}:
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">domain.ldif</a>
+#+end_html
 
-Файл src_raw[:exports code]{base.ldif}:
+#+HTML: <div id="myContent-domain" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
+#+HTML: </div>
+
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-base');" class="fa">base.ldif</a>
+#+end_html
+
+#+HTML: <div id="myContent-base" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
+#+HTML: </div>
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
 <<run-prefix>>
@@ -188,6 +198,32 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Список файлов, модификация которых необходима для настройки процесса аутентификации посредством LDAP;
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
+
+#+begin_html
+<a href="javascript:toggleDiv('myContent-run');" class="fa">ldap-client/run.sh</a>
+#+end_html
+
+#+HTML: <div id="myContent-run" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/run.sh src sh
+#+HTML: </div>
+
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-client5');" class="fa">ldap-client/Dockerfile</a>
+#+end_html
+
+#+HTML: <div id="myContent-client5" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/Dockerfile src dockerfile :lines "7-8"
+#+HTML: </div>
+
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-client6');" class="fa">ldap-client/Dockerfile-centos6</a>
+#+end_html
+
+#+HTML: <div id="myContent-client6" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/Dockerfile-centos6 src dockerfile :lines "9-10"
+#+HTML: </div>
+
+
 
 * Схема БД LDAP
 :PROPERTIES:

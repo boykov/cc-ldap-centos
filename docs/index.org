@@ -20,13 +20,16 @@
 :ID:       cdb77a09-a1eb-4db8-ad05-e45c3b49418c
 :END:
 
-#+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
+# #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
 
-В CentOS 5 из базового репозитория устанавливается 2.3.43 версия OpenLDAP.
-#+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
-#+begin_tip
-Там, где это не вызывает недоразумений, вместо синтаксиса обычных команд иногда будет использоваться синтакс Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
-#+end_tip
+В CentOS 5 из базового репозитория устанавливается 2.3 версия OpenLDAP.
+# #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
+# #+begin_tip
+# Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
+# #+end_tip
+#+begin_src sh
+yum -y install openldap-server openldap-clients
+#+end_src
 #+name: run-prefix
 #+begin_src sh :exports none
 #!/bin/bash

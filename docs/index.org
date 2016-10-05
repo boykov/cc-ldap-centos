@@ -72,6 +72,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-slapd-conf>>
 #+end_src
 
+#+begin_html
+<a href="javascript:toggleDiv('myContent');" class="fa">slapd.conf</a>
+#+end_html
+
+#+HTML: <div id="myContent" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space
+#+HTML: </div>
+
 #+name: run-slapd-d
 #+begin_src sh :exports none
     killall slapd
@@ -91,7 +99,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-slapd-d>>
 #+end_src
 
-#+name: run-postfix
+#+name: run-modify
 #+begin_src sh :exports none
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
@@ -104,6 +112,13 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
 
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-modify>>
+#+end_src
+
+#+name: run-postfix
+#+begin_src sh :exports none
     # kill -INT `cat /var/run/openldap/slapd.pid`
     # service ldap stop
     killall slapd
@@ -120,11 +135,26 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
+#+begin_html
+<a href="javascript:toggleDiv('myContent-manager');" class="fa">manager.ldif</a>
+#+end_html
+
+#+HTML: <div id="myContent-manager" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
+#+HTML: </div>
+
+Файл src_raw[:exports code]{domain.ldif}:
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
+
+Файл src_raw[:exports code]{base.ldif}:
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
+
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config>>
 <<run-slapd-conf>>
 <<run-slapd-d>>
+<<run-modify>>
 <<run-postfix>>
 #+end_src
 
@@ -133,6 +163,14 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 :CUSTOM_ID: ldap2.4-centos6
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
 :END:
+
+#+begin_html
+<a href="javascript:toggleDiv('myContent2');" class="fa">slapd.conf.obsolete</a>
+#+end_html
+
+#+HTML: <div id="myContent2" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space
+#+HTML: </div>
 
 
 * Настройка аутентификации пользователей при помощи LDAP

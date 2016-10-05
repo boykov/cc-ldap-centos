@@ -1,3 +1,5 @@
+# [[nil][OpenLDAP\ 2\.3\ и\ CentOS\ 5:1]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#ldap2.3-centos5][run-prefix]]
 #!/bin/bash
 
 # for testing purpose
@@ -12,9 +14,13 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 	exit
     fi
 
+# run-prefix ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#ldap2.3-centos5][run-db-config]]
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
+# run-db-config ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#ldap2.3-centos5][run-slapd-conf]]
     rm -f /etc/openldap/slapd.conf
     cp /root/slapd.conf /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf
@@ -22,6 +28,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
     sleep 3
 
+# run-slapd-conf ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#ldap2.3-centos5][run-slapd-d]]
     killall slapd
     oldpath=`pwd`
     cd /etc/openldap
@@ -34,6 +42,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
     sleep 3
 
+# run-slapd-d ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#ldap2.3-centos5][run-postfix]]
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
     sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
@@ -59,3 +69,5 @@ rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
 rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
+# run-postfix ends here
+# OpenLDAP\ 2\.3\ и\ CentOS\ 5:1 ends here

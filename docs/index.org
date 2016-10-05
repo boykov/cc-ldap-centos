@@ -117,7 +117,7 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
-#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :comments noweb :noweb yes
 <<run-prefix>>
 <<run-db-config>>
 <<run-slapd-conf>>

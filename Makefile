@@ -1,4 +1,7 @@
 tangle: docs/index.org
+	mkdir -p gen
+	diff ldap-server/slapd.conf.original ldap-server/slapd.conf > gen/slapd.diff || true
+	diff ldap-server/slapd.conf.obsolete.original ldap-server/slapd.conf.obsolete > gen/slapd.obsolete.diff || true
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-publish-current-file) (eab/tangle-init))" > /dev/null
 	chmod 0755 ldap-server/run.sh
 	chmod 0755 ldap-server/run6.sh

@@ -2,8 +2,6 @@
 #+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 
-В данном документе применяется управление конфигурациями при помощи [[https://www.docker.com/what-docker][Docker]]. Все документируемые команды и конфигурационные файлы прошли проверку на работоспособность в воспроизводимом программном окружении, которое доступно в проекте [[https://github.com/boykov/cc-ldap-centos][cc-ldap-centos]].
-
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
 :CUSTOM_ID: install-and-config
@@ -14,15 +12,21 @@
 Необходимо разработать документацию по установке и настройке сервера LDAP в ОС CentOS 5. Предпочтение отдавать реализациям, доступным в базовом репозитории дистрибутива. Проверить работоспособность выработанных инструкций в ОС CentOS 6.
 #+end_quote
 
-** OpenLDAP 2.3 и CentOS 5
+# Процедура [[convert][конвертации]]
+
+#+begin_sidebar
+Команды и конфигурационные файлы прошли проверку на работоспособность в тестовом программном окружении, доступном в проекте [[https://github.com/boykov/cc-ldap-centos][cc-ldap-centos]].
+#+end_sidebar
+
+** Установка OpenLDAP
 :PROPERTIES:
-:CUSTOM_ID: ldap2.3-centos5
+:CUSTOM_ID: install-openldap
 :ID:       cdb77a09-a1eb-4db8-ad05-e45c3b49418c
 :END:
 
 # #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
 
-В CentOS 5 из базового репозитория устанавливается 2.3 версия OpenLDAP.
+Базовые репозитории дистрибутивов CentOS 5 и CentOS6 содержат 2.3 и 2.4 версию OpenLDAP, соответственно. Выполнив стандартную установку
 # #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
 # #+begin_tip
 # Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
@@ -30,6 +34,8 @@
 #+begin_src sh
 yum -y install openldap-servers openldap-clients
 #+end_src
+получаем 2 конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае CentOS 5/2.3 OpenLDAP (5/2.3) и *slapd* в случае CentOS 6/2.4 OpenLDAP (6/2.4).
+
 #+name: run-prefix
 #+begin_src sh :exports none
 #!/bin/bash
@@ -47,7 +53,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     fi
 
 #+end_src
-Для запуска сервиса src_sh[:exports code]{ldap} необходимо подготовить каталог и файл конфигурации базы данных.
+
+** Настройка базы данных Oracle Berkeley DB
+:PROPERTIES:
+:CUSTOM_ID: configure-bdb
+:ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
+:END:
+
+Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и файл конфигурации базы данных. Расположение образца файла настройки, в 5/2.3
 #+name: run-db-config
 #+begin_src sh :exports none
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
@@ -57,7 +70,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-db-config>>
 #+end_src
-
+а в 6/2.4
 #+name: run-db-config6
 #+begin_src sh :exports none
     cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
@@ -67,7 +80,25 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-db-config6>>
 #+end_src
+Используем настройки без изменений в обеих конфигурациях.
+** Предварительная настройка схемы БД LDAP
+:PROPERTIES:
+:CUSTOM_ID: configure-slapd
+:ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
+:END:
 
+Конфигурация 5/2.3 по умолчанию настраивается файлом *slapd.conf*. Такой подход считается устаревшим, [[http://www.openldap.org/doc/admin24/guide.html#Converting%20old%20style%20{{slapd.conf}}%285%29%20file%20to%20{{cn=config}}%20format][рекомендуется]] использовать *cn=config* формат. Конфигурация 6/2.4 поставляется с двумя эквивалентными вариантами, доступными через файл *slapd.conf.obsolete* и *slapd.d* каталог, содержащий настройки в *cn=config* формате.
+
+Внесем небольшие изменения в конфигурационный файл для 5/2.3
+#+begin_html
+<a href="javascript:toggleDiv('myContent');" class="fa">/root/slapd.conf</a>
+#+end_html
+
+#+HTML: <div id="myContent" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space
+#+HTML: </div>
+#+INCLUDE: ../gen/slapd.diff src diff
+и произведем первый запуск сервиса
 #+name: run-slapd-conf
 #+begin_src sh :exports none
     rm -f /etc/openldap/slapd.conf
@@ -77,6 +108,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-conf>>
+<<run-slapd-start>>
 #+end_src
 
 #+name: run-slapd-start
@@ -85,9 +117,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     sleep 3
 
 #+end_src
-#+begin_src sh :exports code :noweb yes
-<<run-slapd-start>>
-#+end_src
 
 #+name: run-slapd-start6
 #+begin_src sh :exports none
@@ -95,9 +124,19 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     sleep 3
 
 #+end_src
-#+begin_src sh :exports code :noweb yes
-<<run-slapd-start6>>
-#+end_src
+Выполним аналогичные действия для 6/2.4
+#+begin_html
+<a href="javascript:toggleDiv('myContent2');" class="fa">/root/slapd.conf.obsolete</a>
+#+end_html
+
+#+HTML: <div id="myContent2" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space
+#+HTML: </div>
+#+INCLUDE: ../gen/slapd.obsolete.diff src diff
+
+#+begin_attention
+В случае с CentOS 6 и OpenLDAP 2.4 здесь дополнительно удаляется конфигурация *slapd.d*.
+#+end_attention
 
 #+name: run-slapd-conf6
 #+begin_src sh :exports none
@@ -112,14 +151,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-slapd-start6>>
 #+end_src
 
-#+begin_html
-<a href="javascript:toggleDiv('myContent');" class="fa">slapd.conf</a>
-#+end_html
-
-#+HTML: <div id="myContent" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space
-#+HTML: </div>
-
+<<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
 #+name: run-slapd-d
 #+begin_src sh :exports none
     killall slapd
@@ -134,8 +166,22 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-d>>
+#+end_src
+После перезапуска, для 5/2.3
+#+begin_src sh :exports code :noweb yes
 <<run-slapd-start>>
 #+end_src
+и для 6/2.4
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-start6>>
+#+end_src
+получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (5/2.3) и */usr/share/openldap-servers/slapd.conf.obsolete* (6/2.4).
+
+** Настройка 
+:PROPERTIES:
+:CUSTOM_ID: add-manager
+:ID:       17e9c727-04eb-495e-97a8-36ab4f2b3cc9
+:END:
 
 #+name: run-modify
 #+begin_src sh :exports none
@@ -174,25 +220,26 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+begin_html
 <br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">manager.ldif</a>
 #+end_html
-
 #+HTML: <div id="myContent-manager" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
 #+HTML: </div>
-
 #+begin_html
 <br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">domain.ldif</a>
 #+end_html
-
 #+HTML: <div id="myContent-domain" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
 #+HTML: </div>
-
 #+begin_html
 <br/><a href="javascript:toggleDiv('myContent-base');" class="fa">base.ldif</a>
 #+end_html
-
 #+HTML: <div id="myContent-base" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
+#+HTML: </div>
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">admin.ldif</a>
+#+end_html
+#+HTML: <div id="myContent-admin" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 #+HTML: </div>
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
@@ -216,21 +263,6 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-modify>>
 <<run-postfix>>
 #+end_src
-
-** OpenLDAP 2.4 и CentOS 6
-:PROPERTIES:
-:CUSTOM_ID: ldap2.4-centos6
-:ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
-:END:
-
-#+begin_html
-<a href="javascript:toggleDiv('myContent2');" class="fa">slapd.conf.obsolete</a>
-#+end_html
-
-#+HTML: <div id="myContent2" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space
-#+HTML: </div>
-
 
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:

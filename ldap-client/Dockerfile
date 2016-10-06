@@ -1,6 +1,6 @@
 #Dockerfile
 FROM centos:centos5
-MAINTAINER lemon <limengabc@163.com>
+MAINTAINER Evgeny Boykov, artscan@list.ru
 
 #update yum repository and install openssh server
 RUN yum update -y

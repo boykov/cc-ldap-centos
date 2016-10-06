@@ -45,8 +45,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
 
-    # kill -INT `cat /var/run/openldap/slapd.pid`
-    # service ldap stop
     killall slapd
     sleep 3
 

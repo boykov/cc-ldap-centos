@@ -58,18 +58,58 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-db-config>>
 #+end_src
 
+#+name: run-db-config6
+#+begin_src sh :exports none
+    cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
+    chown ldap. /var/lib/ldap/DB_CONFIG
+
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-db-config6>>
+#+end_src
+
 #+name: run-slapd-conf
 #+begin_src sh :exports none
     rm -f /etc/openldap/slapd.conf
     cp /root/slapd.conf /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf
 
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf>>
+#+end_src
+
+#+name: run-slapd-start
+#+begin_src sh :exports none
     service ldap start
     sleep 3
 
 #+end_src
 #+begin_src sh :exports code :noweb yes
-<<run-slapd-conf>>
+<<run-slapd-start>>
+#+end_src
+
+#+name: run-slapd-start6
+#+begin_src sh :exports none
+    service slapd start
+    sleep 3
+
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-start6>>
+#+end_src
+
+#+name: run-slapd-conf6
+#+begin_src sh :exports none
+    rm -f /etc/openldap/slapd.conf
+    cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
+    chown ldap. /etc/openldap/slapd.conf
+    rm -rf /etc/openldap/slapd.d
+
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf6>>
+<<run-slapd-start6>>
 #+end_src
 
 #+begin_html
@@ -91,12 +131,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chmod -R 0750 slapd.d
     mv slapd.conf slapd.conf.bak
     cd $oldpath
-    service ldap start
-    sleep 3
-
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-d>>
+<<run-slapd-start>>
 #+end_src
 
 #+name: run-modify
@@ -119,8 +157,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-postfix
 #+begin_src sh :exports none
-    # kill -INT `cat /var/run/openldap/slapd.pid`
-    # service ldap stop
     killall slapd
     sleep 3
 
@@ -163,7 +199,20 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-prefix>>
 <<run-db-config>>
 <<run-slapd-conf>>
+<<run-slapd-start>>
 <<run-slapd-d>>
+<<run-slapd-start>>
+<<run-modify>>
+<<run-postfix>>
+#+end_src
+
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run6.sh :exports none :noweb yes
+<<run-prefix>>
+<<run-db-config6>>
+<<run-slapd-conf6>>
+<<run-slapd-start6>>
+<<run-slapd-d>>
+<<run-slapd-start6>>
 <<run-modify>>
 <<run-postfix>>
 #+end_src

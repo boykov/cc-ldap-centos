@@ -12,7 +12,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 	exit
     fi
 
-    # cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
@@ -25,7 +24,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     sleep 3
 
     killall slapd
-
     oldpath=`pwd`
     cd /etc/openldap
     mkdir slapd.d
@@ -34,7 +32,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chmod -R 0750 slapd.d
     mv slapd.conf slapd.conf.bak
     cd $oldpath
-
     service slapd start
     sleep 3
 
@@ -49,8 +46,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
 
-    # kill -INT `cat /var/run/openldap/slapd.pid`
-    # service ldap stop
     killall slapd
     sleep 3
 

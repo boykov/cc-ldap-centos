@@ -2,19 +2,10 @@
 # See slapd.conf(5) for details on configuration options.
 # This file should NOT be world readable.
 #
-
-include		/etc/openldap/schema/corba.schema
 include		/etc/openldap/schema/core.schema
 include		/etc/openldap/schema/cosine.schema
-include		/etc/openldap/schema/duaconf.schema
-include		/etc/openldap/schema/dyngroup.schema
 include		/etc/openldap/schema/inetorgperson.schema
-include		/etc/openldap/schema/java.schema
-include		/etc/openldap/schema/misc.schema
 include		/etc/openldap/schema/nis.schema
-include		/etc/openldap/schema/openldap.schema
-include		/etc/openldap/schema/ppolicy.schema
-include		/etc/openldap/schema/collective.schema
 
 # Allow LDAPv2 client connections.  This is NOT the default.
 allow bind_v2
@@ -26,46 +17,39 @@ allow bind_v2
 pidfile		/var/run/openldap/slapd.pid
 argsfile	/var/run/openldap/slapd.args
 
-# Load dynamic backend modules
-# - modulepath is architecture dependent value (32/64-bit system)
-# - back_sql.la overlay requires openldap-server-sql package
-# - dyngroup.la and dynlist.la cannot be used at the same time
+# Load dynamic backend modules:
+# modulepath	/usr/lib64/openldap
 
-# modulepath /usr/lib/openldap
-# modulepath /usr/lib64/openldap
-
+# Modules available in openldap-servers-overlays RPM package
+# Module syncprov.la is now statically linked with slapd and there
+# is no need to load it here
 # moduleload accesslog.la
 # moduleload auditlog.la
-# moduleload back_sql.la
-# moduleload chain.la
-# moduleload collect.la
-# moduleload constraint.la
-# moduleload dds.la
-# moduleload deref.la
+# moduleload denyop.la
 # moduleload dyngroup.la
 # moduleload dynlist.la
-# moduleload memberof.la
-# moduleload pbind.la
+# moduleload lastmod.la
 # moduleload pcache.la
 # moduleload ppolicy.la
 # moduleload refint.la
 # moduleload retcode.la
 # moduleload rwm.la
-# moduleload seqmod.la
 # moduleload smbk5pwd.la
-# moduleload sssvlv.la
-# moduleload syncprov.la
 # moduleload translucent.la
 # moduleload unique.la
 # moduleload valsort.la
 
+# modules available in openldap-servers-sql RPM package:
+# moduleload back_sql.la
+
 # The next three lines allow use of TLS for encrypting connections using a
-# dummy test certificate which you can generate by running
-# /usr/libexec/openldap/generate-server-cert.sh. Your client software may balk
-# at self-signed certificates, however.
-TLSCACertificatePath /etc/openldap/certs
-TLSCertificateFile "\"OpenLDAP Server\""
-TLSCertificateKeyFile /etc/openldap/certs/password
+# dummy test certificate which you can generate by changing to
+# /etc/pki/tls/certs, running "make slapd.pem", and fixing permissions on
+# slapd.pem so that the ldap user or group can read it.  Your client software
+# may balk at self-signed certificates, however.
+# TLSCACertificateFile /etc/pki/tls/certs/ca-bundle.crt
+# TLSCertificateFile /etc/pki/tls/certs/slapd.pem
+# TLSCertificateKeyFile /etc/pki/tls/certs/slapd.pem
 
 # Sample security restrictions
 #	Require integrity protection (prevent hijacking)
@@ -94,29 +78,12 @@ TLSCertificateKeyFile /etc/openldap/certs/password
 #
 # rootdn can always read and write EVERYTHING!
 
-# enable on-the-fly configuration (cn=config)
-database config
-access to *
-	by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage
-	by * none
-
-rootdn		"cn=Manager,cn=config"
-rootpw          1
-
-# enable server status monitoring (cn=monitor)
-database monitor
-access to *
-	by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" read
-        by dn.exact="cn=Manager,dc=my-domain,dc=com" read
-        by * none
-
 #######################################################################
-# database definitions
+# ldbm and/or bdb database definitions
 #######################################################################
 
 database	bdb
 suffix		"dc=my-domain,dc=com"
-checkpoint	1024 15
 rootdn		"cn=Manager,dc=my-domain,dc=com"
 # Cleartext passwords, especially for the rootdn, should
 # be avoided.  See slappasswd(8) and slapd.conf(5) for details.

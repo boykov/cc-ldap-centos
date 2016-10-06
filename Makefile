@@ -25,18 +25,16 @@ start:
 	docker start cc-ldap-centos6
 	sleep 1
 
-test: start
-	$(eval IPcentos5 = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} cc-ldap-centos5))
-	echo $(IPcentos5)
-	cd ldap-server && ldapadd -h $(IPcentos5) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f bob.ldif || true
-	cd ldap-server && ldapadd -h $(IPcentos5) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true
-	ldapsearch -x -h $(IPcentos5) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
+build-schema:
+	$(eval host = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(server)))
+	echo $(host)
+	cd ldap-server && ldapadd -h $(host) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f bob.ldif || true
+	cd ldap-server && ldapadd -h $(host) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true
+	ldapsearch -x -h $(host) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
 
-	$(eval IPcentos6 = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} cc-ldap-centos6))
-	echo $(IPcentos6)
-	cd ldap-server && ldapadd -h $(IPcentos6) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f bob.ldif || true
-	cd ldap-server && ldapadd -h $(IPcentos6) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true
-	ldapsearch -x -h $(IPcentos6) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
+test: start
+	make build-schema server=cc-ldap-centos5
+	make build-schema server=cc-ldap-centos6
 
 clear:
 	docker rm -f -v cc-ldap-centos5

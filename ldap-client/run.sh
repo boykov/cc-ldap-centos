@@ -2,7 +2,7 @@
 
 # for testing purpose
 LDAP_SERVER="172.17.0.3"
-LDAP_BASEDN="dc=tuleap,dc=local"
+LDAP_BASEDN="dc=mercury,dc=febras,dc=net"
 
 authconfig --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 

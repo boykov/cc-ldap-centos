@@ -1,19 +1,19 @@
-dn: dc=tuleap,dc=local
+dn: dc=mercury,dc=febras,dc=net
 objectClass: top
 objectClass: dcObject
 objectClass: organization
-dc: tuleap
-o : tuleap
+dc: mercury
+o : mercury
 
-dn: cn=Manager,dc=tuleap,dc=local
+dn: cn=Manager,dc=mercury,dc=febras,dc=net
 objectClass: organizationalRole
 cn: Manager
 description: Directory Manager
 
-dn: ou=people,dc=tuleap,dc=local
+dn: ou=people,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: people
 
-dn: ou=groups,dc=tuleap,dc=local
+dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: groups

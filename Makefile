@@ -32,7 +32,7 @@ start:
 build-schema:
 	$(eval host = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(server)))
 	echo $(host)
-	ldapsearch -x -h $(host) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
+	ldapsearch -x -h $(host) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
 
 test: start
 	make build-schema server=cc-ldap-centos5

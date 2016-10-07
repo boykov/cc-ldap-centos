@@ -1,4 +1,4 @@
-dn: cn=Bob Jones,ou=people,dc=tuleap,dc=local
+dn: cn=Bob Jones,ou=people,dc=mercury,dc=febras,dc=net
 cn: Bob Jones
 sn: Jones
 objectClass: inetOrgPerson

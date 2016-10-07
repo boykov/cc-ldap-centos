@@ -1,4 +1,4 @@
-dn: uid=username,ou=people,dc=tuleap,dc=local
+dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
 cn: User Name
 userPassword: p@ssw0rd
 uid: username

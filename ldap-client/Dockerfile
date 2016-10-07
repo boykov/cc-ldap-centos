@@ -4,7 +4,7 @@ MAINTAINER Evgeny Boykov, artscan@list.ru
 
 #update yum repository and install openssh server
 RUN yum update -y
-RUN yum install -y openssh-server  openldap-clients nss_ldap authconfig
+RUN yum install -y openssh-server openldap-clients nss_ldap authconfig
 
 #generate ssh key
 RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key

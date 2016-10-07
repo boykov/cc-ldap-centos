@@ -2,14 +2,6 @@
 #+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 
-#+begin_html
-<style type="text/css">
-  pre.src:before {
-    top: -5px;
-  }
-</style>
-#+end_html
-
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
 :CUSTOM_ID: install-and-config
@@ -62,7 +54,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+end_src
 
-** Настройка базы данных Oracle Berkeley DB
+** Настройка базы данных BDB
 :PROPERTIES:
 :CUSTOM_ID: configure-bdb
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
@@ -183,11 +175,15 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (5/2.3) и */usr/share/openldap-servers/slapd.conf.obsolete* (6/2.4).
 
-** Настройка 
+** Подготовка к тестированию аутентификации при помощи LDAP
 :PROPERTIES:
 :CUSTOM_ID: add-manager
 :ID:       17e9c727-04eb-495e-97a8-36ab4f2b3cc9
 :END:
+
+Чтобы получить минимально работоспособный сервер LDAP, позволяющий осуществлять аутентификацию для клиентских систем, внесем необходимые изменения в схему. В частности, сконфигурируем базу *bdb* для доменного имени *dc=mercury,dc=febras,dc=net*, пропишем пароли для менеджеров схемы *cn=Manager,cn=config* и *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 2 подразделения *groups* и *people*. Также, для примера, пропишем в *domain.ldif* два правила доступа --- в дальнейшем, при [[id:b64d7c36-b2b3-49ac-9620-d7c94eb9ea31][настройке схемы БД LDAP]], потребуется переконфигурировать все правила доступа заново.
+
+Для обеих конфигураций выполним следующие действия
 
 #+name: run-modify
 #+begin_src sh :exports none
@@ -227,27 +223,27 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">manager.ldif</a>
+<br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">/root/manager.ldif</a>
 #+end_html
-#+HTML: <div id="myContent-manager" style="display:true">
+#+HTML: <div id="myContent-manager" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
 #+HTML: </div>
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">domain.ldif</a>
+<br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">/root/domain.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-domain" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
 #+HTML: </div>
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-base');" class="fa">base.ldif</a>
+<br/><a href="javascript:toggleDiv('myContent-base');" class="fa">/root/base.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-base" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
 #+HTML: </div>
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">admin.ldif</a>
+<br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">/root/admin.ldif</a>
 #+end_html
-#+HTML: <div id="myContent-admin" style="display:none">
+#+HTML: <div id="myContent-admin" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 #+HTML: </div>
 
@@ -273,6 +269,8 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-postfix>>
 #+end_src
 
+Для тестирования аутентификации будем использовать запись *username*.
+
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:
 :CUSTOM_ID: authentification
@@ -289,31 +287,33 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
+#+begin_src sh :exports code
+yum install -y openssh-server openldap-clients nss_ldap authconfig
+#+end_src
+
+#+begin_src sh :exports code
+yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
+#+end_src
+
 #+begin_html
-<a href="javascript:toggleDiv('myContent-run');" class="fa">ldap-client/run.sh</a>
+<a href="javascript:toggleDiv('myContent-run');" class="fa">/root/run.sh</a>
 #+end_html
 
 #+HTML: <div id="myContent-run" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/run.sh src sh
 #+HTML: </div>
 
-#+begin_html
-<br/><a href="javascript:toggleDiv('myContent-client5');" class="fa">ldap-client/Dockerfile</a>
-#+end_html
-
-#+HTML: <div id="myContent-client5" style="display:true">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/Dockerfile src dockerfile :lines "7-8"
-#+HTML: </div>
+#+begin_src conf-colon
+username:x:1050:1030:User Name:/home/webminder:/bin/bash
+#+end_src
 
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-client6');" class="fa">ldap-client/Dockerfile-centos6</a>
+<a href="javascript:toggleDiv('myContent-client');" class="fa">client.diff</a>
 #+end_html
 
-#+HTML: <div id="myContent-client6" style="display:true">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/Dockerfile-centos6 src dockerfile :lines "9-10"
+#+HTML: <div id="myContent-client" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client.diff src diff
 #+HTML: </div>
-
-
 
 * Схема БД LDAP
 :PROPERTIES:

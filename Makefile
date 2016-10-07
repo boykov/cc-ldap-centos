@@ -32,8 +32,6 @@ start:
 build-schema:
 	$(eval host = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(server)))
 	echo $(host)
-	cd ldap-server && ldapadd -h $(host) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f bob.ldif || true
-	cd ldap-server && ldapadd -h $(host) -x -D 'cn=Manager,dc=tuleap,dc=local' -w manager -f admin.ldif || true
 	ldapsearch -x -h $(host) -LLL -D 'cn=Manager,cn=config' -b 'dc=tuleap,dc=local' '*' -w root
 
 test: start

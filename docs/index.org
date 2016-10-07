@@ -2,6 +2,14 @@
 #+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 
+#+begin_html
+<style type="text/css">
+  pre.src:before {
+    top: -5px;
+  }
+</style>
+#+end_html
+
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
 :CUSTOM_ID: install-and-config
@@ -114,15 +122,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+name: run-slapd-start
 #+begin_src sh :exports none
     service ldap start
-    sleep 3
-
 #+end_src
 
 #+name: run-slapd-start6
 #+begin_src sh :exports none
     service slapd start
-    sleep 3
-
 #+end_src
 Выполним аналогичные действия для 6/2.4
 #+begin_html
@@ -154,6 +158,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
 #+name: run-slapd-d
 #+begin_src sh :exports none
+    sleep 3
+
     killall slapd
     oldpath=`pwd`
     cd /etc/openldap
@@ -185,6 +191,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-modify
 #+begin_src sh :exports none
+    sleep 3
+
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
     sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
@@ -195,6 +203,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify  -v -D cn=Manager,cn=config -f /root/domain.ldif -x -w $LDAP_ROOT_PASSWORD
 
     ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
+    ldapadd -x -D cn=Manager,dc=tuleap,dc=local -w $LDAP_MANAGER_PASSWORD -f /root/admin.ldif
 
 #+end_src
 #+begin_src sh :exports code :noweb yes

@@ -23,16 +23,10 @@ build-server:
 
 build-client:
 	cd ldap-client && docker build -t cc-ldap-cli5 .
-	docker run --rm cc-ldap-cli5
+	docker run -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
 
 	cd ldap-client && docker build -f ./Dockerfile-centos6 -t cc-ldap-cli6 .
-	docker run --rm cc-ldap-cli6
-
-	diff -u ldap-client/ldap.conf.original ldap-client/ldap.conf > gen/client.diff || true
-	diff -u ldap-client/nsswitch.conf.original ldap-client/nsswitch.conf >> gen/client.diff || true
-	diff -u ldap-client/openldap-ldap.conf.original ldap-client/openldap-ldap.conf >> gen/client.diff || true
-	diff -u ldap-client/system-auth.original ldap-client/system-auth >> gen/client.diff || true
-	diff -u ldap-client/authconfig.original ldap-client/authconfig >> gen/client.diff || true
+	docker run --rm -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
 
 start:
 	docker start cc-ldap-centos5

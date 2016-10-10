@@ -25,6 +25,8 @@ RUN echo 'root:123456' | chpasswd
 EXPOSE 22
 COPY . /root
 
-CMD ["/root/run.sh"]
+RUN mkdir /gen
+
+CMD ["/root/run6.sh"]
 # CMD /usr/sbin/sshd -D
 #End

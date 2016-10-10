@@ -1,3 +1,7 @@
+gen = /home/eab/git/cc/cc-ldap-centos/gen/
+LDAP_SERVER = "172.17.0.6"
+LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
+
 tangle: docs/index.org
 	mkdir -p gen
 	diff ldap-server/slapd.conf.original ldap-server/slapd.conf > gen/slapd.diff || true

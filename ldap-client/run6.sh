@@ -13,4 +13,6 @@ rm -rf /gen/etc6/etcnew
 
 getent passwd username
 
-/usr/share/migrationtools/migrate_passwd.pl /etc/passwd || true
+# do not need migrate centos 6 users
+# /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/passwd6.ldif
+# /usr/share/migrationtools/migrate_group.pl /etc/group > /gen/group6.ldif

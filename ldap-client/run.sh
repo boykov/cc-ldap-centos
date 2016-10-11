@@ -13,4 +13,6 @@ rm -rf /gen/etc5/etcnew
 
 getent passwd username
 
-/usr/share/openldap/migration/migrate_passwd.pl /etc/passwd || true
+/usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/passwd.ldif
+
+/usr/share/openldap/migration/migrate_group.pl /etc/group > /gen/group.ldif

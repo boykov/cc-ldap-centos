@@ -333,6 +333,42 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
 
+#+begin_html
+<a href="javascript:toggleDiv('myContent-passwd');" class="fa">passwd.ldif</a>
+#+end_html
+
+#+HTML: <div id="myContent-passwd" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd.ldif src ldif
+#+HTML: </div>
+
+# do not need migrate centos 6 users
+# #+begin_html
+# <br/><a href="javascript:toggleDiv('myContent-passwd6');" class="fa">passwd6.ldif</a>
+# #+end_html
+
+# #+HTML: <div id="myContent-passwd6" style="display:none">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd6.ldif src ldif
+# #+HTML: </div>
+
+
+#+begin_html
+<br/><a href="javascript:toggleDiv('myContent-group');" class="fa">group.ldif</a>
+#+end_html
+
+#+HTML: <div id="myContent-group" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group.ldif src ldif
+#+HTML: </div>
+
+# do not need migrate centos 6 users
+# #+begin_html
+# <br/><a href="javascript:toggleDiv('myContent-group6');" class="fa">group6.ldif</a>
+# #+end_html
+
+# #+HTML: <div id="myContent-group6" style="display:none">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group6.ldif src ldif
+# #+HTML: </div>
+
+
 * Процесс добавления нового пользователя в систему
 :PROPERTIES:
 :CUSTOM_ID: new-user

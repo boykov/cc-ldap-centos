@@ -295,10 +295,12 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss_ldap authconfig
+yum install -y openldap-servers sudo
 #+end_src
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
+RUN yum install -y migrationtools sudo
 #+end_src
 
 #+begin_html

@@ -4,6 +4,9 @@ cp -R /etc /gen/etc6/etc
 
 authconfig --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 
+echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo sudoers_debug 0 >> /etc/ldap.conf
+
 cp -R /etc /gen/etc6/etcnew
 
 diff -u -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true

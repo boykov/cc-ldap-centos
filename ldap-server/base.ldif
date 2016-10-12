@@ -14,6 +14,10 @@ dn: ou=people,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: people
 
+dn: ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: organizationalUnit
+ou: sudoers
+
 dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: groups

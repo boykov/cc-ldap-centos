@@ -12,3 +12,19 @@ objectClass: person
 objectClass: inetOrgPerson
 gecos: User Name
 sn: User Name
+
+dn: cn=admins,ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: sudoRole
+objectClass: top
+cn: admins
+sudoCommand: ALL
+sudoRunAs: ALL
+sudoHost: ALL
+sudoUser: username
+
+dn: cn=defaults,ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: sudoRole
+objectClass: top
+cn: defaults
+sudoOption: ignore_local_sudoers
+sudoOption: env_reset

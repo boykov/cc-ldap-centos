@@ -1,7 +1,7 @@
-Используемые конфигурации: [[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]]
+used configurations: [[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]]
 
-См. также
-| demo-версии web интерфейсов   | [[http://demo.phpldapadmin.org/RELEASE/htdocs/index.php][phpLDAPadmin demo]]   | [[http://demo.fusiondirectory.org/][fusiondirectory demo]]               | [[https://www.ldap-account-manager.org/lamcms/liveDemo][LAM demo]]   |
-| docker-образы web интерфейсов | [[https://github.com/osixia/docker-phpLDAPadmin][osixia/phpldapadmin]] | [[https://github.com/m-creations/docker-fusiondirectory][m-creations/docker-fusiondirectory]] | [[https://github.com/aexo/docker-ldap-account-manager][aexoti/lam]] |
+See also
+| demo-versions of web interfaces | [[http://demo.phpldapadmin.org/RELEASE/htdocs/index.php][phpLDAPadmin demo]]   | [[http://demo.fusiondirectory.org/][fusiondirectory demo]]               | [[https://www.ldap-account-manager.org/lamcms/liveDemo][LAM demo]]   |
+| docker-images of web interfaces | [[https://github.com/osixia/docker-phpLDAPadmin][osixia/phpldapadmin]] | [[https://github.com/m-creations/docker-fusiondirectory][m-creations/docker-fusiondirectory]] | [[https://github.com/aexo/docker-ldap-account-manager][aexoti/lam]] |
 
 

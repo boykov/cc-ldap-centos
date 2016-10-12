@@ -300,7 +300,7 @@ yum install -y openldap-servers sudo
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
-RUN yum install -y migrationtools sudo
+yum install -y migrationtools sudo
 #+end_src
 
 #+begin_html

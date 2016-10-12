@@ -15,6 +15,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
+    cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    chown ldap. /etc/openldap/schema/sudo.schema
+
     rm -f /etc/openldap/slapd.conf
     cp /root/slapd.conf /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf

@@ -32,7 +32,7 @@
 # Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
 # #+end_tip
 #+begin_src sh
-yum -y install openldap-servers openldap-clients
+yum -y install openldap-servers openldap-clients sudo
 #+end_src
 получаем 2 конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае CentOS 5/2.3 OpenLDAP (5/2.3) и *slapd* в случае CentOS 6/2.4 OpenLDAP (6/2.4).
 
@@ -101,6 +101,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 и произведем первый запуск сервиса
 #+name: run-slapd-conf
 #+begin_src sh :exports none
+    cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    chown ldap. /etc/openldap/schema/sudo.schema
+
     rm -f /etc/openldap/slapd.conf
     cp /root/slapd.conf /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf
@@ -136,6 +139,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-slapd-conf6
 #+begin_src sh :exports none
+    cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    chown ldap. /etc/openldap/schema/sudo.schema
+
     rm -f /etc/openldap/slapd.conf
     cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf

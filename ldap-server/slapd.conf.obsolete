@@ -15,6 +15,7 @@ include		/etc/openldap/schema/nis.schema
 include		/etc/openldap/schema/openldap.schema
 include		/etc/openldap/schema/ppolicy.schema
 include		/etc/openldap/schema/collective.schema
+include		/etc/openldap/schema/sudo.schema
 
 # Allow LDAPv2 client connections.  This is NOT the default.
 allow bind_v2

@@ -1,2 +1,0 @@
-tangle:
-	$(MAKE) -C .. tangle

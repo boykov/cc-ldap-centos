@@ -62,7 +62,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify  -v -D cn=Manager,cn=config -f /root/domain.ldif -x -w $LDAP_ROOT_PASSWORD
 
     ldapadd -x -D cn=Manager,dc=mercury,dc=febras,dc=net -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
-    ldapadd -x -D cn=Manager,dc=mercury,dc=febras,dc=net -w $LDAP_MANAGER_PASSWORD -f /root/admin.ldif
 
 # run-modify ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]

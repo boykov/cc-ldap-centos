@@ -207,7 +207,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify  -v -D cn=Manager,cn=config -f /root/domain.ldif -x -w $LDAP_ROOT_PASSWORD
 
     ldapadd -x -D cn=Manager,dc=mercury,dc=febras,dc=net -w $LDAP_MANAGER_PASSWORD -f /root/base.ldif
-    ldapadd -x -D cn=Manager,dc=mercury,dc=febras,dc=net -w $LDAP_MANAGER_PASSWORD -f /root/admin.ldif
 
 #+end_src
 #+begin_src sh :exports code :noweb yes
@@ -248,12 +247,12 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+HTML: <div id="myContent-base" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
 #+HTML: </div>
-#+begin_html
-<br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">/root/admin.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-admin" style="display:true">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
-#+HTML: </div>
+# #+begin_html
+# <br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">/root/admin.ldif</a>
+# #+end_html
+# #+HTML: <div id="myContent-admin" style="display:true">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
+# #+HTML: </div>
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>

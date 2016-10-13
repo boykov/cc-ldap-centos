@@ -4,8 +4,6 @@ LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 
 tangle: docs/index.org
 	mkdir -p gen
-	diff ldap-server/slapd.conf.original ldap-server/slapd.conf > gen/slapd.diff || true
-	diff ldap-server/slapd.conf.obsolete.original ldap-server/slapd.conf.obsolete > gen/slapd.obsolete.diff || true
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-publish-current-file) (eab/tangle-init))" > /dev/null
 	sed -i '2d' ldap-server/run.sh
 	sed -i '2d' ldap-server/run6.sh
@@ -15,12 +13,12 @@ tangle: docs/index.org
 build-server:
 	cd ldap-server && docker build -t cc-ldap-dev5 .
 	docker run --name cc-ldap-data5 -v /data busybox true || true
-	docker run --name cc-ldap-centos5 --volumes-from cc-ldap-data5 cc-ldap-dev5 &
+	docker run --name cc-ldap-centos5 -v $(gen):/gen --volumes-from cc-ldap-data5 cc-ldap-dev5 &
 	sleep 15
 
 	cd ldap-server && docker build -f ./Dockerfile-centos6 -t cc-ldap-dev6 .
 	docker run --name cc-ldap-data6 -v /data busybox true || true
-	docker run --name cc-ldap-centos6 --volumes-from cc-ldap-data6 cc-ldap-dev6 &
+	docker run --name cc-ldap-centos6 -v $(gen):/gen --volumes-from cc-ldap-data6 cc-ldap-dev6 &
 	sleep 15
 
 build-client:

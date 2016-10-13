@@ -23,9 +23,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
-    rm -f /etc/openldap/slapd.conf
+    mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
     cp /root/slapd.conf /etc/openldap/slapd.conf
     chown ldap. /etc/openldap/slapd.conf
+
+    diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
 
 # run-slapd-conf ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start]]

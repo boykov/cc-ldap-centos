@@ -38,7 +38,6 @@ yum -y install openldap-servers openldap-clients sudo
 
 #+name: run-prefix
 #+begin_src sh :exports none
-#!/bin/bash
 
 # for testing purpose
 LDAP_ROOT_PASSWORD=root
@@ -253,7 +252,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 #+HTML: </div>
 
-#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :exports none :noweb yes
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config>>
 <<run-slapd-conf>>
@@ -264,7 +263,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-postfix>>
 #+end_src
 
-#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run6.sh :exports none :noweb yes
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config6>>
 <<run-slapd-conf6>>

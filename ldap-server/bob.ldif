@@ -1,6 +1,0 @@
-dn: cn=Bob Jones,ou=people,dc=mercury,dc=febras,dc=net
-cn: Bob Jones
-sn: Jones
-objectClass: inetOrgPerson
-userPassword: p@ssw0rd
-uid: bjones

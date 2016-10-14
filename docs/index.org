@@ -294,6 +294,12 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
+** Используемые пакеты
+:PROPERTIES:
+:CUSTOM_ID: client-packages
+:ID:       a4da4894-117b-40b6-a6c7-1447f083d6e1
+:END:
+
 Для настройки клиентского подключения в 5/2.3 понадобятся следующие пакеты
 
 #+begin_src sh :exports code
@@ -344,7 +350,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -u -r -x passwd -x group -x shadow /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+diff -u -r --unidirectional-new-file /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+diff -q -r /gen/etc5/etc /gen/etc5/etcnew > /gen/client-files.diff || true
 
 rm -rf /gen/etc5/etc
 rm -rf /gen/etc5/etcnew
@@ -361,7 +368,8 @@ getent passwd username
 
 cp -R /etc /gen/etc6/etcnew
 
-diff -u -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+diff -u -r --unidirectional-new-file /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+diff -q -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6-files.diff || true
 
 rm -rf /gen/etc6/etc
 rm -rf /gen/etc6/etcnew
@@ -388,6 +396,12 @@ getent passwd username
 <<client6-run-postfix>>
 #+end_src
 
+** Используемые команды
+:PROPERTIES:
+:CUSTOM_ID: client-commands
+:ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
+:END:
+
 Модифицируем с помощью *authconfig* конфигурацию клиента. Отдельно настроим */etc/ldap.conf*. Для 5/2.3
 
 #+begin_src sh :exports code :noweb yes
@@ -408,6 +422,36 @@ getent passwd username
 #+begin_src conf-colon
 username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_src
+
+** Измененные файлы
+:PROPERTIES:
+:CUSTOM_ID: client-files
+:ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
+:END:
+
+Файлы, которые были модифицированы программой *authconfig* в случае 5/2.3
+
+#+begin_html
+<a href="javascript:toggleDiv('myContent-client-files');" class="fa">client-files.diff</a>
+#+end_html
+#+HTML: <div id="myContent-client-files" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client-files.diff src diff
+#+HTML: </div>
+
+и в случае 6/2.4
+
+#+begin_html
+<a href="javascript:toggleDiv('myContent-client6-files');" class="fa">client6-files.diff</a>
+#+end_html
+#+HTML: <div id="myContent-client6-files" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
+#+HTML: </div>
+
+** Описание используемых опций
+:PROPERTIES:
+:CUSTOM_ID: client-options
+:ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f
+:END:
 
 #+begin_html
 <a href="javascript:toggleDiv('myContent-client');" class="fa">client.diff</a>

@@ -7,8 +7,12 @@ tangle: docs/index.org
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-publish-current-file) (eab/tangle-init))" > /dev/null
 	sed -i '2d' ldap-server/run.sh
 	sed -i '2d' ldap-server/run6.sh
+	sed -i '2d' ldap-client/run.sh
+	sed -i '2d' ldap-client/run6.sh
 	chmod 0755 ldap-server/run.sh
 	chmod 0755 ldap-server/run6.sh
+	chmod 0755 ldap-client/run.sh
+	chmod 0755 ldap-client/run6.sh
 
 build-server5:
 	cd ldap-server && docker build -t cc-ldap-dev5 .

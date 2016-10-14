@@ -294,24 +294,117 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
+Для настройки клиентского подключения в 5/2.3 понадобятся следующие пакеты
+
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss_ldap authconfig
 yum install -y openldap-servers sudo
 #+end_src
+
+Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для 6/2.4 выполним
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
 yum install -y migrationtools sudo
 #+end_src
 
-#+begin_html
-<a href="javascript:toggleDiv('myContent-run');" class="fa">/root/run.sh</a>
-#+end_html
+#+name: client5-run-prefix
+#+begin_src sh :exports none
 
-#+HTML: <div id="myContent-run" style="display:true">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-client/run.sh src sh
-#+HTML: </div>
+cp -R /etc /gen/etc5/etc
 
+#+end_src
+
+#+name: client6-run-prefix
+#+begin_src sh :exports none
+
+cp -R /etc /gen/etc6/etc
+
+#+end_src
+
+#+name: client5-run-setup
+#+begin_src sh :exports none
+authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+#+end_src
+
+#+name: client6-run-setup
+#+begin_src sh :exports none
+authconfig --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+#+end_src
+
+#+name: client-run-sudoers
+#+begin_src sh :exports none
+
+echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo sudoers_debug 0 >> /etc/ldap.conf
+#+end_src
+
+#+name: client5-run-postfix
+#+begin_src sh :exports none
+
+cp -R /etc /gen/etc5/etcnew
+
+diff -u -r -x passwd -x group -x shadow /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+
+rm -rf /gen/etc5/etc
+rm -rf /gen/etc5/etcnew
+
+getent passwd username
+
+/usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/passwd.ldif
+
+/usr/share/openldap/migration/migrate_group.pl /etc/group > /gen/group.ldif
+#+end_src
+
+#+name: client6-run-postfix
+#+begin_src sh :exports none
+
+cp -R /etc /gen/etc6/etcnew
+
+diff -u -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+
+rm -rf /gen/etc6/etc
+rm -rf /gen/etc6/etcnew
+
+getent passwd username
+
+# do not need migrate centos 6 users
+# /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/passwd6.ldif
+# /usr/share/migrationtools/migrate_group.pl /etc/group > /gen/group6.ldif
+#+end_src
+
+
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
+<<client5-run-prefix>>
+<<client5-run-setup>>
+<<client-run-sudoers>>
+<<client5-run-postfix>>
+#+end_src
+
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
+<<client6-run-prefix>>
+<<client6-run-setup>>
+<<client-run-sudoers>>
+<<client6-run-postfix>>
+#+end_src
+
+Модифицируем с помощью *authconfig* конфигурацию клиента. Отдельно настроим */etc/ldap.conf*. Для 5/2.3
+
+#+begin_src sh :exports code :noweb yes
+<<client5-run-setup>>
+<<client-run-sudoers>>
+#+end_src
+и для 6/2.4
+#+begin_src sh :exports code :noweb yes
+<<client6-run-setup>>
+<<client-run-sudoers>>
+#+end_src
+
+Протестируем подключение с помощью команды
+#+begin_src sh
+getent passwd username
+#+end_src
+которая выводит passwd данные пользователя *username* из доступных источников, в данном случае задействован сервер LDAP
 #+begin_src conf-colon
 username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_src

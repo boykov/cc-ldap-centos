@@ -4,7 +4,8 @@ LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 
 tangle: docs/index.org
 	mkdir -p gen
-	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-publish-current-file t) (eab/tangle-init))" > /dev/null
+	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-current-file t) (eab/tangle-init))" > /dev/null
+	mv docs/index.odt /home/eab/git/cc/boykov.github.io/ldap
 	sed -i '2d' ldap-server/run.sh
 	sed -i '2d' ldap-server/run6.sh
 	sed -i '2d' ldap-client/run.sh

@@ -1,5 +1,5 @@
 #+TITLE: Аутентификация пользователей CentOS 5/6 с использованием OpenLDAP 2.3/2.4
-#+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil
+#+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil author:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 
 * Установка и настройка сервера OpenLDAP
@@ -94,7 +94,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_html
 
 #+HTML: <div id="myContent" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+INCLUDE: ../gen/slapd.diff src diff
 и произведем первый запуск сервиса
@@ -130,7 +130,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_html
 
 #+HTML: <div id="myContent2" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+INCLUDE: ../gen/slapd.obsolete.diff src diff
 
@@ -233,19 +233,19 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">/root/manager.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-manager" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+begin_html
 <br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">/root/domain.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-domain" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+begin_html
 <br/><a href="javascript:toggleDiv('myContent-base');" class="fa">/root/base.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-base" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 # #+begin_html
 # <br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">/root/admin.ldif</a>
@@ -458,7 +458,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_html
 
 #+HTML: <div id="myContent-client" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client.diff src diff
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 #+begin_html
@@ -466,7 +466,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_html
 
 #+HTML: <div id="myContent-client6" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 * Схема БД LDAP
@@ -484,7 +484,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_html
 
 #+HTML: <div id="myContent-passwd" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 # do not need migrate centos 6 users
@@ -493,7 +493,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 # #+end_html
 
 # #+HTML: <div id="myContent-passwd6" style="display:none">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd6.ldif src ldif
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
 
 
@@ -502,7 +502,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_html
 
 #+HTML: <div id="myContent-group" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 # do not need migrate centos 6 users
@@ -511,7 +511,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 # #+end_html
 
 # #+HTML: <div id="myContent-group6" style="display:none">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group6.ldif src ldif
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
 
 

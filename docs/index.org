@@ -90,7 +90,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 Внесем небольшие изменения в конфигурационный файл для 5/2.3
 #+begin_html
-<a href="javascript:toggleDiv('myContent');" class="fa">/root/slapd.conf</a>
+<a onclick="toggleDiv2('myContent',$(this));" class="fa fa-caret-right">/root/slapd.conf</a>
 #+end_html
 
 #+HTML: <div id="myContent" style="display:none">
@@ -126,7 +126,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 Выполним аналогичные действия для 6/2.4
 #+begin_html
-<a href="javascript:toggleDiv('myContent2');" class="fa">/root/slapd.conf.obsolete</a>
+<a onclick="toggleDiv2('myContent2',$(this));" class="fa fa-caret-right">/root/slapd.conf.obsolete</a>
 #+end_html
 
 #+HTML: <div id="myContent2" style="display:none">
@@ -230,25 +230,25 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-manager');" class="fa">/root/manager.ldif</a>
+<br/><a onclick="toggleDiv2('myContent-manager',$(this));" class="fa fa-caret-right">/root/manager.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-manager" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-domain');" class="fa">/root/domain.ldif</a>
+<br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-domain" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-base');" class="fa">/root/base.ldif</a>
+<br/><a onclick="toggleDiv2('myContent-base',$(this));" class="fa fa-caret-right">/root/base.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-base" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 # #+begin_html
-# <br/><a href="javascript:toggleDiv('myContent-admin');" class="fa">/root/admin.ldif</a>
+# <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
 # #+end_html
 # #+HTML: <div id="myContent-admin" style="display:true">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
@@ -434,7 +434,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 Файлы, которые были модифицированы программой *authconfig* в случае 5/2.3
 
 #+begin_html
-<a href="javascript:toggleDiv('myContent-client-files');" class="fa">client-files.diff</a>
+<a onclick="toggleDiv2('myContent-client-files',$(this));" class="fa fa-caret-down">client-files.diff</a>
 #+end_html
 #+HTML: <div id="myContent-client-files" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client-files.diff src diff
@@ -443,7 +443,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 и в случае 6/2.4
 
 #+begin_html
-<a href="javascript:toggleDiv('myContent-client6-files');" class="fa">client6-files.diff</a>
+<a onclick="toggleDiv2('myContent-client6-files',$(this));" class="fa fa-caret-down">client6-files.diff</a>
 #+end_html
 #+HTML: <div id="myContent-client6-files" style="display:true">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
@@ -456,7 +456,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 :END:
 
 #+begin_html
-<a href="javascript:toggleDiv('myContent-client');" class="fa">client.diff</a>
+<a onclick="toggleDiv2('myContent-client',$(this));" class="fa fa-caret-right">client.diff</a>
 #+end_html
 
 #+HTML: <div id="myContent-client" style="display:none">
@@ -464,7 +464,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+HTML: </div>
 
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-client6');" class="fa">client6.diff</a>
+<br/><a onclick="toggleDiv2('myContent-client6',$(this));" class="fa fa-caret-right">client6.diff</a>
 #+end_html
 
 #+HTML: <div id="myContent-client6" style="display:none">
@@ -482,7 +482,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 #+end_quote
 
 #+begin_html
-<a href="javascript:toggleDiv('myContent-passwd');" class="fa">passwd.ldif</a>
+<a onclick="toggleDiv2('myContent-passwd',$(this));" class="fa fa-caret-right">passwd.ldif</a>
 #+end_html
 
 #+HTML: <div id="myContent-passwd" style="display:none">
@@ -491,7 +491,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 
 # do not need migrate centos 6 users
 # #+begin_html
-# <br/><a href="javascript:toggleDiv('myContent-passwd6');" class="fa">passwd6.ldif</a>
+# <br/><a onclick="toggleDiv2('myContent-passwd6',$(this));" class="fa fa-caret-right">passwd6.ldif</a>
 # #+end_html
 
 # #+HTML: <div id="myContent-passwd6" style="display:none">
@@ -500,7 +500,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 
 
 #+begin_html
-<br/><a href="javascript:toggleDiv('myContent-group');" class="fa">group.ldif</a>
+<br/><a onclick="toggleDiv2('myContent-group',$(this));" class="fa fa-caret-right">group.ldif</a>
 #+end_html
 
 #+HTML: <div id="myContent-group" style="display:none">
@@ -509,7 +509,7 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 
 # do not need migrate centos 6 users
 # #+begin_html
-# <br/><a href="javascript:toggleDiv('myContent-group6');" class="fa">group6.ldif</a>
+# <br/><a onclick="toggleDiv2('myContent-group6',$(this));" class="fa fa-caret-right">group6.ldif</a>
 # #+end_html
 
 # #+HTML: <div id="myContent-group6" style="display:none">

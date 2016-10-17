@@ -1,5 +1,4 @@
 gen = /home/eab/git/cc/cc-ldap-centos/gen/
-LDAP_SERVER = "172.17.0.6"
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 
 define get_ip
@@ -32,12 +31,14 @@ build-server6:
 	sleep 15
 
 build-client5:
+	$(eval ip = $(call get_ip,$(server)))
 	cd ldap-client && docker build -t cc-ldap-cli5 .
-	docker run --rm --name cc-ldap-client5 -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
+	docker run --rm --name cc-ldap-client5 -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
 
 build-client6:
+	$(eval ip = $(call get_ip,$(server)))
 	cd ldap-client && docker build -f ./Dockerfile-centos6 -t cc-ldap-cli6 .
-	docker run --rm --name cc-ldap-client6 -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
+	docker run --rm --name cc-ldap-client6 -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
 
 start:
 	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server5
@@ -47,18 +48,17 @@ start:
 	sleep 1
 
 build-schema:
-	$(eval host = $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(server)))
-	echo $(host)
-	ldapsearch -x -h $(host) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
+	$(eval ip = $(call get_ip,$(server)))
+	ldapsearch -x -h $(ip) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
 
 test: start
 	make build-schema server=cc-ldap-centos5
 	make build-schema server=cc-ldap-centos6
-	make build-client5 &
+	make build-client5 server=cc-ldap-centos6 &
 	sleep 2
 	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo ls /root
 	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo killall sshd || true
-	make build-client6
+	make build-client6 server=cc-ldap-centos6
 
 clear:
 	docker rm -f -v cc-ldap-centos5

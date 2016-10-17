@@ -47,6 +47,7 @@ sudoCommand: ALL
 sudoRunAs: ALL
 sudoHost: ALL
 sudoUser: username
+sudoOption: !authenticate
 
 dn: cn=defaults,ou=sudoers,dc=mercury,dc=febras,dc=net
 objectClass: sudoRole

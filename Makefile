@@ -2,6 +2,10 @@ gen = /home/eab/git/cc/cc-ldap-centos/gen/
 LDAP_SERVER = "172.17.0.6"
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 
+define get_ip
+    $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(1))
+endef
+
 tangle: docs/index.org
 	mkdir -p gen
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-current-file t) (eab/tangle-init))" > /dev/null

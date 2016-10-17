@@ -16,7 +16,7 @@ VOLUME [ "/data" ]
 # Update to last version
 
 RUN yum -y update && \
-    yum -y install openldap-servers openldap-clients sudo && \
+    yum -y install openldap openldap-servers openldap-clients sudo && \
     yum clean all
 
 COPY . /root

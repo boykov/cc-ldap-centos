@@ -32,7 +32,7 @@
 # Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
 # #+end_tip
 #+begin_src sh
-yum -y install openldap-servers openldap-clients sudo
+yum -y install openldap openldap-servers openldap-clients sudo
 #+end_src
 получаем 2 конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае CentOS 5/2.3 OpenLDAP (5/2.3) и *slapd* в случае CentOS 6/2.4 OpenLDAP (6/2.4).
 
@@ -304,14 +304,14 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss_ldap authconfig
-yum install -y openldap-servers sudo
+yum install -y openldap openldap-servers sudo
 #+end_src
 
 Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для 6/2.4 выполним
 
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
-yum install -y migrationtools sudo
+yum install -y openldap migrationtools sudo
 #+end_src
 
 #+name: client5-run-prefix

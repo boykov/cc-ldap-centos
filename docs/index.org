@@ -361,6 +361,8 @@ getent passwd username
 /usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/passwd.ldif
 
 /usr/share/openldap/migration/migrate_group.pl /etc/group > /gen/group.ldif
+
+/usr/sbin/sshd -D
 #+end_src
 
 #+name: client6-run-postfix

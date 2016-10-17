@@ -29,3 +29,5 @@ getent passwd username
 /usr/share/openldap/migration/migrate_group.pl /etc/group > /gen/group.ldif
 # client5-run-postfix ends here
 # Используемые\ пакеты:1 ends here
+
+/usr/sbin/sshd -D

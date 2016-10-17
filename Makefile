@@ -50,7 +50,10 @@ build-schema:
 test: start
 	make build-schema server=cc-ldap-centos5
 	make build-schema server=cc-ldap-centos6
-	make build-client5
+	make build-client5 &
+	sleep 2
+	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo ls /root
+	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo killall sshd || true
 	make build-client6
 
 clear:

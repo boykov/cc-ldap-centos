@@ -51,13 +51,17 @@ build-schema:
 	$(eval ip = $(call get_ip,$(server)))
 	ldapsearch -x -h $(ip) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
 
+sshpass:
+	$(eval ip = $(call get_ip,$(server)))
+	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
+	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo killall sshd || true
+
 test: start
 	make build-schema server=cc-ldap-centos5
 	make build-schema server=cc-ldap-centos6
 	make build-client5 server=cc-ldap-centos6 &
 	sleep 2
-	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo ls /root
-	sshpass -p p@ssw0rd ssh -t username@172.17.0.8 sudo killall sshd || true
+	make sshpass server=cc-ldap-client5
 	make build-client6 server=cc-ldap-centos6
 
 clear:

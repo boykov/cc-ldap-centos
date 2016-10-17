@@ -29,11 +29,11 @@ build-server6:
 
 build-client5:
 	cd ldap-client && docker build -t cc-ldap-cli5 .
-	docker run --rm -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
+	docker run --rm --name cc-ldap-client5 -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
 
 build-client6:
 	cd ldap-client && docker build -f ./Dockerfile-centos6 -t cc-ldap-cli6 .
-	docker run --rm -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
+	docker run --rm --name cc-ldap-client6 -v $(gen):/gen -e LDAP_SERVER=$(LDAP_SERVER) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
 
 start:
 	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server5

@@ -16,8 +16,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -u -r --unidirectional-new-file /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
-diff -q -r /gen/etc5/etc /gen/etc5/etcnew > /gen/client-files.diff || true
+diff -u -r --unidirectional-new-file -x group -x shadow -x gshadow -x system-auth-ac -x passwd /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client-files.diff || true
 
 rm -rf /gen/etc5/etc
 rm -rf /gen/etc5/etcnew

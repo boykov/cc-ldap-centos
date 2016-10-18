@@ -36,7 +36,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-d]]
     sleep 3
 
-    killall slapd
+    kill -INT `cat /var/run/openldap/slapd.pid`
     oldpath=`pwd`
     cd /etc/openldap
     mkdir slapd.d
@@ -65,7 +65,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 # run-modify ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]
-    killall slapd
+    kill -INT `cat /var/run/openldap/slapd.pid`
     sleep 3
 
     mkdir /data/lib /data/etc

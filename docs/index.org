@@ -173,7 +173,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     sleep 3
 
-    killall slapd
+    kill -INT `cat /var/run/openldap/slapd.pid`
     oldpath=`pwd`
     cd /etc/openldap
     mkdir slapd.d
@@ -230,7 +230,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-postfix
 #+begin_src sh :exports none
-    killall slapd
+    kill -INT `cat /var/run/openldap/slapd.pid`
     sleep 3
 
     mkdir /data/lib /data/etc

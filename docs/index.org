@@ -330,12 +330,20 @@ cp -R /etc /gen/etc6/etc
 
 #+name: client5-run-setup
 #+begin_src sh :exports none
-authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
+	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+opts="--unidirectional-new-file -x group -x shadow -x gshadow \
+ -x system-auth-ac -x passwd"
 #+end_src
 
 #+name: client6-run-setup
 #+begin_src sh :exports none
-authconfig --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+authconfig --enablemkhomedir --enableldap --enableldapauth \
+	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+opts="--unidirectional-new-file -x fingerprint-auth-ac -x password-auth-ac \
+-x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
 #+end_src
 
 #+name: client-run-sudoers
@@ -350,7 +358,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -u -r --unidirectional-new-file -x group -x shadow -x gshadow -x system-auth-ac -x passwd /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client.diff
 diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client-files.diff || true
 
 rm -rf /gen/etc5/etc
@@ -370,7 +379,8 @@ getent passwd username
 
 cp -R /etc /gen/etc6/etcnew
 
-diff -u -r --unidirectional-new-file -x fingerprint-auth-ac -x password-auth-ac -x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+diff -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client6.diff
 diff -q -r /gen/etc6/etc /gen/etc6/etcnew | grep -v "K88nslcd" | grep -v "S12nslcd" | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client6-files.diff || true
 
 rm -rf /gen/etc6/etc

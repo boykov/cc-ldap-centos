@@ -5,7 +5,11 @@ cp -R /etc /gen/etc5/etc
 
 # client5-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-setup]]
-authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
+	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+opts="--unidirectional-new-file -x group -x shadow -x gshadow \
+ -x system-auth-ac -x passwd"
 # client5-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
 
@@ -16,7 +20,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -u -r --unidirectional-new-file -x group -x shadow -x gshadow -x system-auth-ac -x passwd /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client.diff
 diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client-files.diff || true
 
 rm -rf /gen/etc5/etc

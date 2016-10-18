@@ -5,7 +5,11 @@ cp -R /etc /gen/etc6/etc
 
 # client6-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-setup]]
-authconfig --enablemkhomedir --enableldap --enableldapauth --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+authconfig --enablemkhomedir --enableldap --enableldapauth \
+	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+opts="--unidirectional-new-file -x fingerprint-auth-ac -x password-auth-ac \
+-x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
 # client6-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
 
@@ -16,7 +20,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc6/etcnew
 
-diff -u -r --unidirectional-new-file -x fingerprint-auth-ac -x password-auth-ac -x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+diff -r /gen/etc6/etc /gen/etc6/etcnew > /gen/client6.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client6.diff
 diff -q -r /gen/etc6/etc /gen/etc6/etcnew | grep -v "K88nslcd" | grep -v "S12nslcd" | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client6-files.diff || true
 
 rm -rf /gen/etc6/etc

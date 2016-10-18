@@ -8,8 +8,7 @@ cp -R /etc /gen/etc5/etc
 authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 
-opts="--unidirectional-new-file -x group -x shadow -x gshadow \
- -x system-auth-ac -x passwd"
+opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
 # client5-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
 

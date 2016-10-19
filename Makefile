@@ -45,7 +45,7 @@ build-server:
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
 	cd ldap-client && docker build -f ./Dockerfile$(n) -t cc-ldap-cli$(n) .
-	docker run --rm --name cc-ldap-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli$(n)
+	docker run -d --name cc-ldap-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli$(n)
 
 start:
 	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server n=5
@@ -62,19 +62,22 @@ build-schema:
 sshpass:
 	$(eval ip = $(call get_ip,$(server)))
 	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
-	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo killall sshd || true
 
 test: start
 	make build-schema server=cc-ldap-centos5
 	make build-schema server=cc-ldap-centos6
-	make build-client n=5 server=cc-ldap-centos6 &
+	make build-client n=5 server=cc-ldap-centos6
 	sleep 2
 	make sshpass server=cc-ldap-client5
 	make build-client n=6 server=cc-ldap-centos6
+	sleep 2
+	make sshpass server=cc-ldap-client6
 	$(call recreate_cc-ldap,5)
 	sleep 1
 	$(call recreate_cc-ldap,6)
 	sleep 1
+	docker rm -f cc-ldap-client5
+	docker rm -f cc-ldap-client6
 
 clear:
 	docker rm -f -v cc-ldap-centos5

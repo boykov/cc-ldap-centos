@@ -20,9 +20,9 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
-sed -i 's|.*etcnew|/etc|g' /gen/client.diff
-diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client-files.diff || true
+diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client5.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client5.diff
+diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client5-files.diff || true
 
 rm -rf /gen/etc5/etc
 rm -rf /gen/etc5/etcnew

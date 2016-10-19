@@ -381,9 +381,9 @@ echo sudoers_debug 0 >> /etc/sudo-ldap.conf
 
 cp -R /etc /gen/etc5/etcnew
 
-diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client.diff || true
-sed -i 's|.*etcnew|/etc|g' /gen/client.diff
-diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client-files.diff || true
+diff -r $opts /gen/etc5/etc /gen/etc5/etcnew > /gen/client5.diff || true
+sed -i 's|.*etcnew|/etc|g' /gen/client5.diff
+diff -q -r /gen/etc5/etc /gen/etc5/etcnew | awk -F"etcnew" '{print "/etc"$2}' | sed 's/ differ//g' | sed 's|: |/|g' > /gen/client5-files.diff || true
 
 rm -rf /gen/etc5/etc
 rm -rf /gen/etc5/etcnew
@@ -471,12 +471,12 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 
 #+begin_html
 <div align="right">
-<a onclick="toggleDiv2('myContent-client-files',$(this));" class="fa fa-caret-down">client-files.diff</a>
+<a onclick="toggleDiv2('myContent-client5-files',$(this));" class="fa fa-caret-down">client5-files.diff</a>
 </div>
 #+end_html
-#+HTML: <div id="myContent-client-files" style="display:true">
+#+HTML: <div id="myContent-client5-files" style="display:true">
 #+caption: Список измененных файлов для 5/2.3
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client-files.diff src diff
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5-files.diff src diff
 #+HTML: </div>
 
 и в случае 6/2.4
@@ -498,11 +498,11 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 :END:
 
 #+begin_html
-<a onclick="toggleDiv2('myContent-client',$(this));" class="fa fa-caret-right">client.diff</a>
+<a onclick="toggleDiv2('myContent-client5',$(this));" class="fa fa-caret-right">client5.diff</a>
 #+end_html
 
-#+HTML: <div id="myContent-client" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: <div id="myContent-client5" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 #+begin_html

@@ -57,7 +57,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :END:
 
 Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и файл конфигурации базы данных. Расположение образца файла настройки, в 5/2.3
-#+name: run-db-config
+#+name: run-db-config5
 #+begin_src sh :exports none
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
@@ -65,7 +65,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+caption: Конфигурация БД для 5/2.3
 #+begin_src sh :exports code :noweb yes
-<<run-db-config>>
+<<run-db-config5>>
 #+end_src
 а в 6/2.4
 #+name: run-db-config6
@@ -101,7 +101,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+caption: Настройка *conf*-файла для 5/2.3
 #+INCLUDE: ../gen/slapd.diff src diff
 и произведем первый запуск сервиса
-#+name: run-slapd-conf
+#+name: run-slapd-conf5
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
@@ -115,11 +115,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+caption: Первый запуск сервиса для 5/2.3
 #+begin_src sh :exports code :noweb yes
-<<run-slapd-conf>>
-<<run-slapd-start>>
+<<run-slapd-conf5>>
+<<run-slapd-start5>>
 #+end_src
 
-#+name: run-slapd-start
+#+name: run-slapd-start5
 #+begin_src sh :exports none
     service ldap start
 #+end_src
@@ -185,7 +185,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 После перезапуска, для 5/2.3
 #+begin_src sh :exports code :noweb yes
-<<run-slapd-start>>
+<<run-slapd-start5>>
 #+end_src
 и для 6/2.4
 #+begin_src sh :exports code :noweb yes
@@ -265,11 +265,11 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
-<<run-db-config>>
-<<run-slapd-conf>>
-<<run-slapd-start>>
+<<run-db-config5>>
+<<run-slapd-conf5>>
+<<run-slapd-start5>>
 <<run-slapd-d>>
-<<run-slapd-start>>
+<<run-slapd-start5>>
 <<run-modify>>
 <<run-postfix>>
 #+end_src

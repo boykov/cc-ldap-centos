@@ -10,12 +10,12 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     fi
 
 # run-prefix ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-bdb][run-db-config]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-bdb][run-db-config5]]
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
-# run-db-config ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf]]
+# run-db-config5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf5]]
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
@@ -25,10 +25,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
 
-# run-slapd-conf ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start]]
+# run-slapd-conf5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
     service ldap start
-# run-slapd-start ends here
+# run-slapd-start5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-d]]
     sleep 3
 
@@ -42,9 +42,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     mv slapd.conf slapd.conf.bak
     cd $oldpath
 # run-slapd-d ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
     service ldap start
-# run-slapd-start ends here
+# run-slapd-start5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
     sleep 3
 

@@ -34,19 +34,12 @@ tangle: docs/index.org
 	chmod 0755 ldap-client/run5.sh
 	chmod 0755 ldap-client/run6.sh
 
-build-server5:
-	cd ldap-server && docker build -f ./Dockerfile5 -t cc-ldap-dev5 .
-	docker run --name cc-ldap-data5 -v /data busybox true || true
-	docker run --name cc-ldap-centos5 -v $(gen):/gen --volumes-from cc-ldap-data5 -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev5 &
+build-server:
+	cd ldap-server && docker build -f ./Dockerfile$(n) -t cc-ldap-dev$(n) .
+	docker run --name cc-ldap-data$(n) -v /data busybox true || true
+	docker run --name cc-ldap-centos$(n) -v $(gen):/gen --volumes-from cc-ldap-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(n) &
 	sleep 15
-	$(call create_backup,5)
-
-build-server6:
-	cd ldap-server && docker build -f ./Dockerfile6 -t cc-ldap-dev6 .
-	docker run --name cc-ldap-data6 -v /data busybox true || true
-	docker run --name cc-ldap-centos6 -v $(gen):/gen --volumes-from cc-ldap-data6 -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev6 &
-	sleep 15
-	$(call create_backup,6)
+	$(call create_backup,$(n))
 
 build-client5:
 	$(eval ip = $(call get_ip,$(server)))
@@ -59,9 +52,9 @@ build-client6:
 	docker run --rm --name cc-ldap-client6 -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
 
 start:
-	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server5
+	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server n=5
 	docker start cc-ldap-centos5
-	docker ps -a | grep cc-ldap-centos6 > /dev/null || make build-server6
+	docker ps -a | grep cc-ldap-centos6 > /dev/null || make build-server n=6
 	docker start cc-ldap-centos6
 	sleep 1
 

@@ -13,8 +13,13 @@ opts="-N -x fingerprint-auth-ac -x password-auth-ac \
 # client6-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
 
-echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
-echo sudoers_debug 0 >> /etc/ldap.conf
+echo sudoers:  files ldap >> /etc/nsswitch.conf
+
+echo uri ldap://$LDAP_SERVER/ >> /etc/sudo-ldap.conf
+echo base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
+echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
+echo sudoers_debug 0 >> /etc/sudo-ldap.conf
+
 # client-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-postfix]]
 
@@ -32,5 +37,6 @@ getent passwd username
 # do not need migrate centos 6 users
 # /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/passwd6.ldif
 # /usr/share/migrationtools/migrate_group.pl /etc/group > /gen/group6.ldif
+/usr/sbin/sshd -D
 # client6-run-postfix ends here
 # Используемые\ пакеты:1 ends here

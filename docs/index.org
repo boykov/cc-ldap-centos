@@ -356,7 +356,15 @@ opts="-N -x fingerprint-auth-ac -x password-auth-ac \
 -x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
 #+end_src
 
-#+name: client-run-sudoers
+#+name: client5-run-sudoers
+#+begin_src sh :exports none
+
+echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo sudoers_debug 0 >> /etc/ldap.conf
+
+#+end_src
+
+#+name: client6-run-sudoers
 #+begin_src sh :exports none
 
 echo sudoers:  files ldap >> /etc/nsswitch.conf
@@ -413,14 +421,14 @@ getent passwd username
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<client5-run-prefix>>
 <<client5-run-setup>>
-<<client-run-sudoers>>
+<<client5-run-sudoers>>
 <<client5-run-postfix>>
 #+end_src
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<client6-run-prefix>>
 <<client6-run-setup>>
-<<client-run-sudoers>>
+<<client6-run-sudoers>>
 <<client6-run-postfix>>
 #+end_src
 
@@ -435,13 +443,13 @@ getent passwd username
 #+caption: Настройка клиента для 5/2.3
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
-<<client-run-sudoers>>
+<<client5-run-sudoers>>
 #+end_src
 и для 6/2.4
 #+caption: Настройка клиента для 6/2.4
 #+begin_src sh :exports code :noweb yes
 <<client6-run-setup>>
-<<client-run-sudoers>>
+<<client6-run-sudoers>>
 #+end_src
 
 Протестируем подключение с помощью команды

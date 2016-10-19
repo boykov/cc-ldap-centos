@@ -10,11 +10,12 @@ authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 
 opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
 # client5-run-setup ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-sudoers]]
 
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
-# client-run-sudoers ends here
+
+# client5-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-postfix]]
 
 cp -R /etc /gen/etc5/etcnew

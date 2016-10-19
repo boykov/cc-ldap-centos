@@ -11,7 +11,7 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 opts="-N -x fingerprint-auth-ac -x password-auth-ac \
 -x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
 # client6-run-setup ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-run-sudoers]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-sudoers]]
 
 echo sudoers:  files ldap >> /etc/nsswitch.conf
 
@@ -20,7 +20,7 @@ echo base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_debug 0 >> /etc/sudo-ldap.conf
 
-# client-run-sudoers ends here
+# client6-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-postfix]]
 
 cp -R /etc /gen/etc6/etcnew

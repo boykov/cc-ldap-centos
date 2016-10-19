@@ -25,24 +25,24 @@ tangle: docs/index.org
 	mkdir -p gen
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-current-file t) (eab/tangle-init))" > /dev/null
 	mv docs/index.odt gen/
-	sed -i '2d' ldap-server/run.sh
+	sed -i '2d' ldap-server/run5.sh
 	sed -i '2d' ldap-server/run6.sh
-	sed -i '2d' ldap-client/run.sh
+	sed -i '2d' ldap-client/run5.sh
 	sed -i '2d' ldap-client/run6.sh
-	chmod 0755 ldap-server/run.sh
+	chmod 0755 ldap-server/run5.sh
 	chmod 0755 ldap-server/run6.sh
-	chmod 0755 ldap-client/run.sh
+	chmod 0755 ldap-client/run5.sh
 	chmod 0755 ldap-client/run6.sh
 
 build-server5:
-	cd ldap-server && docker build -t cc-ldap-dev5 .
+	cd ldap-server && docker build -f ./Dockerfile5 -t cc-ldap-dev5 .
 	docker run --name cc-ldap-data5 -v /data busybox true || true
 	docker run --name cc-ldap-centos5 -v $(gen):/gen --volumes-from cc-ldap-data5 -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev5 &
 	sleep 15
 	$(call create_backup,5)
 
 build-server6:
-	cd ldap-server && docker build -f ./Dockerfile-centos6 -t cc-ldap-dev6 .
+	cd ldap-server && docker build -f ./Dockerfile6 -t cc-ldap-dev6 .
 	docker run --name cc-ldap-data6 -v /data busybox true || true
 	docker run --name cc-ldap-centos6 -v $(gen):/gen --volumes-from cc-ldap-data6 -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev6 &
 	sleep 15
@@ -50,12 +50,12 @@ build-server6:
 
 build-client5:
 	$(eval ip = $(call get_ip,$(server)))
-	cd ldap-client && docker build -t cc-ldap-cli5 .
+	cd ldap-client && docker build -f ./Dockerfile5 -t cc-ldap-cli5 .
 	docker run --rm --name cc-ldap-client5 -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli5
 
 build-client6:
 	$(eval ip = $(call get_ip,$(server)))
-	cd ldap-client && docker build -f ./Dockerfile-centos6 -t cc-ldap-cli6 .
+	cd ldap-client && docker build -f ./Dockerfile6 -t cc-ldap-cli6 .
 	docker run --rm --name cc-ldap-client6 -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli6
 
 start:

@@ -21,4 +21,4 @@ RUN yum -y update && \
 
 COPY . /root
 
-CMD ["/root/run.sh"]
+CMD ["/root/run5.sh"]

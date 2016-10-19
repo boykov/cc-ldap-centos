@@ -25,6 +25,6 @@ COPY . /root
 
 RUN mkdir /gen
 
-CMD ["/root/run.sh"]
+CMD ["/root/run5.sh"]
 # CMD /usr/sbin/sshd -D
 #End

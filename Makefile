@@ -59,7 +59,7 @@ build-schema:
 	ldapadd -x -h $(ip) -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $(LDAP_MANAGER_PASSWORD) -f ldap-server/base.ldif
 	ldapsearch -x -h $(ip) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
 
-sshpass:
+test-client:
 	$(eval ip = $(call get_ip,$(server)))
 	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
 
@@ -68,10 +68,10 @@ test: start
 	make build-schema server=cc-ldap-centos6
 	make build-client n=5 server=cc-ldap-centos6
 	sleep 2
-	make sshpass server=cc-ldap-client5
+	make test-client server=cc-ldap-client5
 	make build-client n=6 server=cc-ldap-centos6
 	sleep 2
-	make sshpass server=cc-ldap-client6
+	make test-client server=cc-ldap-client6
 	$(call recreate_cc-ldap,5)
 	sleep 1
 	$(call recreate_cc-ldap,6)

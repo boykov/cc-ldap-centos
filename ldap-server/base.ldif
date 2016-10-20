@@ -38,6 +38,17 @@ objectClass: person
 objectClass: inetOrgPerson
 gecos: User Name
 sn: User Name
+shadowLastChange: 17093
+shadowMin: 0
+shadowMax: 99999
+shadowWarning: 7
+
+dn: cn=username,ou=groups,dc=mercury,dc=febras,dc=net
+objectClass: posixGroup
+objectClass: top
+cn: username
+userPassword: {crypt}x
+gidNumber: 1030
 
 dn: cn=admins,ou=sudoers,dc=mercury,dc=febras,dc=net
 objectClass: sudoRole

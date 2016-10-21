@@ -61,7 +61,7 @@ build-schema:
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))
-	sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
+	sshpass -p p@ssw0rd ssh -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root
 
 test: start
 	make build-schema server=cc-ldap-centos5

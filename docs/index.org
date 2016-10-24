@@ -525,6 +525,26 @@ getent passwd username
 # #+HTML: <div id="myContent-admin" style="display:true">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 # #+HTML: </div>
+
+** Процесс добавления нового пользователя в систему
+:PROPERTIES:
+:CUSTOM_ID: new-user
+:ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
+:END:
+
+#+begin_quote
+Необходимо разработать документацию по процессу добавления нового
+пользователя в систему, использующего аутентификацию посредством
+LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной
+операции. Ориентироваться на использование в ОС CentOS 5/6.
+#+end_quote
+
+#+begin_html
+<br/><a onclick="toggleDiv2('myContent-user',$(this));" class="fa fa-caret-right">/root/user.ldif</a>
+#+end_html
+#+HTML: <div id="myContent-user" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/user.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: </div>
 \\
 Для тестирования аутентификации будем использовать запись *username*.
 
@@ -582,17 +602,6 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 # #+HTML: <div id="myContent-group6" style="display:none">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
-
-
-* Процесс добавления нового пользователя в систему
-:PROPERTIES:
-:CUSTOM_ID: new-user
-:ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
-:END:
-
-#+begin_quote
-Необходимо разработать документацию по процессу добавления нового пользователя в систему, использующего аутентификацию посредством LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной операции. Ориентироваться на использование в ОС CentOS 5/6.
-#+end_quote
 
 * Перевести аутентификацию пользователей кластера на использование LDAP
 :PROPERTIES:

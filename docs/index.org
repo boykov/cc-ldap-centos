@@ -2,6 +2,7 @@
 #+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil author:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 #+HTML_HEAD: <style type="text/css">.org-src-name{ text-align: right; }</style>
+#+HTML_HEAD: <style type="text/css">.outline-2{ margin-top: 60px; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
 

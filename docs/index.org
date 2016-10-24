@@ -197,15 +197,13 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (5/2.3) и */usr/share/openldap-servers/slapd.conf.obsolete* (6/2.4).
 
-** Подготовка к тестированию аутентификации при помощи LDAP
+** Подготовка к конфигурированию схемы БД LDAP
 :PROPERTIES:
 :CUSTOM_ID: add-manager
 :ID:       17e9c727-04eb-495e-97a8-36ab4f2b3cc9
 :END:
 
-Чтобы получить минимально работоспособный сервер LDAP, позволяющий осуществлять аутентификацию для клиентских систем, внесем необходимые изменения в схему. В частности, сконфигурируем базу *bdb* для доменного имени *dc=mercury,dc=febras,dc=net*, пропишем пароли для менеджеров схемы *cn=Manager,cn=config* и *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 2 подразделения *groups* и *people*. Также, для примера, пропишем в *domain.ldif* два правила доступа --- в дальнейшем, при [[id:b64d7c36-b2b3-49ac-9620-d7c94eb9ea31][настройке схемы БД LDAP]], потребуется переконфигурировать все правила доступа заново.
-
-Для обеих конфигураций выполним следующие действия
+Чтобы иметь доступ к серверу LDAP для конфигурирование схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
 
 #+name: run-modify
 #+begin_src sh :exports none
@@ -239,29 +237,11 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 #+begin_html
-<br/><a onclick="toggleDiv2('myContent-manager',$(this));" class="fa fa-caret-right">/root/manager.ldif</a>
+<br/><a onclick="toggleDiv2('myContent-manager',$(this));" class="fa fa-caret-down">/root/manager.ldif</a>
 #+end_html
-#+HTML: <div id="myContent-manager" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: <div id="myContent-manager" style="display:true">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
 #+HTML: </div>
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-domain" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-base',$(this));" class="fa fa-caret-right">/root/base.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-base" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-# #+begin_html
-# <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
-# #+end_html
-# #+HTML: <div id="myContent-admin" style="display:true">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
-# #+HTML: </div>
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
@@ -284,8 +264,6 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-modify>>
 <<run-postfix>>
 #+end_src
-\\
-Для тестирования аутентификации будем использовать запись *username*.
 
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:
@@ -452,15 +430,6 @@ getent passwd username
 <<client6-run-sudoers>>
 #+end_src
 
-Протестируем подключение с помощью команды
-#+begin_src sh
-getent passwd username
-#+end_src
-которая выводит passwd данные пользователя *username* из доступных источников, в данном случае задействован сервер LDAP
-#+begin_src conf-colon
-username:x:1050:1030:User Name:/home/webminder:/bin/bash
-#+end_src
-
 ** Измененные файлы
 :PROPERTIES:
 :CUSTOM_ID: client-files
@@ -523,6 +492,63 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
 
+** Подготовка к тестированию аутентификации при помощи LDAP
+:PROPERTIES:
+:CUSTOM_ID: minimal-schema
+:ID:       3446a07c-3649-4e85-84c1-044e78c340dc
+:END:
+
+Чтобы получить минимально работоспособный сервер LDAP, позволяющий
+осуществлять аутентификацию для клиентских систем, внесем необходимые
+изменения в схему. В частности, сконфигурируем базу *bdb* для
+доменного имени *dc=mercury,dc=febras,dc=net*, пропишем пароль для
+менеджера схемы *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 2
+подразделения *groups* и *people*. Также, добавим в *domain.ldif*
+правила доступа к атрибутам *userPassword* и *shadowLastChange* для
+менеджера, владельца и неавторизованного пользователя.
+
+#+begin_html
+<br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
+#+end_html
+#+HTML: <div id="myContent-domain" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: </div>
+#+begin_html
+<br/><a onclick="toggleDiv2('myContent-base',$(this));" class="fa fa-caret-right">/root/base.ldif</a>
+#+end_html
+#+HTML: <div id="myContent-base" style="display:none">
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: </div>
+# #+begin_html
+# <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
+# #+end_html
+# #+HTML: <div id="myContent-admin" style="display:true">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
+# #+HTML: </div>
+\\
+Для тестирования аутентификации будем использовать запись *username*.
+
+** Тестирование клиентского подключения
+:PROPERTIES:
+:CUSTOM_ID: test-client
+:ID:       061371a3-a5d6-4fa2-9e15-2d8adef5caf0
+:END:
+
+Протестируем подключение с помощью команды
+#+begin_src sh
+getent passwd username
+#+end_src
+которая выводит passwd данные пользователя *username* из доступных источников, в данном случае задействован сервер LDAP
+#+begin_src conf-colon
+username:x:1050:1030:User Name:/home/webminder:/bin/bash
+#+end_src
+
+** Миграция пользователей и групп
+:PROPERTIES:
+:CUSTOM_ID: add-users
+:ID:       3c998117-af2e-4965-94c7-3ebfb31d7691
+:END:
+
 #+begin_html
 <a onclick="toggleDiv2('myContent-passwd',$(this));" class="fa fa-caret-right">passwd.ldif</a>
 #+end_html
@@ -539,7 +565,6 @@ username:x:1050:1030:User Name:/home/webminder:/bin/bash
 # #+HTML: <div id="myContent-passwd6" style="display:none">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
-
 
 #+begin_html
 <br/><a onclick="toggleDiv2('myContent-group',$(this));" class="fa fa-caret-right">group.ldif</a>

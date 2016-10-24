@@ -68,4 +68,4 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
-# Подготовка\ к\ тестированию\ аутентификации\ при\ помощи\ LDAP:1 ends here
+# Подготовка\ к\ конфигурированию\ схемы\ БД\ LDAP:1 ends here

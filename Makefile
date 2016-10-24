@@ -56,6 +56,7 @@ start:
 
 build-schema:
 	$(eval ip = $(call get_ip,$(server)))
+	ldapmodify -v -h $(ip) -D cn=Manager,cn=config -f ldap-server/domain.ldif -x -w $(LDAP_ROOT_PASSWORD)
 	ldapadd -x -h $(ip) -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $(LDAP_MANAGER_PASSWORD) -f ldap-server/base.ldif
 	ldapsearch -x -h $(ip) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
 

@@ -17,7 +17,7 @@ olcRootDN: cn=Manager,dc=mercury,dc=febras,dc=net
 dn: olcDatabase={2}bdb,cn=config
 changetype: modify
 add: olcRootPW
-olcRootPW: %LDAP_MANAGER_PASSWORD%
+olcRootPW: manager
 
 dn: olcDatabase={2}bdb,cn=config
 add: olcAccess

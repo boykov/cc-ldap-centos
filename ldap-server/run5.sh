@@ -53,10 +53,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
     ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
 
-    MANAGER_PWD=$(slappasswd -s $LDAP_MANAGER_PASSWORD)
-    sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" /root/domain.ldif
-    ldapmodify  -v -D cn=Manager,cn=config -f /root/domain.ldif -x -w $LDAP_ROOT_PASSWORD
-
 # run-modify ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid`

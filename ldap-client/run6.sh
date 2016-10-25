@@ -3,13 +3,13 @@
 
 cp -R /etc /gen/etc6/etc
 
+opts="-N -x fingerprint-auth-ac -x password-auth-ac \
+-x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
+
 # client6-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-setup]]
 authconfig --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
-
-opts="-N -x fingerprint-auth-ac -x password-auth-ac \
--x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
 # client6-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-sudoers]]
 

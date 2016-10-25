@@ -22,6 +22,11 @@ dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: groups
 
+dn: cn=wheel,ou=groups,dc=mercury,dc=febras,dc=net
+objectClass: posixGroup
+objectClass: top
+gidNumber: 1030
+
 dn: cn=admins,ou=sudoers,dc=mercury,dc=febras,dc=net
 objectClass: sudoRole
 objectClass: top
@@ -29,7 +34,7 @@ cn: admins
 sudoCommand: ALL
 sudoRunAs: ALL
 sudoHost: ALL
-sudoUser: username
+sudoUser: %wheel
 sudoOption: !authenticate
 
 dn: cn=defaults,ou=sudoers,dc=mercury,dc=febras,dc=net

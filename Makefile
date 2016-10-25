@@ -1,4 +1,5 @@
 gen = /home/eab/git/cc/cc-ldap-centos/gen/
+schema = /home/eab/git/cc/cc-ldap-centos/schema/
 LDAP_ROOT_PASSWORD=root
 LDAP_MANAGER_PASSWORD=manager
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
@@ -18,7 +19,7 @@ define recreate_cc-ldap
 	docker rm -f -v cc-ldap-centos$(1)
 	docker rm -f -v cc-ldap-data$(1)
 	docker run --name cc-ldap-data$(1) -v /data data$(1)-backup true
-	docker run --name cc-ldap-centos$(1) -v $(gen):/gen --volumes-from cc-ldap-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(1) &
+	docker run --name cc-ldap-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from cc-ldap-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(1) &
 endef
 
 define fix_run
@@ -38,7 +39,7 @@ tangle: docs/index.org
 build-server:
 	cd ldap-server && docker build -f ./Dockerfile$(n) -t cc-ldap-dev$(n) .
 	docker run --name cc-ldap-data$(n) -v /data busybox true || true
-	docker run --name cc-ldap-centos$(n) -v $(gen):/gen --volumes-from cc-ldap-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(n) &
+	docker run --name cc-ldap-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from cc-ldap-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(n) &
 	sleep 15
 	$(call create_backup,$(n))
 
@@ -56,10 +57,7 @@ start:
 
 build-schema:
 	$(eval ip = $(call get_ip,$(server)))
-	ldapmodify -v -h $(ip) -D cn=Manager,cn=config -f ldap-server/domain.ldif -x -w $(LDAP_ROOT_PASSWORD)
-	ldapadd -x -h $(ip) -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $(LDAP_MANAGER_PASSWORD) -f ldap-server/base.ldif
-	ldapadd -x -h $(ip) -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $(LDAP_MANAGER_PASSWORD) -f ldap-server/user.ldif
-	ldapsearch -x -h $(ip) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w root
+	docker exec $(server) /schema/build.sh
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))

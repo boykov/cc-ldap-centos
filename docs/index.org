@@ -544,7 +544,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 # #+HTML: </div>
 
-** Процесс добавления нового пользователя в систему
+* Процесс добавления нового пользователя в систему
 :PROPERTIES:
 :CUSTOM_ID: new-user
 :ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
@@ -556,6 +556,14 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной
 операции. Ориентироваться на использование в ОС CentOS 5/6.
 #+end_quote
+
+** Добавление пользователя с помощью протокола LDAP
+:PROPERTIES:
+:CUSTOM_ID: new-user-ldap
+:ID:       6e8437bc-7e1f-489a-9afb-44f3d67d49ab
+:END:
+
+Используем утилиту *ldapadd* для добавления записи пользователя в формате *ldif*
 
 #+name: add-user
 #+begin_src sh :exports none

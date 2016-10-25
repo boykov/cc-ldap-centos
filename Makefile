@@ -70,14 +70,16 @@ test-client:
 test:
 	make start n=6 k=6
 	make start n=5 k=6
+	make clear
+
+clear:
 	$(call recreate_cc-ldap,6)
 	$(call recreate_cc-ldap,5)
 
 	docker rm -f cc-ldap-client6
 	docker rm -f cc-ldap-client5
 
-
-clear:
+full-clear:
 	docker rm -f -v cc-ldap-centos6 || true
 	docker rm -f -v cc-ldap-centos5 || true
 

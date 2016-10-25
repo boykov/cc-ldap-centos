@@ -20,6 +20,7 @@ define recreate_cc-ldap
 	docker rm -f -v cc-ldap-data$(1)
 	docker run --name cc-ldap-data$(1) -v /data data$(1)-backup true
 	docker run --name cc-ldap-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from cc-ldap-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(1) &
+	sleep 1
 endef
 
 define fix_run
@@ -49,11 +50,13 @@ build-client:
 	docker run -d --name cc-ldap-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli$(n)
 
 start:
-	docker ps -a | grep cc-ldap-centos5 > /dev/null || make build-server n=5
-	docker start cc-ldap-centos5
-	docker ps -a | grep cc-ldap-centos6 > /dev/null || make build-server n=6
-	docker start cc-ldap-centos6
+	docker ps -a | grep cc-ldap-centos$(n) > /dev/null || make build-server n=$(n)
+	docker start cc-ldap-centos$(n)
 	sleep 1
+	make build-client n=$(n) server=cc-ldap-centos$(k)
+	make build-schema server=cc-ldap-centos$(n)
+	sleep 1
+	make test-client server=cc-ldap-client$(n)
 
 build-schema:
 	$(eval ip = $(call get_ip,$(server)))
@@ -63,24 +66,20 @@ test-client:
 	$(eval ip = $(call get_ip,$(server)))
 	sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root
 
-test: start
-	make build-schema server=cc-ldap-centos5
-	make build-schema server=cc-ldap-centos6
-	make build-client n=5 server=cc-ldap-centos6
-	sleep 2
-	make test-client server=cc-ldap-client5
-	make build-client n=6 server=cc-ldap-centos6
-	sleep 2
-	make test-client server=cc-ldap-client6
-	$(call recreate_cc-ldap,5)
-	sleep 1
+test:
+	make start n=6 k=6
+	make start n=5 k=6
 	$(call recreate_cc-ldap,6)
-	sleep 1
-	docker rm -f cc-ldap-client5
+	$(call recreate_cc-ldap,5)
+
 	docker rm -f cc-ldap-client6
+	docker rm -f cc-ldap-client5
+
 
 clear:
-	docker rm -f -v cc-ldap-centos5
-	docker rm cc-ldap-data5
-	docker rm -f -v cc-ldap-centos6
-	docker rm cc-ldap-data6
+	docker rm -f -v cc-ldap-centos6 || true
+	docker rm -f -v cc-ldap-centos5 || true
+
+	docker rm cc-ldap-data6 || true
+	docker rm cc-ldap-data5 || true
+

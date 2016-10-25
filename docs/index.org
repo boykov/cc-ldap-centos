@@ -502,10 +502,11 @@ getent passwd username
 осуществлять аутентификацию для клиентских систем, внесем необходимые
 изменения в схему. В частности, сконфигурируем базу *bdb* для
 доменного имени *dc=mercury,dc=febras,dc=net*, пропишем пароль для
-менеджера схемы *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 2
-подразделения *groups* и *people*. Также, добавим в *domain.ldif*
-правила доступа к атрибутам *userPassword* и *shadowLastChange* для
-менеджера, владельца и неавторизованного пользователя.
+менеджера домена *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 3
+подразделения *groups*, *people* и *sudoers*. Также, добавим в
+*domain.ldif* правила доступа к атрибутам *userPassword* и
+*shadowLastChange*: для менеджера домена и владельца записи --
+write и неавторизованного пользователя -- auth.
 
 #+begin_html
 <br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>

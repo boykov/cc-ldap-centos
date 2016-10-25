@@ -24,18 +24,19 @@ define recreate_cc-ldap
 endef
 
 define fix_run
-	sed -i '2d' ldap-server/run$(1).sh
-	sed -i '2d' ldap-client/run$(1).sh
-	chmod 0755 ldap-server/run$(1).sh
-	chmod 0755 ldap-client/run$(1).sh
+	sed -i '2d' $(1)
+	chmod 0755 $(1)
 endef
 
 tangle: docs/index.org
 	mkdir -p gen
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-current-file t) (eab/tangle-init))" > /dev/null
 	mv docs/index.odt gen/
-	$(call fix_run,5)
-	$(call fix_run,6)
+	$(call fix_run,ldap-server/run6.sh)
+	$(call fix_run,ldap-server/run5.sh)
+	$(call fix_run,ldap-client/run6.sh)
+	$(call fix_run,ldap-client/run5.sh)
+	$(call fix_run,schema/build.sh)
 
 build-server:
 	cd ldap-server && docker build -f ./Dockerfile$(n) -t cc-ldap-dev$(n) .

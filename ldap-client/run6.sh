@@ -39,4 +39,4 @@ getent passwd username
 # /usr/share/migrationtools/migrate_group.pl /etc/group > /gen/group6.ldif
 /usr/sbin/sshd -D
 # client6-run-postfix ends here
-# Используемые\ пакеты:1 ends here
+# Требуемые\ пакеты:1 ends here

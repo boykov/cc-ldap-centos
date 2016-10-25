@@ -29,7 +29,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start6]]
     service slapd start
 # run-slapd-start6 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-d]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#config-transform][run-slapd-d]]
     sleep 3
 
     kill -INT `cat /var/run/openldap/slapd.pid`
@@ -68,4 +68,4 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
-# Подготовка\ к\ конфигурированию\ схемы\ БД\ LDAP:1 ends here
+# Установка\ пароля\ менеджера\ схемы:1 ends here

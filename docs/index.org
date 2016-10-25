@@ -168,6 +168,12 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-slapd-start6>>
 #+end_src
 
+** Преобразование в *cn=config* формат
+:PROPERTIES:
+:CUSTOM_ID: config-transform
+:ID:       3d434678-6d24-4888-a97a-ac0c493ff0ec
+:END:
+
 <<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
 #+name: run-slapd-d
 #+begin_src sh :exports none
@@ -197,10 +203,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (5/2.3) и */usr/share/openldap-servers/slapd.conf.obsolete* (6/2.4).
 
-** Подготовка к конфигурированию схемы БД LDAP
+** Установка пароля менеджера схемы
 :PROPERTIES:
 :CUSTOM_ID: add-manager
-:ID:       17e9c727-04eb-495e-97a8-36ab4f2b3cc9
+:ID:       234e1535-dac2-4e77-8d65-8267aca6044d
 :END:
 
 Чтобы иметь доступ к серверу LDAP для конфигурирование схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
@@ -253,7 +259,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 использование *ldapi*.
 #+end_note
 
-Дальнейшая настройка схемы осуществляется в разделе [[id:b64d7c36-b2b3-49ac-9620-d7c94eb9ea31][Схема БД LDAP]].
+Дальнейшая настройка схемы осуществляется в разделе [[#schema][Схема БД LDAP]].
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
@@ -293,7 +299,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
-** Используемые пакеты
+** Требуемые пакеты
 :PROPERTIES:
 :CUSTOM_ID: client-packages
 :ID:       a4da4894-117b-40b6-a6c7-1447f083d6e1
@@ -448,7 +454,7 @@ getent passwd username
 :ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
 :END:
 
-Файлы, которые были модифицированы [[id:6e7a8278-7334-46f7-b289-07da7f2b6d14][настройками]], в случае 5/2.3
+Файлы, которые были модифицированы [[#client-commands][настройками]] в случае 5/2.3
 
 #+begin_html
 <div align="right">
@@ -472,7 +478,7 @@ getent passwd username
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
 #+HTML: </div>
 
-** Описание используемых опций
+** Описание опций
 :PROPERTIES:
 :CUSTOM_ID: client-options
 :ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f

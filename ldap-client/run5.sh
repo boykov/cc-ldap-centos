@@ -35,4 +35,4 @@ getent passwd username
 
 /usr/sbin/sshd -D
 # client5-run-postfix ends here
-# Используемые\ пакеты:1 ends here
+# Требуемые\ пакеты:1 ends here

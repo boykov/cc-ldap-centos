@@ -515,8 +515,6 @@ cd /schema
 
 ldapmodify -v -D cn=Manager,cn=config -f domain.ldif -x -w $LDAP_ROOT_PASSWORD
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f user.ldif
-ldapsearch -x -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $LDAP_ROOT_PASSWORD
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<build-schema>>
@@ -524,6 +522,7 @@ ldapsearch -x -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/build.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<build-schema>>
+<<add-user>>
 #+end_src
 
 #+begin_html
@@ -557,6 +556,15 @@ ldapsearch -x -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*
 LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной
 операции. Ориентироваться на использование в ОС CentOS 5/6.
 #+end_quote
+
+#+name: add-user
+#+begin_src sh :exports none
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f user.ldif
+ldapsearch -x -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $LDAP_ROOT_PASSWORD
+#+end_src
+#+begin_src sh :exports code :noweb yes
+<<add-user>>
+#+end_src
 
 #+begin_html
 <br/><a onclick="toggleDiv2('myContent-user',$(this));" class="fa fa-caret-right">/root/user.ldif</a>

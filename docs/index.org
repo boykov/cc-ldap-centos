@@ -243,6 +243,18 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
 #+HTML: </div>
 
+#+begin_note
+Первичный доступ к схемам LDAP, использущим только *cn=config* формат
+(без *conf*-файлов), осуществляется при помощи *ldapi* интерфейса.  В
+случае 5/2.3 при использовании *-Y EXTERNAL -H ldapi:///* флагов
+появляется ошибка *Insufficient access (50)*.  Поэтому, используется
+явное задание пароля для rootdn (*cn=Manager,cn=config*) в
+*conf*-файле и последующее его изменение через *ldapmodify*, имитируя
+использование *ldapi*.
+#+end_note
+
+Дальнейшая настройка схемы осуществляется в разделе [[id:b64d7c36-b2b3-49ac-9620-d7c94eb9ea31][Схема БД LDAP]].
+
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config5>>
@@ -416,27 +428,27 @@ getent passwd username
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
 
-Модифицируем с помощью *authconfig* конфигурацию клиента. Отдельно настроим */etc/ldap.conf*. Для 5/2.3
+Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию клиента, отдельно настроим */etc/ldap.conf*. Для 5/2.3
 
 #+caption: Настройка клиента для 5/2.3
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
 <<client5-run-sudoers>>
 #+end_src
-и для 6/2.4
+и для 6/2.4 (здесь дополнительно модифицируются файлы *nsswitch.conf* и *sudo-ldap.conf*)
 #+caption: Настройка клиента для 6/2.4
 #+begin_src sh :exports code :noweb yes
 <<client6-run-setup>>
 <<client6-run-sudoers>>
 #+end_src
 
-** Измененные файлы
+** Изменяемые файлы
 :PROPERTIES:
 :CUSTOM_ID: client-files
 :ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
 :END:
 
-Файлы, которые были модифицированы программой *authconfig* в случае 5/2.3
+Файлы, которые были модифицированы [[id:6e7a8278-7334-46f7-b289-07da7f2b6d14][настройками]], в случае 5/2.3
 
 #+begin_html
 <div align="right">

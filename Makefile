@@ -11,16 +11,16 @@ endef
 
 define create_backup
 	docker images | grep data$(1)-backup > /dev/null || docker rm -f -v data$(1)-backup
-	docker stop $(name)-centos$(1)
-	docker commit $(name)-data$(1) data$(1)-backup
-	docker start $(name)-centos$(1)
+	docker stop $(2)-centos$(1)
+	docker commit $(2)-data$(1) data$(1)-backup
+	docker start $(2)-centos$(1)
 endef
 
 define recreate_server
-	docker rm -f -v $(name)-centos$(1)
-	docker rm -f -v $(name)-data$(1)
-	docker run --name $(name)-data$(1) -v /data data$(1)-backup true
-	docker run --name $(name)-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(1) &
+	docker rm -f -v $(2)-centos$(1)
+	docker rm -f -v $(2)-data$(1)
+	docker run --name $(2)-data$(1) -v /data data$(1)-backup true
+	docker run --name $(2)-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
 	sleep 1
 endef
 
@@ -44,7 +44,7 @@ build-server:
 	docker run --name $(name)-data$(n) -v /data busybox true || true
 	docker run --name $(name)-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	sleep 15
-	$(call create_backup,$(n))
+	$(call create_backup,$(n),$(name))
 
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
@@ -75,8 +75,8 @@ test:
 	make clear
 
 clear:
-	$(call recreate_server,6)
-	$(call recreate_server,5)
+	$(call recreate_server,6,$(name))
+	$(call recreate_server,5,$(name))
 
 	docker rm -f $(name)-client6
 	docker rm -f $(name)-client5

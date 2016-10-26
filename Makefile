@@ -74,7 +74,7 @@ test-client:
 
 test:
 	make start n=6 k=6
-	make start n=5 k=6
+	make start n=5 k=5
 	make clear
 
 clear:

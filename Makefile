@@ -3,6 +3,7 @@ schema = /home/eab/git/cc/cc-ldap-centos/schema/
 LDAP_ROOT_PASSWORD=root
 LDAP_MANAGER_PASSWORD=manager
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
+name=cc-ldap
 
 define get_ip
     $(shell docker inspect -f {{.NetworkSettings.IPAddress}} $(1))
@@ -10,16 +11,16 @@ endef
 
 define create_backup
 	docker images | grep data$(1)-backup > /dev/null || docker rm -f -v data$(1)-backup
-	docker stop cc-ldap-centos$(1)
-	docker commit cc-ldap-data$(1) data$(1)-backup
-	docker start cc-ldap-centos$(1)
+	docker stop $(name)-centos$(1)
+	docker commit $(name)-data$(1) data$(1)-backup
+	docker start $(name)-centos$(1)
 endef
 
 define recreate_cc-ldap
-	docker rm -f -v cc-ldap-centos$(1)
-	docker rm -f -v cc-ldap-data$(1)
-	docker run --name cc-ldap-data$(1) -v /data data$(1)-backup true
-	docker run --name cc-ldap-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from cc-ldap-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(1) &
+	docker rm -f -v $(name)-centos$(1)
+	docker rm -f -v $(name)-data$(1)
+	docker run --name $(name)-data$(1) -v /data data$(1)-backup true
+	docker run --name $(name)-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(1) &
 	sleep 1
 endef
 
@@ -39,26 +40,26 @@ tangle: docs/index.org
 	$(call fix_run,schema/build.sh)
 
 build-server:
-	cd ldap-server && docker build -f ./Dockerfile$(n) -t cc-ldap-dev$(n) .
-	docker run --name cc-ldap-data$(n) -v /data busybox true || true
-	docker run --name cc-ldap-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from cc-ldap-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) cc-ldap-dev$(n) &
+	cd ldap-server && docker build -f ./Dockerfile$(n) -t $(name)-dev$(n) .
+	docker run --name $(name)-data$(n) -v /data busybox true || true
+	docker run --name $(name)-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	sleep 15
 	$(call create_backup,$(n))
 
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
-	cd ldap-client && docker build -f ./Dockerfile$(n) -t cc-ldap-cli$(n) .
-	docker run -d --name cc-ldap-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) cc-ldap-cli$(n)
+	cd ldap-client && docker build -f ./Dockerfile$(n) -t $(name)-cli$(n) .
+	docker run -d --name $(name)-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
 
 start:
-	docker ps -a | grep cc-ldap-centos$(n) > /dev/null || make build-server n=$(n)
-	docker start cc-ldap-centos$(n)
+	docker ps -a | grep $(name)-centos$(n) > /dev/null || make build-server n=$(n)
+	docker start $(name)-centos$(n)
 	sleep 1
-	make build-client n=$(n) server=cc-ldap-centos$(k)
-	make build-schema server=cc-ldap-centos$(n)
+	make build-client n=$(n) server=$(name)-centos$(k)
+	make build-schema server=$(name)-centos$(n)
 	sleep 1
-	make test-client server=cc-ldap-client$(n)
-	ldapsearch -x -h $(call get_ip,cc-ldap-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $(LDAP_ROOT_PASSWORD)
+	make test-client server=$(name)-client$(n)
+	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $(LDAP_ROOT_PASSWORD)
 
 build-schema:
 	$(eval ip = $(call get_ip,$(server)))
@@ -77,15 +78,15 @@ clear:
 	$(call recreate_cc-ldap,6)
 	$(call recreate_cc-ldap,5)
 
-	docker rm -f cc-ldap-client6
-	docker rm -f cc-ldap-client5
+	docker rm -f $(name)-client6
+	docker rm -f $(name)-client5
 
 full-clear:
-	docker rm -f -v cc-ldap-centos6 || true
-	docker rm -f -v cc-ldap-centos5 || true
+	docker rm -f -v $(name)-centos6 || true
+	docker rm -f -v $(name)-centos5 || true
 
-	docker rm cc-ldap-data6 || true
-	docker rm cc-ldap-data5 || true
+	docker rm $(name)-data6 || true
+	docker rm $(name)-data5 || true
 
-	docker rm -f cc-ldap-client6 || true
-	docker rm -f cc-ldap-client5 || true
+	docker rm -f $(name)-client6 || true
+	docker rm -f $(name)-client5 || true

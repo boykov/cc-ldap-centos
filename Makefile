@@ -59,6 +59,9 @@ start:
 	make build-schema server=$(name)-centos$(n)
 	sleep 1
 	make test-client server=$(name)-client$(n)
+	make test-schema k=$(k)
+
+test-schema:
 	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $(LDAP_ROOT_PASSWORD)
 
 build-schema:

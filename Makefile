@@ -16,7 +16,7 @@ define create_backup
 	docker start $(name)-centos$(1)
 endef
 
-define recreate_cc-ldap
+define recreate_server
 	docker rm -f -v $(name)-centos$(1)
 	docker rm -f -v $(name)-data$(1)
 	docker run --name $(name)-data$(1) -v /data data$(1)-backup true
@@ -75,8 +75,8 @@ test:
 	make clear
 
 clear:
-	$(call recreate_cc-ldap,6)
-	$(call recreate_cc-ldap,5)
+	$(call recreate_server,6)
+	$(call recreate_server,5)
 
 	docker rm -f $(name)-client6
 	docker rm -f $(name)-client5

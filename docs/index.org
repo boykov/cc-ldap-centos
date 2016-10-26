@@ -586,7 +586,7 @@ LDAP. Предложить CLI (или GUI WEB) интерфейс для вып
 #+name: add-user
 #+begin_src sh :exports none
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f user.ldif
-ldapsearch -x -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $LDAP_ROOT_PASSWORD
+
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<add-user>>

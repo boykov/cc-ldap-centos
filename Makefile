@@ -87,3 +87,5 @@ full-clear:
 	docker rm cc-ldap-data6 || true
 	docker rm cc-ldap-data5 || true
 
+	docker rm -f cc-ldap-client6 || true
+	docker rm -f cc-ldap-client5 || true

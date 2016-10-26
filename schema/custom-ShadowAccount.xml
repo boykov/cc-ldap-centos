@@ -75,6 +75,13 @@
   <value>30</value>
 </attribute>
 
+<attribute id="shadowMin">
+  <display>Password may be changed (days before)</display>
+  <order>12</order>
+  <spacer>1</spacer>
+  <value>0</value>
+</attribute>
+
 <attribute id="shadowWarning">
   <display>Password Change Warning (days before expiry)</display>
   <order>9</order>
@@ -90,7 +97,7 @@
 
 <attribute id="loginShell">
 	<display>Login shell</display>
-	<order>12</order>
+	<order>13</order>
 	<page>1</page>
 	<!-- <value><![CDATA[=php.PickList(/;(&(objectClass=posixAccount));loginShell;%loginShell%;;;;loginShell)]]></value> -->
 	<type>select</type>

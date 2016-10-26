@@ -23,6 +23,7 @@ objectClass: organizationalUnit
 ou: groups
 
 dn: cn=wheel,ou=groups,dc=mercury,dc=febras,dc=net
+cn: wheel
 objectClass: posixGroup
 objectClass: top
 gidNumber: 1030

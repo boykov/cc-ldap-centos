@@ -242,12 +242,9 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-manager',$(this));" class="fa fa-caret-down">/root/manager.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-manager" style="display:true">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/manager.ldif src ldif
-#+HTML: </div>
+#+caption: Файл *manager.ldif*
+#+name: manager-ldif
+#+INCLUDE: ../ldap-server/manager.ldif src ldif
 
 #+begin_note
 Первичный доступ к схемам LDAP, использущим только *cn=config* формат
@@ -518,13 +515,18 @@ getent passwd username
 
 Чтобы получить минимально работоспособный сервер LDAP, позволяющий
 осуществлять аутентификацию для клиентских систем, внесем необходимые
-изменения в схему. В частности, сконфигурируем базу *bdb* для
-доменного имени *dc=mercury,dc=febras,dc=net*, пропишем пароль для
-менеджера домена *cn=Manager,dc=mercury,dc=febras,dc=net*, добавим 3
-подразделения *groups*, *people* и *sudoers*. Также, добавим в
-*domain.ldif* правила доступа к атрибутам *userPassword* и
-*shadowLastChange*: для менеджера домена и владельца записи --
-write и неавторизованного пользователя -- auth.
+изменения в схему. В частности, [[domain-ldif][сконфигурируем]] базу *bdb* для
+доменного имени *dc=mercury,dc=febras,dc=net*, определим менеджера
+домена *cn=Manager,dc=mercury,dc=febras,dc=net* и его пароль.  Также,
+добавим в *domain.ldif* правила доступа к атрибутам *userPassword* и
+*shadowLastChange*: для менеджера домена и владельца записи -- write и
+для неавторизованного пользователя -- auth.
+
+Далее, [[base-ldif][пропишем]] необходимые атрибуты, начиная с корневого узла *dn:
+dc=mercury,dc=febras,dc=net*, добавим подразделения *people*, *groups*
+и *sudoers*. Создадим одну posix-группу *wheel* и сконфигурируем
+*sudoers* так, чтобы разрешить выполнение *sudo* команд без ввода
+пароля для членов этой группы.
 
 #+name: build-schema
 #+begin_src sh :exports none
@@ -543,16 +545,21 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-domain" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
+#+caption: Файл *domain.ldif*
+#+name: domain-ldif
+#+INCLUDE: ../schema/domain.ldif src ldif
+
+# #+begin_html
+# <br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
+# #+end_html
+# #+HTML: <div id="myContent-domain" style="display:none">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+# #+HTML: </div>
 #+begin_html
 <br/><a onclick="toggleDiv2('myContent-base',$(this));" class="fa fa-caret-right">/root/base.ldif</a>
 #+end_html
 #+HTML: <div id="myContent-base" style="display:none">
+#+name: base-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 # #+begin_html
@@ -575,7 +582,7 @@ LDAP. Предложить CLI (или GUI WEB) интерфейс для вып
 операции. Ориентироваться на использование в ОС CentOS 5/6.
 #+end_quote
 
-** Добавление пользователя с помощью протокола LDAP
+** Добавление пользователя с помощью CLI интерфейса
 :PROPERTIES:
 :CUSTOM_ID: new-user-ldap
 :ID:       6e8437bc-7e1f-489a-9afb-44f3d67d49ab
@@ -592,14 +599,24 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-user',$(this));" class="fa fa-caret-right">/root/user.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-user" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/user.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-\\
-Для тестирования аутентификации будем использовать запись *username*.
+#+caption: Файл *user.ldif*, применяемый для создания нового пользователя
+#+INCLUDE: "../schema/user.ldif" src ldif
+# #+begin_html
+# <br/><a onclick="toggleDiv2('myContent-user',$(this));" class="fa fa-caret-right">/root/user.ldif</a>
+# #+end_html
+# #+HTML: <div id="myContent-user" style="display:none">
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/user.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
+# #+HTML: </div>
+
+** Добавление пользователя с помощью GUI Web интерфейса
+:PROPERTIES:
+:CUSTOM_ID: new-user-php
+:ID:       6de9e6dc-04f2-429d-b22e-55caa2e270ee
+:END:
+
+#+NAME:   fig:php01
+#+caption: Создание пользователя с использованием шаблона phpLDAPadmin
+[[./php01.png]]
 
 ** Тестирование клиентского подключения
 :PROPERTIES:
@@ -607,13 +624,22 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :ID:       061371a3-a5d6-4fa2-9e15-2d8adef5caf0
 :END:
 
-Протестируем подключение с помощью команды
+Для проверки возможности аутентификации будем использовать [[#new-user-ldap][запись]] *username*. Протестируем подключение с помощью команды
 #+begin_src sh
 getent passwd username
 #+end_src
 которая выводит passwd данные пользователя *username* из доступных источников, в данном случае задействован сервер LDAP
 #+begin_src conf-colon
 username:x:1050:1030:User Name:/home/webminder:/bin/bash
+#+end_src
+
+Убедимся, что механизм *sudoers* задействован. Вывод команды
+#+begin_src sh
+sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
+#+end_src
+демонстрирует, что пользователь *username* успешно прочитал содержимое каталога *root* с помощью *sudo*
+#+begin_src raw
+Dockerfile5  Dockerfile6  run5.sh  run6.sh
 #+end_src
 
 ** Миграция пользователей и групп

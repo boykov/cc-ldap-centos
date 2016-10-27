@@ -31,7 +31,7 @@ endef
 
 tangle: docs/index.org
 	mkdir -p gen
-	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-current-file t) (eab/tangle-init))" > /dev/null
+	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-project \"html-ldap\") (eab/tangle-init))" > /dev/null
 	mv docs/index.odt gen/
 	$(call fix_run,ldap-server/run6.sh)
 	$(call fix_run,ldap-server/run5.sh)

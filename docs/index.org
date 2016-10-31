@@ -6,6 +6,20 @@
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
 
+* Используемые реусры
+:PROPERTIES:
+:CUSTOM_ID: links
+:ID:       be7bb1b4-d8e8-4b5f-8aa3-754d148fa6ba
+:END:
+
+| English version                             | Русская версия                          |
+|---------------------------------------------+-----------------------------------------|
+| [[http://www.openldap.org/doc/admin24/][OpenLDAP Software 2.4 Administrator's Guide]] | [[http://pro-ldap.ru/tr/admin24/index.html][Руководство администратора OpenLDAP 2.4]] |
+| [[http://www.openldap.org/doc/admin23/][OpenLDAP Software 2.3 Administrator's Guide]] |                                         |
+| [[http://www.zytrax.com/books/ldap/][LDAP for Rocket Scientists]]                  | [[http://pro-ldap.ru/tr/zytrax/][LDAP для учёных-ракетчиков]]              |
+| [[http://itdavid.blogspot.ru/2012/05/howto-centos-6.html][HOWTO : CentOS 6.2 OpenLDAP 2.4 Setup ]]      | [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/][OpenLDAP и Ubuntu на практике]]           |
+| [[http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html][The Linux-PAM System Administrators' Guide]]  |                                         |
+
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
 :CUSTOM_ID: install-and-config

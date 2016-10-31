@@ -81,8 +81,8 @@ clear:
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))
 
-	docker rm -f $(name)-client6
-	docker rm -f $(name)-client5
+	docker rm -f $(name)-client6 || true
+	docker rm -f $(name)-client5 || true
 
 full-clear:
 	docker rm -f -v $(name)-centos6 || true

@@ -10,7 +10,7 @@ define get_ip
 endef
 
 define create_backup
-	docker images | grep data$(1)-backup > /dev/null || docker rm -f -v data$(1)-backup
+	docker images | grep data$(1)-backup > /dev/null || docker rm -f -v data$(1)-backup || true
 	docker stop $(2)-centos$(1)
 	docker commit $(2)-data$(1) data$(1)-backup
 	docker start $(2)-centos$(1)

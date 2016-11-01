@@ -1,8 +1,27 @@
 dn: cn=config
 objectClass: olcGlobal
+olcPidFile: /var/run/openldap/slapd.pid
+olcArgsFile: /var/run/openldap/slapd.args
 cn: config
 
 dn: olcDatabase={0}config,cn=config
 objectClass: olcDatabaseConfig
 olcDatabase: {0}config
+olcRootDN: cn=Manager,cn=config
 olcRootPW: 1
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+include: file:///etc/openldap/schema/core.ldif
+include: file:///etc/openldap/schema/cosine.ldif
+include: file:///etc/openldap/schema/inetorgperson.ldif
+include: file:///etc/openldap/schema/nis.ldif
+include: file:///etc/openldap/schema/sudo.ldif
+
+dn: olcDatabase={-1}frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcSchemaDN: cn=Subschema
+olcDatabase: {-1}frontend

@@ -36,7 +36,11 @@ if [ $# -gt 0 ] ; then
 				# create temp dir and config file
 				tmpDir=$(mktemp -d)
 				cd $tmpDir
-				echo "include $schemaFile" > tmp.conf
+				echo "include /etc/openldap/schema/core.schema" > tmp.conf
+				echo "include /etc/openldap/schema/cosine.schema" >> tmp.conf
+				echo "include /etc/openldap/schema/inetorgperson.schema" >> tmp.conf
+				echo "include /etc/openldap/schema/nis.schema" >> tmp.conf
+				echo "include /etc/openldap/schema/sudo.schema" >> tmp.conf
 
 				# convert
 				$slaptest -f tmp.conf -F $tmpDir

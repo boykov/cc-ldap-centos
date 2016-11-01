@@ -142,6 +142,36 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
 #+end_src
 
+#+name: schema2ldif5
+#+begin_src sh :exports none
+    rm -rf /etc/openldap/slapd.d
+    rm -f /etc/openldap/slapd.conf
+    mkdir -p /etc/openldap/slapd.d
+
+    oldpath=`pwd`
+    cd /etc/openldap/
+    /root/schema2ldif.sh /etc/openldap/schema/cosine.schema
+    /root/schema2ldif.sh /etc/openldap/schema/inetorgperson.schema
+    /root/schema2ldif.sh /etc/openldap/schema/nis.schema
+    /root/schema2ldif.sh /etc/openldap/schema/sudo.schema
+    cp cosine.ldif schema/
+    cp inetorgperson.ldif schema/
+    cp nis.ldif schema/
+    cp sudo.ldif schema/
+    cp -R schema /gen/schema
+    cd $oldpath
+    ls /etc/openldap/schema/
+
+    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
+    chown -R ldap. /etc/openldap/slapd.d/
+
+    service ldap start
+
+    sleep 3
+
+    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
+#+end_src
+
 #+name: run-slapd-start6
 #+begin_src sh :exports none
     service slapd start
@@ -278,7 +308,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-slapd-conf5>>
 <<run-slapd-start5>>
 <<run-slapd-d>>
-<<run-slapd-start5>>
+<<schema2ldif5>>
 <<run-modify>>
 <<run-postfix>>
 #+end_src

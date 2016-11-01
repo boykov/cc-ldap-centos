@@ -42,9 +42,34 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     mv slapd.conf slapd.conf.bak
     cd $oldpath
 # run-slapd-d ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema2ldif5]]
+    rm -rf /etc/openldap/slapd.d
+    rm -f /etc/openldap/slapd.conf
+    mkdir -p /etc/openldap/slapd.d
+
+    oldpath=`pwd`
+    cd /etc/openldap/
+    /root/schema2ldif.sh /etc/openldap/schema/cosine.schema
+    /root/schema2ldif.sh /etc/openldap/schema/inetorgperson.schema
+    /root/schema2ldif.sh /etc/openldap/schema/nis.schema
+    /root/schema2ldif.sh /etc/openldap/schema/sudo.schema
+    cp cosine.ldif schema/
+    cp inetorgperson.ldif schema/
+    cp nis.ldif schema/
+    cp sudo.ldif schema/
+    cp -R schema /gen/schema
+    cd $oldpath
+    ls /etc/openldap/schema/
+
+    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
+    chown -R ldap. /etc/openldap/slapd.d/
+
     service ldap start
-# run-slapd-start5 ends here
+
+    sleep 3
+
+    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
+# schema2ldif5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
     sleep 3
 

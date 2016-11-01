@@ -43,9 +43,9 @@ if [ $# -gt 0 ] ; then
 
 				# 3. rename and sanitize
 				cd cn\=config/cn\=schema
-				filenametmp=$(ls cn={0}*)
-				sed -r -e  's/^dn: cn=\{0\}(.*)$/dn: cn=\1,cn=schema,cn=config/' \
-					-e 's/cn: \{0\}(.*)$/cn: \1/' \
+				filenametmp=$(ls *$(basename $schemaFile .schema)*)
+				sed -r -e  's/^dn: cn=\{[[:digit:]]\}(.*)$/dn: cn=\1,cn=schema,cn=config/' \
+					-e 's/cn: \{[[:digit:]]\}(.*)$/cn: \1/' \
 					-e '/^structuralObjectClass: /d' \
 					-e '/^entryUUID: /d' \
 					-e '/^creatorsName: /d' \

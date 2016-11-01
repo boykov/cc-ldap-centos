@@ -77,6 +77,12 @@ test:
 	make start n=5 k=5
 	make clear
 
+dclear:
+	docker rm -f $(name)-centos5
+	docker rm -f -v $(name)-data5
+	docker stop $(name)-client5
+	docker rm -f $(name)-client5
+
 clear:
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))

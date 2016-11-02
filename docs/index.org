@@ -263,11 +263,13 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+begin_note
 Первичный доступ к схемам LDAP, использущим только *cn=config* формат
 (без *conf*-файлов), осуществляется при помощи *ldapi* интерфейса.  В
-случае 5/2.3 при использовании *-Y EXTERNAL -H ldapi:///* флагов
-появляется ошибка *Insufficient access (50)*.  Поэтому, используется
-явное задание пароля для rootdn (*cn=Manager,cn=config*) в
-*conf*-файле и последующее его изменение через *ldapmodify*, имитируя
-использование *ldapi*.
+случае 5/2.3 при использовании *-Y EXTERNAL -H ldapi:///* флагов по
+мере отладки появляются ошибки *Can't contact LDAP server (-1)*,
+*Insufficient access (50)* и *<olcRootPW> can only be set when rootdn
+is under suffix*. Последнюю пока разрешить не удается, поэтому
+используется явное задание пароля для rootdn (*cn=Manager,cn=config*)
+в *conf*-файле и последующее его изменение через *ldapmodify*,
+имитируя использование *ldapi*.
 #+end_note
 
 Дальнейшая настройка схемы осуществляется в разделе [[#schema][Схема БД LDAP]].

@@ -6,11 +6,13 @@
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
 
-* Используемые реусры
+* Введение
 :PROPERTIES:
-:CUSTOM_ID: links
+:CUSTOM_ID: intro
 :ID:       be7bb1b4-d8e8-4b5f-8aa3-754d148fa6ba
 :END:
+
+В процессе написания использовались материалы
 
 | English version                             | Русская версия                          |
 |---------------------------------------------+-----------------------------------------|
@@ -20,6 +22,22 @@
 | [[http://itdavid.blogspot.ru/2012/05/howto-centos-6.html][HOWTO : CentOS 6.2 OpenLDAP 2.4 Setup ]]      | [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/][OpenLDAP и Ubuntu на практике]]           |
 | [[http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html][The Linux-PAM System Administrators' Guide]]  |                                         |
 
+Конфигурация используемых в нашем docker-стенде машин:
+
+| *Шлюз, docker host* | 172.17.0.1      |
+| *Серверы каталогов* |                 |
+|                     | cc-ldap-centos5 |
+|                     | cc-ldap-centos6 |
+| *Клиентские машины* |                 |
+|                     | cc-ldap-client5 |
+|                     | cc-ldap-client6 |
+
+IP-адреса машин в подсети 172.17.0.x определяются на основе имен контейнеров.
+
+#+begin_note
+Команды и конфигурационные файлы прошли проверку на работоспособность в тестовом программном окружении, доступном в проекте [[https://github.com/boykov/cc-ldap-centos][cc-ldap-centos]].
+#+end_note
+
 * Установка и настройка сервера OpenLDAP
 :PROPERTIES:
 :CUSTOM_ID: install-and-config
@@ -27,14 +45,10 @@
 :END:
 
 #+begin_quote
-Необходимо разработать документацию по установке и настройке сервера LDAP в ОС CentOS 5. Предпочтение отдавать реализациям, доступным в базовом репозитории дистрибутива. Проверить работоспособность выработанных инструкций в ОС CentOS 6.
+Необходимо разработать документацию по установке и настройке сервера LDAP в ОС *CentOS 5*. Предпочтение отдавать реализациям, доступным в базовом репозитории дистрибутива. Проверить работоспособность выработанных инструкций в *ОС CentOS 6*.
 #+end_quote
 
 # Процедура [[convert][конвертации]]
-
-#+begin_sidebar
-Команды и конфигурационные файлы прошли проверку на работоспособность в тестовом программном окружении, доступном в проекте [[https://github.com/boykov/cc-ldap-centos][cc-ldap-centos]].
-#+end_sidebar
 
 ** Установка OpenLDAP
 :PROPERTIES:
@@ -44,16 +58,16 @@
 
 # #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
 
-Базовые репозитории дистрибутивов CentOS 5 и CentOS 6 содержат 2.3 и 2.4 версию OpenLDAP, соответственно. Выполнив стандартную установку
+Базовые репозитории дистрибутивов *CentOS 5* и *CentOS 6* содержат *2.3* и *2.4* версию *OpenLDAP*, соответственно. Выполнив стандартную установку
 # #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
 # #+begin_tip
 # Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
 # #+end_tip
-#+caption: Установка сервера OpenLDAP для 5/2.3 и 6/2.4
+#+caption: Установка сервера *OpenLDAP* для *5/2.3* и *6/2.4*
 #+begin_src sh
 yum -y install openldap openldap-servers openldap-clients sudo
 #+end_src
-получаем 2 конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае CentOS 5/2.3 OpenLDAP (5/2.3) и *slapd* в случае CentOS 6/2.4 OpenLDAP (6/2.4).
+получаем две конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае *CentOS 5/2.3 OpenLDAP* (*5/2.3*) и *slapd* в случае *CentOS 6/2.4 OpenLDAP* (*6/2.4*).
 
 #+name: run-prefix
 #+begin_src sh :exports none
@@ -74,25 +88,25 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
 :END:
 
-Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и файл конфигурации базы данных. Расположение образца файла настройки, в 5/2.3
+Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и файл конфигурации базы данных. Расположение образца файла настройки, в *5/2.3*
 #+name: run-db-config5
 #+begin_src sh :exports none
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
 #+end_src
-#+caption: Конфигурация БД для 5/2.3
+#+caption: Конфигурация БД для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-db-config5>>
 #+end_src
-а в 6/2.4
+а в *6/2.4*
 #+name: run-db-config6
 #+begin_src sh :exports none
     cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 
 #+end_src
-#+caption: Конфигурация БД для 6/2.4
+#+caption: Конфигурация БД для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-db-config6>>
 #+end_src
@@ -103,9 +117,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
 :END:
 
-Конфигурация 5/2.3 по умолчанию настраивается файлом *slapd.conf*. Такой подход считается устаревшим, [[http://www.openldap.org/doc/admin24/guide.html#Converting%20old%20style%20{{slapd.conf}}%285%29%20file%20to%20{{cn=config}}%20format][рекомендуется]] использовать *cn=config* формат. Конфигурация 6/2.4 поставляется с двумя эквивалентными вариантами, доступными через файл *slapd.conf.obsolete* и *slapd.d* каталог, содержащий настройки в *cn=config* формате.
+Конфигурация *5/2.3* по умолчанию настраивается файлом *slapd.conf*. Такой подход считается устаревшим, [[http://www.openldap.org/doc/admin24/guide.html#Converting%20old%20style%20{{slapd.conf}}%285%29%20file%20to%20{{cn=config}}%20format][рекомендуется]] использовать *cn=config* формат. Конфигурация *6/2.4* поставляется с двумя эквивалентными вариантами, доступными через файл *slapd.conf.obsolete* и *slapd.d* каталог, содержащий настройки в *cn=config* формате.
 
-Внесем небольшие изменения в конфигурационный файл для 5/2.3
+Внесем небольшие изменения в конфигурационный файл для *5/2.3*
 
 #+begin_html
 <div align="right">
@@ -113,10 +127,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 </div>
 #+end_html
 #+HTML: <div id="myContent" style="display:none">
-#+caption: Конфигурационный файл для 5/2.3
+#+caption: Конфигурационный файл для *5/2.3*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
-#+caption: Настройка *conf*-файла для 5/2.3
+#+caption: Настройка *conf*-файла для *5/2.3*
 #+INCLUDE: ../gen/slapd.diff src diff
 и произведем первый запуск сервиса
 #+name: run-slapd-conf5
@@ -131,7 +145,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
 
 #+end_src
-#+caption: Первый запуск сервиса для 5/2.3
+#+caption: Первый запуск сервиса для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-conf5>>
 <<run-slapd-start5>>
@@ -176,7 +190,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     service slapd start
 #+end_src
-Выполним аналогичные действия для 6/2.4
+Выполним аналогичные действия для *6/2.4*
 
 #+begin_html
 <div align="right">
@@ -184,14 +198,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 </div>
 #+end_html
 #+HTML: <div id="myContent2" style="display:none">
-#+caption: Конфигурационный файл для 6/2.4
+#+caption: Конфигурационный файл для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
-#+caption: Настройка *conf*-файла для 6/2.4
+#+caption: Настройка *conf*-файла для *6/2.4*
 #+INCLUDE: ../gen/slapd.obsolete.diff src diff
 
 #+begin_attention
-В случае с CentOS 6 и OpenLDAP 2.4 здесь дополнительно удаляется конфигурация *slapd.d*.
+В случае с *CentOS 6* и *OpenLDAP 2.4* здесь дополнительно удаляется конфигурация *slapd.d*.
 #+end_attention
 
 #+name: run-slapd-conf6
@@ -206,7 +220,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     diff /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf > /gen/slapd.obsolete.diff || true
 
 #+end_src
-#+caption: Первый запуск сервиса для 6/2.4
+#+caption: Первый запуск сервиса для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-conf6>>
 <<run-slapd-start6>>
@@ -233,19 +247,19 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     mv slapd.conf slapd.conf.bak
     cd $oldpath
 #+end_src
-#+caption: Преобразование к *cn=config* формату для 5/2.3 и 6/2.4
+#+caption: Преобразование к *cn=config* формату для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-d>>
 #+end_src
-После перезапуска, для 5/2.3
+После перезапуска, для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start5>>
 #+end_src
-и для 6/2.4
+и для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start6>>
 #+end_src
-получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (5/2.3) и */usr/share/openldap-servers/slapd.conf.obsolete* (6/2.4).
+получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (*5/2.3*) и */usr/share/openldap-servers/slapd.conf.obsolete* (*6/2.4*).
 
 ** Установка пароля менеджера схемы
 :PROPERTIES:
@@ -253,7 +267,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :ID:       234e1535-dac2-4e77-8d65-8267aca6044d
 :END:
 
-Чтобы иметь доступ к серверу LDAP для конфигурирование схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
+Чтобы иметь доступ к серверу LDAP для конфигурирования схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
 
 #+name: run-modify
 #+begin_src sh :exports none
@@ -265,7 +279,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
 
 #+end_src
-#+caption: Начальное конфигурирование схемы БД LDAP для 5/2.3 и 6/2.4
+#+caption: Начальное конфигурирование схемы БД LDAP для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-modify>>
 #+end_src
@@ -291,9 +305,9 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+INCLUDE: ../ldap-server/manager.ldif src ldif
 
 #+begin_note
-Первичный доступ к схемам LDAP, использущим только *cn=config* формат
+Первичный доступ к схемам LDAP, использующим только *cn=config* формат
 (без *conf*-файлов), осуществляется при помощи *ldapi* интерфейса.  В
-случае 5/2.3 при использовании *-Y EXTERNAL -H ldapi:///* флагов по
+случае *5/2.3* при использовании *-Y EXTERNAL -H ldapi:///* флагов по
 мере отладки появляются ошибки *Can't contact LDAP server (-1)*,
 *Insufficient access (50)* и *<olcRootPW> can only be set when rootdn
 is under suffix*. Последнюю пока разрешить не удается, поэтому
@@ -333,7 +347,7 @@ is under suffix*. Последнюю пока разрешить не удает
 :END:
 
 #+begin_quote
-Необходимо разработать документацию по настройке аутентификации пользователей при помощи LDAP в ОС CentOS 5. Проверить работоспособность выработанных инструкций в ОС CentOS 6.
+Необходимо разработать документацию по настройке аутентификации пользователей при помощи LDAP в ОС *CentOS 5*. Проверить работоспособность выработанных инструкций в ОС *CentOS 6*.
 
 В документацию должно входить:
 
@@ -348,17 +362,17 @@ is under suffix*. Последнюю пока разрешить не удает
 :ID:       a4da4894-117b-40b6-a6c7-1447f083d6e1
 :END:
 
-Для настройки клиентского подключения в 5/2.3 понадобятся следующие пакеты
+Для настройки клиентского подключения в *5/2.3* понадобятся следующие пакеты
 
-#+caption: Установка клиента для 5/2.3
+#+caption: Установка клиента для *5/2.3*
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss_ldap authconfig
 yum install -y openldap openldap-servers sudo
 #+end_src
 
-Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для 6/2.4 выполним
+Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для *6/2.4* выполним
 
-#+caption: Установка клиента для 6/2.4
+#+caption: Установка клиента для *6/2.4*
 #+begin_src sh :exports code
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
 yum install -y openldap migrationtools sudo
@@ -477,15 +491,15 @@ getent passwd username
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
 
-Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию клиента, отдельно настроим */etc/ldap.conf*. Для 5/2.3
+Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию клиента, отдельно настроим */etc/ldap.conf*. Для *5/2.3*
 
-#+caption: Настройка клиента для 5/2.3
+#+caption: Настройка клиента для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
 <<client5-run-sudoers>>
 #+end_src
-и для 6/2.4 (здесь дополнительно модифицируются файлы *nsswitch.conf* и *sudo-ldap.conf*)
-#+caption: Настройка клиента для 6/2.4
+и для *6/2.4* (здесь дополнительно модифицируются файлы *nsswitch.conf* и *sudo-ldap.conf*)
+#+caption: Настройка клиента для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<client6-run-setup>>
 <<client6-run-sudoers>>
@@ -497,7 +511,7 @@ getent passwd username
 :ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
 :END:
 
-Файлы, которые были модифицированы [[#client-commands][настройками]] в случае 5/2.3
+Файлы, которые были модифицированы [[#client-commands][настройками]] в случае *5/2.3*
 
 #+begin_html
 <div align="right">
@@ -505,11 +519,11 @@ getent passwd username
 </div>
 #+end_html
 #+HTML: <div id="myContent-client5-files" style="display:true">
-#+caption: Список измененных файлов для 5/2.3
+#+caption: Список измененных файлов для *5/2.3*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5-files.diff src diff
 #+HTML: </div>
 
-и в случае 6/2.4
+и в случае *6/2.4*
 
 #+begin_html
 <div align="right">
@@ -517,7 +531,7 @@ getent passwd username
 </div>
 #+end_html
 #+HTML: <div id="myContent-client6-files" style="display:true">
-#+caption: Список измененных файлов для 6/2.4
+#+caption: Список измененных файлов для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
 #+HTML: </div>
 
@@ -625,7 +639,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 Необходимо разработать документацию по процессу добавления нового
 пользователя в систему, использующего аутентификацию посредством
 LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной
-операции. Ориентироваться на использование в ОС CentOS 5/6.
+операции. Ориентироваться на использование в ОС *CentOS 5/6*.
 #+end_quote
 
 ** Добавление пользователя с помощью CLI интерфейса

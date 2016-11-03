@@ -36,20 +36,16 @@ if [ $# -gt 0 ] ; then
 				# create temp dir and config file
 				tmpDir=$(mktemp -d)
 				cd $tmpDir
-				echo "include /etc/openldap/schema/core.schema" > tmp.conf
-				echo "include /etc/openldap/schema/cosine.schema" >> tmp.conf
-				echo "include /etc/openldap/schema/inetorgperson.schema" >> tmp.conf
-				echo "include /etc/openldap/schema/nis.schema" >> tmp.conf
-				echo "include /etc/openldap/schema/sudo.schema" >> tmp.conf
+				echo "include $schemaFile" > tmp.conf
 
 				# convert
 				$slaptest -f tmp.conf -F $tmpDir
 
 				# 3. rename and sanitize
 				cd cn\=config/cn\=schema
-				filenametmp=$(ls *$(basename $schemaFile .schema)*)
-				sed -r -e  's/^dn: cn=\{[[:digit:]]\}(.*)$/dn: cn=\1,cn=schema,cn=config/' \
-					-e 's/cn: \{[[:digit:]]\}(.*)$/cn: \1/' \
+				filenametmp=$(ls cn={0}*.ldif)
+				sed -r -e  's/^dn: cn=\{0\}(.*)$/dn: cn=\1,cn=schema,cn=config/' \
+					-e 's/cn: \{0\}(.*)$/cn: \1/' \
 					-e '/^structuralObjectClass: /d' \
 					-e '/^entryUUID: /d' \
 					-e '/^creatorsName: /d' \

@@ -3,6 +3,7 @@
 #+SETUPFILE: theme-readtheorg-local.setup
 #+HTML_HEAD: <style type="text/css">.org-src-name{ text-align: right; }</style>
 #+HTML_HEAD: <style type="text/css">.outline-2{ margin-top: 60px; }</style>
+#+MACRO: fa @@html:<i class="fa fa-$1"></i>@@
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
 
@@ -565,7 +566,7 @@ getent passwd username
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
-* Схема БД LDAP
+* {{{fa(star-half-o)}}} Схема БД LDAP
 :PROPERTIES:
 :CUSTOM_ID: schema
 :ID:       b64d7c36-b2b3-49ac-9620-d7c94eb9ea31
@@ -574,6 +575,34 @@ getent passwd username
 #+begin_quote
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
+
+** {{{fa(star)}}} Возможности LDAP
+:PROPERTIES:
+:CUSTOM_ID: ldap-possibilities
+:ID:       4f9ddacc-3908-4cd1-b091-3f00c31aa8a7
+:END:
+
+Возможности протокола LDAP определяются схемами, которые можно подключить с помощью директивы *include*. Помня об основной цели, рассмотрим типичные задачи, которые можно решить с помощью протокола LDAP. В первую очередь нас интересуют уже готовые схемы, входящие в дистрибутив *OpenLDAP* или разработанные сторонними поставщиками.
+
+- [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/index.html][OpenLDAP и Ubuntu на практике]]
+  - Управление пользователями и группами в *OpenLDAP*
+  - Настройка аутентификации пользователей через *OpenLDAP* на клиенте
+  - Настройка *OpenLDAP* в качестве хранилища правил *sudo* (sudo.schema)
+  - *OpenLDAP* как хранилище карт автоматического монтирования для *autofs* (autofs.schema)
+  - Репозиторий *NFS netgroup* на основе *OpenLDAP* для *autofs* (расширение возможностей стандартной схемы nis.schema)
+
+- [[https://www.fusiondirectory.org/service/][FusionDirectory]]
+  - Управление пользователями
+    - Управление квотами пользователей
+    - Управление *ssh* ключами, сертификатами пользователей
+    - Управление учетными записями сервисов почты, *Samba*, *Nagios*,
+      *Squid* и т.д.
+  - Управление системами
+    - Тонкие клиенты, десктопы, серверы, voip, сетевые и мобильные
+      устройства
+  - Управление сервисами
+    - Управление сервисами *dhcp*, *dns*, *web management interface*
+    - Управление репозиториями
 
 ** Подготовка к тестированию аутентификации при помощи LDAP
 :PROPERTIES:
@@ -637,7 +666,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
 # #+HTML: </div>
 
-* Процесс добавления нового пользователя в систему
+* {{{fa(star-half-o)}}} Процесс добавления нового пользователя в систему
 :PROPERTIES:
 :CUSTOM_ID: new-user
 :ID:       6fe3c37d-639a-4656-9675-bdc7a6c5ddb2
@@ -676,7 +705,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/user.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
 
-** Добавление пользователя с помощью GUI Web интерфейса
+** {{{fa(star)}}} Добавление пользователя с помощью GUI Web интерфейса
 :PROPERTIES:
 :CUSTOM_ID: new-user-php
 :ID:       6de9e6dc-04f2-429d-b22e-55caa2e270ee

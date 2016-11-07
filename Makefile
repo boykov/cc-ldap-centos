@@ -70,7 +70,8 @@ build-schema:
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))
-	sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root
+	ldappasswd -h $(call get_ip,$(name)-centos$(k)) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
+	sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root
 
 test:
 	make start n=6 k=6

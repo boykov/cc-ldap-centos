@@ -566,6 +566,15 @@ getent passwd username
     - Управление сервисами *DHCP*, *DNS*, *Web management interface*
     - Управление репозиториями
 
+** Стандартные команды администрирования пользователей в случае использования LDAP{{{fa(star)}}}
+:PROPERTIES:
+:CUSTOM_ID: standard-commands
+:ID:       84d40fcf-c285-40e6-9f13-11685889a085
+:END:
+#+begin_quote
+Предложить LDAP-варианты для команд *passwd*, *useradd*, *usermod*, *finger*, *chsh*, *chfn* и функциональности *.forward*.
+#+end_quote
+
 ** Подготовка к тестированию аутентификации при помощи LDAP
 :PROPERTIES:
 :CUSTOM_ID: minimal-schema

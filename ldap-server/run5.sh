@@ -48,26 +48,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     mkdir -p /etc/openldap/slapd.d
 
     oldpath=`pwd`
-    cd /etc/openldap/
-    echo "include /etc/openldap/schema/core.schema" > cosine.schema
-    cat /etc/openldap/schema/cosine.schema >> cosine.schema
-    echo "include /etc/openldap/schema/core.schema" > inetorgperson.schema
-    echo "include /etc/openldap/schema/cosine.schema" >> inetorgperson.schema
-    cat /etc/openldap/schema/inetorgperson.schema >> inetorgperson.schema
-    echo "include /etc/openldap/schema/core.schema" > nis.schema
-    echo "include /etc/openldap/schema/cosine.schema" >> nis.schema
-    cat /etc/openldap/schema/nis.schema >> nis.schema
-    /root/schema2ldif.sh /etc/openldap/cosine.schema
-    /root/schema2ldif.sh /etc/openldap/inetorgperson.schema
-    /root/schema2ldif.sh /etc/openldap/nis.schema
-    /root/schema2ldif.sh /etc/openldap/schema/sudo.schema
-    cp cosine.ldif schema/
-    cp inetorgperson.ldif schema/
-    cp nis.ldif schema/
-    cp sudo.ldif schema/
-    cp -R schema /gen/schema
+    cd /etc/openldap/schema
+    SCHEMAD=`pwd` SCHEMAS='core.schema cosine.schema inetorgperson.schema nis.schema sudo.schema' /root/2.5-schema-ldif.sh
+    cp -R /etc/openldap/schema /gen/schema
     cd $oldpath
-    ls /etc/openldap/schema/
 
     slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/

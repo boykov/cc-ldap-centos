@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SCHEMAD=~/ldap
-
 tmpd=`mktemp -d`
 pushd ${tmpd} >>/dev/null
 

@@ -19,29 +19,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
-    cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
-    chown ldap. /etc/openldap/slapd.conf
-    rm -rf /etc/openldap/slapd.d
-
-    diff /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf > /gen/slapd.obsolete.diff || true
-
 # run-slapd-conf6 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start6]]
-    service slapd start
-# run-slapd-start6 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#config-transform][run-slapd-d]]
-    sleep 3
-
-    kill -INT `cat /var/run/openldap/slapd.pid`
-    oldpath=`pwd`
-    cd /etc/openldap
-    mkdir slapd.d
-    slaptest -f slapd.conf -F slapd.d
-    chown -R ldap:ldap slapd.d
-    chmod -R 0750 slapd.d
-    mv slapd.conf slapd.conf.bak
-    cd $oldpath
-# run-slapd-d ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema2ldif]]
     rm -rf /etc/openldap/slapd.d
     rm -f /etc/openldap/slapd.conf

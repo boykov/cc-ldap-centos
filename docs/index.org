@@ -139,12 +139,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
-    mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
-    cp /root/slapd.conf /etc/openldap/slapd.conf
-    chown ldap. /etc/openldap/slapd.conf
-
-    diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
-
 #+end_src
 #+caption: Первый запуск сервиса для *5/2.3*
 #+begin_src sh :exports code :noweb yes
@@ -203,12 +197,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
-
-    cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
-    chown ldap. /etc/openldap/slapd.conf
-    rm -rf /etc/openldap/slapd.d
-
-    diff /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf > /gen/slapd.obsolete.diff || true
 
 #+end_src
 #+caption: Первый запуск сервиса для *6/2.4*
@@ -318,8 +306,6 @@ is under suffix*. Последнюю пока разрешить не удает
 <<run-prefix>>
 <<run-db-config5>>
 <<run-slapd-conf5>>
-<<run-slapd-start5>>
-<<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start5>>
 <<run-modify>>
@@ -331,8 +317,6 @@ is under suffix*. Последнюю пока разрешить не удает
 <<run-prefix>>
 <<run-db-config6>>
 <<run-slapd-conf6>>
-<<run-slapd-start6>>
-<<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start6>>
 <<run-modify>>

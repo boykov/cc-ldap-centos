@@ -19,9 +19,3 @@ include: file:///etc/openldap/schema/cosine.ldif
 include: file:///etc/openldap/schema/inetorgperson.ldif
 include: file:///etc/openldap/schema/nis.ldif
 include: file:///etc/openldap/schema/sudo.ldif
-
-dn: olcDatabase={-1}frontend,cn=config
-objectClass: olcDatabaseConfig
-objectClass: olcFrontendConfig
-olcSchemaDN: cn=Subschema
-olcDatabase: {-1}frontend

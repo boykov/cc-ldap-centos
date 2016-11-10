@@ -1,0 +1,5 @@
+dn: olcDatabase={-1}frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcSchemaDN: cn=Subschema
+olcDatabase: {-1}frontend

@@ -15,9 +15,17 @@ olcRootPW: manager
 
 dn: olcDatabase={2}bdb,cn=config
 add: olcAccess
-olcAccess: {0}to attrs=userPassword,shadowLastChange by
-  dn="cn=Manager,dc=mercury,dc=febras,dc=net" write by anonymous auth by self write by * none
-olcAccess: {1}to attrs=loginShell,gecos by
-  dn="cn=Manager,dc=mercury,dc=febras,dc=net" write by self write by * read
-olcAccess: {2}to dn.base="" by * read
-olcAccess: {3}to * by dn="cn=Manager,dc=mercury,dc=febras,dc=net" write by * read
+olcAccess: {0}to attrs=userPassword,shadowLastChange
+  by dn="cn=Manager,dc=mercury,dc=febras,dc=net" write
+  by anonymous auth
+  by self write
+  by * none
+olcAccess: {1}to attrs=loginShell,gecos
+  by dn="cn=Manager,dc=mercury,dc=febras,dc=net" write
+  by self write
+  by * read
+olcAccess: {2}to dn.base=""
+  by * read
+olcAccess: {3}to *
+  by dn="cn=Manager,dc=mercury,dc=febras,dc=net" write
+  by * read

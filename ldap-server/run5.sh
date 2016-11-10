@@ -41,15 +41,15 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
     service ldap start
 # run-slapd-start5 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-modify]]
     sleep 3
 
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 # run-modify ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][add-front5]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][add-front5]]
     ldapadd -v -D cn=Manager,cn=config -f /root/front.ldif -x -w $LDAP_ROOT_PASSWORD || true
 # add-front5 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid`
     sleep 3
 
@@ -63,4 +63,4 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
-# Установка\ пароля\ менеджера\ схемы:1 ends here
+# Предварительная\ настройка\ схемы\ БД\ LDAP:1 ends here

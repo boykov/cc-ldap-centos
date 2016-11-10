@@ -46,7 +46,7 @@ IP-адреса машин в подсети 172.17.0.x определяются
 :END:
 
 #+begin_quote
-Необходимо разработать документацию по установке и настройке сервера LDAP в ОС *CentOS 5*. Предпочтение отдавать реализациям, доступным в базовом репозитории дистрибутива. Проверить работоспособность выработанных инструкций в *ОС CentOS 6*.
+Необходимо разработать документацию по установке и настройке сервера LDAP в ОС *CentOS 5*. Предпочтение отдавать реализациям, доступным в базовом репозитории дистрибутива. Проверить работоспособность выработанных инструкций в ОС *CentOS 6*.
 #+end_quote
 
 # Процедура [[convert][конвертации]]
@@ -118,32 +118,23 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
 :END:
 
-Конфигурация *5/2.3* по умолчанию настраивается файлом *slapd.conf*. Такой подход считается устаревшим, [[http://www.openldap.org/doc/admin24/guide.html#Converting%20old%20style%20{{slapd.conf}}%285%29%20file%20to%20{{cn=config}}%20format][рекомендуется]] использовать *cn=config* формат. Конфигурация *6/2.4* поставляется с двумя эквивалентными вариантами, доступными через файл *slapd.conf.obsolete* и *slapd.d* каталог, содержащий настройки в *cn=config* формате.
+Конфигурация *5/2.3* по умолчанию настраивается файлом *slapd.conf*. Такой подход считается устаревшим, [[http://www.openldap.org/doc/admin24/guide.html#Converting%20old%20style%20{{slapd.conf}}%285%29%20file%20to%20{{cn=config}}%20format][рекомендуется]] использовать *cn=config* формат. Конфигурация *6/2.4* поставляется с двумя эквивалентными вариантами, доступными через файл *slapd.conf.obsolete* и *slapd.d* каталог, содержащий настройки в *cn=config* формате. Для обеих конфигураций будем создавать каталог *slapd.d* с нуля, используя *ldif* формат, не применяя *.conf* файлы.
 
-Внесем небольшие изменения в конфигурационный файл для *5/2.3*
-
-#+begin_html
-<div align="right">
-<a onclick="toggleDiv2('myContent',$(this));" class="fa fa-caret-right">/root/slapd.conf</a>
-</div>
-#+end_html
-#+HTML: <div id="myContent" style="display:none">
-#+caption: Конфигурационный файл для *5/2.3*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-#+caption: Настройка *conf*-файла для *5/2.3*
-#+INCLUDE: ../gen/slapd.diff src diff
-и произведем первый запуск сервиса
+Добавим необходимые схемы в формате *.schema*, для *5/2.3*
 #+name: run-slapd-conf5
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
 #+end_src
-#+caption: Первый запуск сервиса для *5/2.3*
+#+caption: Добавление схем для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-conf5>>
-<<run-slapd-start5>>
+#+end_src
+и для *6/2.4*
+#+caption: Добавление схем для *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf6>>
 #+end_src
 
 #+name: run-slapd-start5
@@ -171,65 +162,26 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+end_src
 
+Чтобы иметь доступ к серверу LDAP для конфигурирования схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*.
+
+#+caption: Преобразование схем в *ldif* формат и задание начальной конфигурации
+#+begin_src sh :exports code :noweb yes
+<<schema2ldif>>
+#+end_src
+#+caption: Файл *startup-config.ldif*
+#+INCLUDE: ../ldap-server/startup-config.ldif src ldif
+
 #+name: run-slapd-start6
 #+begin_src sh :exports none
     service slapd start
 #+end_src
-Выполним аналогичные действия для *6/2.4*
-
-#+begin_html
-<div align="right">
-<a onclick="toggleDiv2('myContent2',$(this));" class="fa fa-caret-right">/root/slapd.conf.obsolete</a>
-</div>
-#+end_html
-#+HTML: <div id="myContent2" style="display:none">
-#+caption: Конфигурационный файл для *6/2.4*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/slapd.conf.obsolete src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-#+caption: Настройка *conf*-файла для *6/2.4*
-#+INCLUDE: ../gen/slapd.obsolete.diff src diff
-
-#+begin_attention
-В случае с *CentOS 6* и *OpenLDAP 2.4* здесь дополнительно удаляется конфигурация *slapd.d*.
-#+end_attention
-
 #+name: run-slapd-conf6
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
 #+end_src
-#+caption: Первый запуск сервиса для *6/2.4*
-#+begin_src sh :exports code :noweb yes
-<<run-slapd-conf6>>
-<<run-slapd-start6>>
-#+end_src
 
-** Преобразование в *cn=config* формат
-:PROPERTIES:
-:CUSTOM_ID: config-transform
-:ID:       3d434678-6d24-4888-a97a-ac0c493ff0ec
-:END:
-
-<<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
-#+name: run-slapd-d
-#+begin_src sh :exports none
-    sleep 3
-
-    kill -INT `cat /var/run/openldap/slapd.pid`
-    oldpath=`pwd`
-    cd /etc/openldap
-    mkdir slapd.d
-    slaptest -f slapd.conf -F slapd.d
-    chown -R ldap:ldap slapd.d
-    chmod -R 0750 slapd.d
-    mv slapd.conf slapd.conf.bak
-    cd $oldpath
-#+end_src
-#+caption: Преобразование к *cn=config* формату для *5/2.3* и *6/2.4*
-#+begin_src sh :exports code :noweb yes
-<<run-slapd-d>>
-#+end_src
 После перезапуска, для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start5>>
@@ -238,15 +190,16 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start6>>
 #+end_src
-получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (*5/2.3*) и */usr/share/openldap-servers/slapd.conf.obsolete* (*6/2.4*).
+получаем сервисы, отличающиеся только настройками схемы, содержащимися в исходных кодах разных версий *OpenLDAP*.
+Например, для конфигурации *5/2.3* требуется добавить настройки *frontend* базы
+#+begin_src sh :exports code :noweb yes
+<<add-front5>>
+#+end_src
+а для *6/2.4* эти настройки добавляются автоматически из исходного кода *OpenLDAP*.
 
-** Установка пароля менеджера схемы
-:PROPERTIES:
-:CUSTOM_ID: add-manager
-:ID:       234e1535-dac2-4e77-8d65-8267aca6044d
-:END:
-
-Чтобы иметь доступ к серверу LDAP для конфигурирования схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
+#+caption: Файл *front.ldif*
+#+name: front-ldif
+#+INCLUDE: ../ldap-server/front.ldif src ldif
 
 #+name: add-front5
 #+begin_src sh :exports none
@@ -259,18 +212,16 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 #+end_src
+
+Добавим минимально необходимые настройки для *monitor* и *bdb*
 #+caption: Начальное конфигурирование схемы БД LDAP для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-modify>>
 #+end_src
-Для *5/2.3* отдельно добавляется, поскольку в *6/2.4* эта запись создается автоматически.
-#+begin_src sh :exports code :noweb yes
-<<add-front5>>
-#+end_src
 
-#+caption: Файл *front.ldif*
-#+name: front-ldif
-#+INCLUDE: ../ldap-server/front.ldif src ldif
+#+caption: Файл *slapd.ldif*
+#+name: slapd-ldif
+#+INCLUDE: ../ldap-server/slapd.ldif src ldif
 
 #+name: run-postfix
 #+begin_src sh :exports none
@@ -288,17 +239,17 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
-#+begin_note
-Первичный доступ к схемам LDAP, использующим только *cn=config* формат
-(без *conf*-файлов), осуществляется при помощи *ldapi* интерфейса.  В
-случае *5/2.3* при использовании *-Y EXTERNAL -H ldapi:///* флагов по
-мере отладки появляются ошибки *Can't contact LDAP server (-1)*,
-*Insufficient access (50)* и *<olcRootPW> can only be set when rootdn
-is under suffix*. Последнюю пока разрешить не удается, поэтому
-используется явное задание пароля для rootdn (*cn=Manager,cn=config*)
-в *conf*-файле и последующее его изменение через *ldapmodify*,
-имитируя использование *ldapi*.
-#+end_note
+# #+begin_note
+# Первичный доступ к схемам LDAP, использующим только *cn=config* формат
+# (без *conf*-файлов), осуществляется при помощи *ldapi* интерфейса.  В
+# случае *5/2.3* при использовании *-Y EXTERNAL -H ldapi:///* флагов по
+# мере отладки появляются ошибки *Can't contact LDAP server (-1)*,
+# *Insufficient access (50)* и *<olcRootPW> can only be set when rootdn
+# is under suffix*. Последнюю пока разрешить не удается, поэтому
+# используется явное задание пароля для rootdn (*cn=Manager,cn=config*)
+# в *conf*-файле и последующее его изменение через *ldapmodify*,
+# имитируя использование *ldapi*.
+# #+end_note
 
 Дальнейшая настройка схемы осуществляется в разделе [[#schema][Схема БД LDAP]].
 

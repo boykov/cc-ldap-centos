@@ -42,7 +42,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     mv slapd.conf slapd.conf.bak
     cd $oldpath
 # run-slapd-d ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema2ldif5]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema2ldif]]
     rm -rf /etc/openldap/slapd.d
     rm -f /etc/openldap/slapd.conf
     mkdir -p /etc/openldap/slapd.d
@@ -56,14 +56,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
+# schema2ldif ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
     service ldap start
-
+# run-slapd-start5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
     sleep 3
 
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
-# schema2ldif5 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
-    sleep 3
 
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705

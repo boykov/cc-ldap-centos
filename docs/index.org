@@ -157,7 +157,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
 #+end_src
 
-#+name: schema2ldif5
+#+name: schema2ldif
 #+begin_src sh :exports none
     rm -rf /etc/openldap/slapd.d
     rm -f /etc/openldap/slapd.conf
@@ -172,11 +172,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
-    service ldap start
-
-    sleep 3
-
-    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
 #+end_src
 
 #+name: run-slapd-start6
@@ -266,6 +261,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     sleep 3
 
+    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
+
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
     sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
@@ -317,7 +314,8 @@ is under suffix*. Последнюю пока разрешить не удает
 <<run-slapd-conf5>>
 <<run-slapd-start5>>
 <<run-slapd-d>>
-<<schema2ldif5>>
+<<schema2ldif>>
+<<run-slapd-start5>>
 <<run-modify>>
 <<run-postfix>>
 #+end_src
@@ -328,6 +326,7 @@ is under suffix*. Последнюю пока разрешить не удает
 <<run-slapd-conf6>>
 <<run-slapd-start6>>
 <<run-slapd-d>>
+<<schema2ldif>>
 <<run-slapd-start6>>
 <<run-modify>>
 <<run-postfix>>

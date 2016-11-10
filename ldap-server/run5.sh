@@ -71,6 +71,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
 
 # run-modify ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][add-front5]]
+    ldapadd -v -D cn=Manager,cn=config -f /root/front.ldif -x -w $LDAP_ROOT_PASSWORD || true
+# add-front5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid`
     sleep 3

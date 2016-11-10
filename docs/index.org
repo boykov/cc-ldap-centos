@@ -257,6 +257,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 Чтобы иметь доступ к серверу LDAP для конфигурирования схемы БД LDAP, внесем необходимые изменения: пропишем пароль менеджера схемы *cn=Manager,cn=config*. Для обеих конфигураций выполним следующие действия
 
+#+name: add-front5
+#+begin_src sh :exports none
+    ldapadd -v -D cn=Manager,cn=config -f /root/front.ldif -x -w $LDAP_ROOT_PASSWORD || true
+#+end_src
+
 #+name: run-modify
 #+begin_src sh :exports none
     sleep 3
@@ -273,6 +278,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-modify>>
 #+end_src
+Для *5/2.3* отдельно добавляется, поскольку в *6/2.4* эта запись создается автоматически.
+#+begin_src sh :exports code :noweb yes
+<<add-front5>>
+#+end_src
+
+#+caption: Файл *front.ldif*
+#+name: front-ldif
+#+INCLUDE: ../ldap-server/front.ldif src ldif
 
 #+name: run-postfix
 #+begin_src sh :exports none
@@ -317,6 +330,7 @@ is under suffix*. Последнюю пока разрешить не удает
 <<schema2ldif>>
 <<run-slapd-start5>>
 <<run-modify>>
+<<add-front5>>
 <<run-postfix>>
 #+end_src
 

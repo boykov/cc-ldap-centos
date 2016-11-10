@@ -53,6 +53,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp -R /etc/openldap/schema /gen/schema
     cd $oldpath
 
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/startup-config.ldif
     slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
@@ -63,13 +66,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-modify]]
     sleep 3
 
-    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
-
-    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
-    # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
-    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
-    ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
-
+    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 # run-modify ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-manager][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid`

@@ -169,6 +169,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp -R /etc/openldap/schema /gen/schema
     cd $oldpath
 
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/startup-config.ldif
     slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
@@ -266,13 +269,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     sleep 3
 
-    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w 1 || true
-
-    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
-    # Use bash variable subsitution to escape special chars http://stackoverflow.com/a/14339705
-    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/manager.ldif
-    ldapmodify -v -D cn=Manager,cn=config -f /root/manager.ldif -x -w 1
-
+    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 #+end_src
 #+caption: Начальное конфигурирование схемы БД LDAP для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
@@ -302,10 +299,6 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
-
-#+caption: Файл *manager.ldif*
-#+name: manager-ldif
-#+INCLUDE: ../ldap-server/manager.ldif src ldif
 
 #+begin_note
 Первичный доступ к схемам LDAP, использующим только *cn=config* формат

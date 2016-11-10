@@ -8,7 +8,7 @@ dn: olcDatabase={0}config,cn=config
 objectClass: olcDatabaseConfig
 olcDatabase: {0}config
 olcRootDN: cn=Manager,cn=config
-olcRootPW: 1
+olcRootPW: %LDAP_ROOT_PASSWORD%
 
 dn: cn=schema,cn=config
 objectClass: olcSchemaConfig

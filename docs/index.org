@@ -566,6 +566,7 @@ cd /schema
 
 ldapmodify -v -D cn=Manager,cn=config -f domain.ldif -x -w $LDAP_ROOT_PASSWORD
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
 #+end_src
 #+begin_src sh :exports code :noweb yes
 <<build-schema>>
@@ -586,13 +587,11 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 # #+HTML: <div id="myContent-domain" style="display:none">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-base',$(this));" class="fa fa-caret-right">/root/base.ldif</a>
-#+end_html
-#+HTML: <div id="myContent-base" style="display:none">
-#+name: base-ldif
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
+#+caption: Файл *base.ldif*
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
+
+#+caption: Файл *sudo.ldif*
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
 # #+begin_html
 # <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
 # #+end_html

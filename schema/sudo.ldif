@@ -1,0 +1,26 @@
+dn: ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: organizationalUnit
+ou: sudoers
+
+dn: cn=wheel,ou=groups,dc=mercury,dc=febras,dc=net
+cn: wheel
+objectClass: posixGroup
+objectClass: top
+gidNumber: 1030
+
+dn: cn=admins,ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: sudoRole
+objectClass: top
+cn: admins
+sudoCommand: ALL
+sudoRunAs: ALL
+sudoHost: ALL
+sudoUser: %wheel
+sudoOption: !authenticate
+
+dn: cn=defaults,ou=sudoers,dc=mercury,dc=febras,dc=net
+objectClass: sudoRole
+objectClass: top
+cn: defaults
+sudoOption: ignore_local_sudoers
+sudoOption: env_reset

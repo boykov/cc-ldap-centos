@@ -42,7 +42,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     service ldap start
 # run-slapd-start5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-modify]]
-    sleep 3
+    sleep 2
 
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 # run-modify ends here
@@ -51,7 +51,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 # add-front5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid`
-    sleep 3
+    sleep 2
 
     mkdir /data/lib /data/etc
     cp -ar /var/lib/ldap /data/lib

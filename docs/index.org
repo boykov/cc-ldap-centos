@@ -208,7 +208,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-modify
 #+begin_src sh :exports none
-    sleep 3
+    sleep 2
 
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 #+end_src
@@ -226,7 +226,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+name: run-postfix
 #+begin_src sh :exports none
     kill -INT `cat /var/run/openldap/slapd.pid`
-    sleep 3
+    sleep 2
 
     mkdir /data/lib /data/etc
     cp -ar /var/lib/ldap /data/lib

@@ -1,27 +1,31 @@
 #+TITLE: Аутентификация пользователей CentOS 5/6 с использованием OpenLDAP 2.3/2.4
-#+OPTIONS: toc:4 H:6 num:nil html-postamble:nil ^:nil tags:nil author:nil
+#+OPTIONS: toc:4 H:6 num:t html-postamble:nil ^:nil tags:nil author:nil
 #+SETUPFILE: theme-readtheorg-local.setup
 #+HTML_HEAD: <style type="text/css">.org-src-name{ text-align: right; }</style>
 #+HTML_HEAD: <style type="text/css">.outline-2{ margin-top: 60px; }</style>
 #+MACRO: fa @@html:&nbsp;<sup><i class="fa fa-$1"></i></sup>@@
+# #+BIBLIOGRAPHY: /home/eab/git/lit/ldap.bib plain option:-d
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
 
 * Введение{{{fa(star-half-o)}}}
 :PROPERTIES:
 :CUSTOM_ID: intro
+:UNNUMBERED: t
 :ID:       be7bb1b4-d8e8-4b5f-8aa3-754d148fa6ba
 :END:
 
 В процессе написания использовались материалы
 
-| English version                             | Русская версия                          |
-|---------------------------------------------+-----------------------------------------|
-| [[http://www.openldap.org/doc/admin24/][OpenLDAP Software 2.4 Administrator's Guide]] | [[http://pro-ldap.ru/tr/admin24/index.html][Руководство администратора OpenLDAP 2.4]] |
-| [[http://www.openldap.org/doc/admin23/][OpenLDAP Software 2.3 Administrator's Guide]] |                                         |
-| [[http://www.zytrax.com/books/ldap/][LDAP for Rocket Scientists]]                  | [[http://pro-ldap.ru/tr/zytrax/][LDAP для учёных-ракетчиков]]              |
-| [[http://itdavid.blogspot.ru/2012/05/howto-centos-6.html][HOWTO : CentOS 6.2 OpenLDAP 2.4 Setup ]]      | [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/][OpenLDAP и Ubuntu на практике]]           |
-| [[http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html][The Linux-PAM System Administrators' Guide]]  |                                         |
+| English version                                                                                                       | Русская версия                          |
+|-----------------------------------------------------------------------------------------------------------------------+-----------------------------------------|
+| [[http://www.openldap.org/doc/admin24/][OpenLDAP Software 2.4 Administrator's Guide]]                                                                           | [[http://pro-ldap.ru/tr/admin24/index.html][Руководство администратора OpenLDAP 2.4]] |
+| [[http://www.openldap.org/doc/admin23/][OpenLDAP Software 2.3 Administrator's Guide]]                                                                           |                                         |
+| [[http://www.zytrax.com/books/ldap/][LDAP for Rocket Scientists]]                                                                                            | [[http://pro-ldap.ru/tr/zytrax/][LDAP для учёных-ракетчиков]]              |
+| [[http://itdavid.blogspot.ru/2012/05/howto-centos-6.html][HOWTO : CentOS 6.2 OpenLDAP 2.4 Setup ]]                                                                                | [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/][OpenLDAP и Ubuntu на практике]]           |
+| [[https://www.packtpub.com/networking-and-servers/mastering-openldap-configuring-securing-and-integrating-directory-services][Matt Butcher. *Mastering OpenLDAP: Configuring, Securing and Integrating Directory Services*. Packt Publishing, 2007.]] |                                         |
+| [[http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html][The Linux-PAM System Administrators' Guide]]                                                                            |                                         |
+# | [[cite:butcher2007mastering]]                   |                                         |
 
 Конфигурация используемых в нашем docker-стенде машин:
 
@@ -168,7 +172,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: Файл *startup-config.ldif*
+#+caption: *startup-config.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных
 #+INCLUDE: ../schema/startup-config.ldif src ldif
 
 #+name: run-slapd-start6
@@ -191,15 +195,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-slapd-start6>>
 #+end_src
 получаем сервисы, отличающиеся только настройками схемы, содержащимися в исходных кодах разных версий *OpenLDAP*.
-Например, для конфигурации *5/2.3* требуется добавить настройки *frontend* базы
-#+begin_src sh :exports code :noweb yes
-<<add-front5>>
-#+end_src
-а для *6/2.4* эти настройки добавляются автоматически из исходного кода *OpenLDAP*.
+Например, для конфигурации *5/2.3* требуется добавить настройки *frontend* базы, а для *6/2.4* эти настройки добавляются автоматически из исходного кода *OpenLDAP*.
 
-#+caption: Файл *front.ldif*
-#+name: front-ldif
-#+INCLUDE: ../schema/front.ldif src ldif
+Кроме того, добавим минимально необходимые настройки для *monitor* и *bdb*
 
 #+name: add-front5
 #+begin_src sh :exports none
@@ -213,15 +211,22 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
 #+end_src
 
-Добавим минимально необходимые настройки для *monitor* и *bdb*
 #+caption: Начальное конфигурирование схемы БД LDAP для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-modify>>
 #+end_src
+#+caption: Добавление *frontend* для *5/2.3*
+#+begin_src sh :exports code :noweb yes
+<<add-front5>>
+#+end_src
 
-#+caption: Файл *slapd.ldif*
+#+caption: *slapd.ldif*: конфигурирование базы данных *bdb* и включение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
+
+#+caption: *front.ldif*: добавление служебной базы данных *frontend* (только для *5/2.3*)
+#+name: front-ldif
+#+INCLUDE: ../schema/front.ldif src ldif
 
 #+name: run-postfix
 #+begin_src sh :exports none
@@ -496,10 +501,23 @@ getent passwd username
 :CUSTOM_ID: schema
 :ID:       b64d7c36-b2b3-49ac-9620-d7c94eb9ea31
 :END:
-
 #+begin_quote
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
+
+Использование только *ldif* формата позволяет единообразно конфигурировать схему *LDAP*, начиная с корневой записи DIT (Directory Information Tree) *cn=config* и заканчивая листями этого дерева - записями, содержащими нужную информацию:
+#+begin_src sh :exports results :results raw
+grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/:/|/g" | sed "s/^/|/"
+#+end_src
+
+#+RESULTS:
+| *startup-config.ldif* | формирование корневой записи DIT и контейнера для наборов схем данных |
+| *slapd.ldif*          | конфигурирование базы данных *bdb* и включение мониторинга баз данных |
+| *front.ldif*          | добавление служебной базы данных *frontend* (только для *5/2.3*)      |
+| *domain.ldif*         | установка суффикса, менеджера и ACL для *bdb*                         |
+| *base.ldif*           | настройка корневого суффикса, менеджера и организационных единиц      |
+| *sudo.ldif*           | настройка организационной единицы *sudoers*                           |
+| *user.ldif*           | создание нового пользователя                                          |
 
 ** Возможности LDAP{{{fa(star)}}}
 :PROPERTIES:
@@ -528,15 +546,6 @@ getent passwd username
   - Управление сервисами
     - Управление сервисами *DHCP*, *DNS*, *Web management interface*
     - Управление репозиториями
-
-** Стандартные команды администрирования пользователей в случае использования LDAP{{{fa(star)}}}
-:PROPERTIES:
-:CUSTOM_ID: standard-commands
-:ID:       84d40fcf-c285-40e6-9f13-11685889a085
-:END:
-#+begin_quote
-Предложить LDAP-варианты для команд *passwd*, *useradd*, *usermod*, *finger*, *chsh*, *chfn* и функциональности *.forward*.
-#+end_quote
 
 ** Подготовка к тестированию аутентификации при помощи LDAP
 :PROPERTIES:
@@ -582,27 +591,33 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: Файл *domain.ldif*
+#+caption: *domain.ldif*: установка суффикса, менеджера и ACL для *bdb*
 #+name: domain-ldif
 #+INCLUDE: ../schema/domain.ldif src ldif
 
-# #+begin_html
-# <br/><a onclick="toggleDiv2('myContent-domain',$(this));" class="fa fa-caret-right">/root/domain.ldif</a>
-# #+end_html
-# #+HTML: <div id="myContent-domain" style="display:none">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/domain.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-# #+HTML: </div>
-#+caption: Файл *base.ldif*
+#+caption: *base.ldif*: настройка корневого суффикса, менеджера и организационных единиц
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
 
-#+caption: Файл *sudo.ldif*
+#+caption: *sudo.ldif*: настройка организационной единицы *sudoers*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
-# #+begin_html
-# <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
-# #+end_html
-# #+HTML: <div id="myContent-admin" style="display:true">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/admin.ldif src ldif
-# #+HTML: </div>
+
+** Стандартные команды администрирования пользователей в случае использования LDAP{{{fa(star)}}}
+:PROPERTIES:
+:CUSTOM_ID: standard-commands
+:ID:       84d40fcf-c285-40e6-9f13-11685889a085
+:END:
+#+begin_quote
+Предложить LDAP-варианты для команд *passwd*, *useradd*, *usermod*, *finger*, *chsh*, *chfn* и функциональности *.forward*.
+#+end_quote
+
+#+caption: Изменение значения *loginShell* с помощью утилиты *ldapmodify*
+#+name: modify-sh
+#+INCLUDE: ../schema/modify.sh src sh
+
+#+caption: Изменение пароля пользователя с помощью утилиты *ldappasswd*
+#+begin_src sh
+ldappasswd -h $(ip) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
+#+end_src
 
 * Процесс добавления нового пользователя в систему{{{fa(star-half-o)}}}
 :PROPERTIES:
@@ -634,14 +649,8 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: Файл *user.ldif*, применяемый для создания нового пользователя
+#+caption: *user.ldif*: создание нового пользователя
 #+INCLUDE: "../schema/user.ldif" src ldif
-# #+begin_html
-# <br/><a onclick="toggleDiv2('myContent-user',$(this));" class="fa fa-caret-right">/root/user.ldif</a>
-# #+end_html
-# #+HTML: <div id="myContent-user" style="display:none">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/user.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
-# #+HTML: </div>
 
 ** Добавление пользователя с помощью GUI Web интерфейса{{{fa(star)}}}
 :PROPERTIES:

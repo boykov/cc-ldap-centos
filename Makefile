@@ -40,7 +40,7 @@ tangle: docs/index.org
 	$(call fix_run,schema/build.sh)
 
 build-server:
-	cd ldap-server && docker build -f ./Dockerfile$(n) -t $(name)-dev$(n) .
+	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .
 	docker run --name $(name)-data$(n) -v /data busybox true || true
 	docker run --name $(name)-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	sleep 15
@@ -48,7 +48,7 @@ build-server:
 
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
-	cd ldap-client && docker build -f ./Dockerfile$(n) -t $(name)-cli$(n) .
+	docker build -f ldap-client/Dockerfile$(n) -t $(name)-cli$(n) .
 	docker run -d --name $(name)-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
 
 start:

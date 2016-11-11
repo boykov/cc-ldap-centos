@@ -169,7 +169,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<schema2ldif>>
 #+end_src
 #+caption: Файл *startup-config.ldif*
-#+INCLUDE: ../ldap-server/startup-config.ldif src ldif
+#+INCLUDE: ../schema/startup-config.ldif src ldif
 
 #+name: run-slapd-start6
 #+begin_src sh :exports none
@@ -199,7 +199,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+caption: Файл *front.ldif*
 #+name: front-ldif
-#+INCLUDE: ../ldap-server/front.ldif src ldif
+#+INCLUDE: ../schema/front.ldif src ldif
 
 #+name: add-front5
 #+begin_src sh :exports none
@@ -221,7 +221,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+caption: Файл *slapd.ldif*
 #+name: slapd-ldif
-#+INCLUDE: ../ldap-server/slapd.ldif src ldif
+#+INCLUDE: ../schema/slapd.ldif src ldif
 
 #+name: run-postfix
 #+begin_src sh :exports none
@@ -597,7 +597,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 # <br/><a onclick="toggleDiv2('myContent-admin',$(this));" class="fa fa-caret-down">/root/admin.ldif</a>
 # #+end_html
 # #+HTML: <div id="myContent-admin" style="display:true">
-# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/ldap-server/admin.ldif src ldif
+# #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/admin.ldif src ldif
 # #+HTML: </div>
 
 * Процесс добавления нового пользователя в систему{{{fa(star-half-o)}}}

@@ -19,6 +19,7 @@ RUN yum -y update && \
     yum -y install openldap openldap-servers openldap-clients sudo && \
     yum clean all
 
-COPY . /root
+COPY ldap-server/. /root
+COPY schema/. /root
 
 CMD ["/root/run5.sh"]

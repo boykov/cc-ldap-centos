@@ -24,7 +24,7 @@ RUN echo 'root:123456' | chpasswd
 #ENV LC_ALL en_US.UTF-8
 
 EXPOSE 22
-COPY . /root
+COPY ldap-client/. /root
 
 RUN mkdir /gen
 

@@ -685,7 +685,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 #+end_html
 #+HTML: <div id="shadow" style="display:none">
 #+caption: xml-файл шаблона *User Account With Shadow* браузера схемы
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/custom-ShadowAccount.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-ShadowAccount.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 #+NAME:   fig:php01

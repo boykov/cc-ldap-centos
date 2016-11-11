@@ -1,12 +1,16 @@
-dn: olcDatabase={1}monitor,cn=config
+dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig
-olcDatabase: {1}monitor
+olcDatabase: monitor
 
-dn: olcDatabase={2}bdb,cn=config
+dn: olcDatabase=bdb,cn=config
 objectClass: olcDatabaseConfig
 objectClass: olcBdbConfig
-olcDatabase: {2}bdb
+olcDatabase: bdb
 olcSuffix: dc=my-domain,dc=com
 olcRootDN: cn=Manager,dc=my-domain,dc=com
 olcDbDirectory:	/var/lib/ldap
-olcDbIndex: objectClass eq
+olcDbIndex: objectClass eq,pres
+olcDbIndex: ou,cn      eq,pres,sub
+olcDbIndex: uidNumber,gidNumber,loginShell    eq,pres
+olcDbIndex: uid                     eq,pres,sub
+

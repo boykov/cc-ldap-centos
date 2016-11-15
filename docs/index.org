@@ -87,9 +87,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+end_src
 
-** Настройка базы данных BDB
+** Настройка базы данных HDB
 :PROPERTIES:
-:CUSTOM_ID: configure-bdb
+:CUSTOM_ID: configure-hdb
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
 :END:
 
@@ -197,7 +197,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 получаем сервисы, отличающиеся только настройками схемы, содержащимися в исходных кодах разных версий *OpenLDAP*.
 Например, для конфигурации *5/2.3* требуется добавить настройки *frontend* базы, а для *6/2.4* эти настройки добавляются автоматически из исходного кода *OpenLDAP*.
 
-Кроме того, добавим минимально необходимые настройки для *monitor* и *bdb*
+Кроме того, добавим минимально необходимые настройки для *monitor* и *hdb*
 
 #+name: add-front5
 #+begin_src sh :exports none
@@ -220,7 +220,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<add-front5>>
 #+end_src
 
-#+caption: *slapd.ldif*: конфигурирование базы данных *bdb* и включение мониторинга баз данных
+#+caption: *slapd.ldif*: конфигурирование базы данных *hdb* и включение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -512,9 +512,9 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 
 #+RESULTS:
 | *startup-config.ldif* | формирование корневой записи DIT и контейнера для наборов схем данных |
-| *slapd.ldif*          | конфигурирование базы данных *bdb* и включение мониторинга баз данных |
+| *slapd.ldif*          | конфигурирование базы данных *hdb* и включение мониторинга баз данных |
 | *front.ldif*          | добавление служебной базы данных *frontend* (только для *5/2.3*)      |
-| *domain.ldif*         | установка суффикса, менеджера и ACL для *bdb*                         |
+| *domain.ldif*         | установка суффикса, менеджера и ACL для *hdb*                         |
 | *base.ldif*           | настройка корневого суффикса, менеджера и организационных единиц      |
 | *sudo.ldif*           | настройка организационной единицы *sudoers*                           |
 | *user.ldif*           | создание нового пользователя                                          |
@@ -555,7 +555,7 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 
 Чтобы получить минимально работоспособный сервер LDAP, позволяющий
 осуществлять аутентификацию для клиентских систем, внесем необходимые
-изменения в схему. В частности, [[domain-ldif][сконфигурируем]] базу *bdb* для
+изменения в схему. В частности, [[domain-ldif][сконфигурируем]] базу *hdb* для
 доменного имени *dc=mercury,dc=febras,dc=net*, определим менеджера
 домена *cn=Manager,dc=mercury,dc=febras,dc=net* и его пароль.  Также,
 добавим в *domain.ldif* правила доступа к атрибутам *userPassword* и
@@ -591,7 +591,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: *domain.ldif*: установка суффикса, менеджера и ACL для *bdb*
+#+caption: *domain.ldif*: установка суффикса, менеджера и ACL для *hdb*
 #+name: domain-ldif
 #+INCLUDE: ../schema/domain.ldif src ldif
 

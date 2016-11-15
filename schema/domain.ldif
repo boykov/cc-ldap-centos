@@ -1,19 +1,19 @@
-dn: olcDatabase={2}bdb,cn=config
+dn: olcDatabase={2}hdb,cn=config
 changetype: modify
 replace: olcSuffix
 olcSuffix: dc=mercury,dc=febras,dc=net
 
-dn: olcDatabase={2}bdb,cn=config
+dn: olcDatabase={2}hdb,cn=config
 changetype: modify
 replace: olcRootDN
 olcRootDN: cn=Manager,dc=mercury,dc=febras,dc=net
 
-dn: olcDatabase={2}bdb,cn=config
+dn: olcDatabase={2}hdb,cn=config
 changetype: modify
 add: olcRootPW
 olcRootPW: %LDAP_MANAGER_PASSWORD%
 
-dn: olcDatabase={2}bdb,cn=config
+dn: olcDatabase={2}hdb,cn=config
 add: olcAccess
 olcAccess: {0}to attrs=userPassword,shadowLastChange
   by dn="cn=Manager,dc=mercury,dc=febras,dc=net" write

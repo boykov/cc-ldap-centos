@@ -2,10 +2,10 @@ dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig
 olcDatabase: monitor
 
-dn: olcDatabase=bdb,cn=config
+dn: olcDatabase=hdb,cn=config
 objectClass: olcDatabaseConfig
-objectClass: olcBdbConfig
-olcDatabase: bdb
+objectClass: olcHdbConfig
+olcDatabase: hdb
 olcSuffix: dc=my-domain,dc=com
 olcRootDN: cn=Manager,dc=my-domain,dc=com
 olcDbDirectory:	/var/lib/ldap

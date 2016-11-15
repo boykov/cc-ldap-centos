@@ -10,7 +10,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     fi
 
 # run-prefix ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-bdb][run-db-config6]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-hdb][run-db-config6]]
     cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
     chown ldap. /var/lib/ldap/DB_CONFIG
 

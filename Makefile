@@ -74,7 +74,7 @@ test-client:
 	$(eval ip = $(call get_ip,$(server)))
 	ldappasswd -h $(call get_ip,$(name)-centos$(k)) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
 	./schema/modify.sh $(call get_ip,$(name)-centos$(k))
-	sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root
+	sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$(ip) sudo ls /root || true
 
 test:
 	make start n=6 k=6

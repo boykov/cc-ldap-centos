@@ -65,6 +65,7 @@ test-schema:
 	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '*' -w $(LDAP_ROOT_PASSWORD)
 	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w $(LDAP_ROOT_PASSWORD) | grep structuralObjectClass
 	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -D 'cn=Manager,cn=config' -b 'dc=mercury,dc=febras,dc=net' '(uid=username)' structuralObjectClass -w $(LDAP_ROOT_PASSWORD)
+	ldapsearch -x -h $(call get_ip,$(name)-centos$(k)) -LLL -x -b 'dc=mercury,dc=febras,dc=net'
 
 build-schema:
 	$(eval ip = $(call get_ip,$(server)))

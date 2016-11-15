@@ -19,6 +19,18 @@ echo uri ldap://$LDAP_SERVER/ >> /etc/sudo-ldap.conf
 echo base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_debug 0 >> /etc/sudo-ldap.conf
+echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
+echo bindpw secret >> /etc/sudo-ldap.conf
+
+echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
+echo bindpw secret >> /etc/pam_ldap.conf
+
+echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
+echo bindpw secret >> /etc/nslcd.conf
+
+/etc/init.d/nslcd stop
+rm /var/run/nslcd/*
+/etc/init.d/nslcd start
 
 # client6-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-postfix]]

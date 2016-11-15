@@ -17,3 +17,10 @@ ou: people
 dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: groups
+
+dn: cn=authenticator,dc=mercury,dc=febras,dc=net
+objectClass: person
+cn: authenticator
+sn: authenticator
+description: Used for authentication to LDAP
+userPassword: secret

@@ -14,6 +14,8 @@ authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
+echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo bindpw secret >> /etc/ldap.conf
 
 # client5-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-postfix]]

@@ -58,7 +58,7 @@ start:
 	make build-client n=$(n) server=$(name)-centos$(k)
 	make build-schema server=$(name)-centos$(n)
 	sleep 1
-	make test-client server=$(name)-client$(n)
+	make test-client server=$(name)-client$(n) k=$(k)
 	make test-schema k=$(k)
 
 test-schema:

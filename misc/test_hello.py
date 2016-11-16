@@ -3,6 +3,7 @@
 import subprocess
 import unittest
 import os.path
+import sys
 
 class BashFunctionCaller(object):
     '''utilitary class to show some cool magic you can do in python'''
@@ -20,9 +21,18 @@ class BashFunctionCaller(object):
         return call_fun
         
 class HelloTest(unittest.TestCase):
+    def __init__(self, testName, extraArg):
+        super(HelloTest, self).__init__(testName)
+        self.myExtraArg = extraArg
+    
     def setUp(self):
         self.script = BashFunctionCaller("../schema/hello.sh")
         
     def test_hello_world(self):
-        output = self.script.hello("world")
+        output = self.script.hello(self.myExtraArg)
         self.assertEqual("hello world\n", output)
+
+# call your test
+suite = unittest.TestSuite()
+suite.addTest(HelloTest('test_hello_world',sys.argv.pop()))
+unittest.TextTestRunner(verbosity=2).run(suite)

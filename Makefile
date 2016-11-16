@@ -94,7 +94,7 @@ test:
 	@make -s clear >> gen/full.log 2>&1
 
 hello:
-	python -m unittest discover -s misc
+	python misc/test_hello.py world
 
 dclear:
 	docker rm -f $(name)-centos5

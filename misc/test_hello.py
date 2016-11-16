@@ -21,7 +21,7 @@ class BashFunctionCaller(object):
         
 class HelloTest(unittest.TestCase):
     def setUp(self):
-        self.script = BashFunctionCaller("../src/hello.sh")
+        self.script = BashFunctionCaller("../schema/hello.sh")
         
     def test_hello_world(self):
         output = self.script.hello("world")

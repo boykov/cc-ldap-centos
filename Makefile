@@ -93,6 +93,9 @@ test:
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
 	@make -s clear >> gen/full.log 2>&1
 
+hello:
+	python -m unittest discover -s misc
+
 dclear:
 	docker rm -f $(name)-centos5
 	docker rm -f -v $(name)-data5

@@ -24,7 +24,7 @@ define recreate_server
 	sleep 1
 endef
 
-define fix_run
+define fix_tangle
 	sed -i '2d' $(1)
 	chmod 0755 $(1)
 endef
@@ -33,11 +33,11 @@ tangle: docs/index.org
 	mkdir -p gen
 	@emacsclient -s serverN --eval "(progn (find-file \"docs/index.org\") (org-odt-export-to-odt) (org-publish-project \"html-ldap\") (eab/tangle-init))" > /dev/null
 	mv docs/index.odt gen/
-	$(call fix_run,ldap-server/run6.sh)
-	$(call fix_run,ldap-server/run5.sh)
-	$(call fix_run,ldap-client/run6.sh)
-	$(call fix_run,ldap-client/run5.sh)
-	$(call fix_run,schema/build.sh)
+	$(call fix_tangle,ldap-server/run6.sh)
+	$(call fix_tangle,ldap-server/run5.sh)
+	$(call fix_tangle,ldap-client/run6.sh)
+	$(call fix_tangle,ldap-client/run5.sh)
+	$(call fix_tangle,schema/build.sh)
 
 build-server:
 	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .

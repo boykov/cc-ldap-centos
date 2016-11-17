@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Stolen from https://stuckinadoloop.wordpress.com/2011/04/14/script-to-convert-openldap-schema-files-to-ldif-format/
 
 tmpd=`mktemp -d`
 pushd ${tmpd} >>/dev/null

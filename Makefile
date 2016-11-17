@@ -11,16 +11,16 @@ endef
 
 define create_backup
 	docker images | grep data$(1)-backup > /dev/null || docker rm -f -v data$(1)-backup || true
-	docker stop $(2)-centos$(1)
+	docker stop $(2)-server$(1)
 	docker commit $(2)-data$(1) data$(1)-backup
-	docker start $(2)-centos$(1)
+	docker start $(2)-server$(1)
 endef
 
 define recreate_server
-	docker rm -f -v $(2)-centos$(1)
+	docker rm -f -v $(2)-server$(1)
 	docker rm -f -v $(2)-data$(1)
 	docker run --name $(2)-data$(1) -v /data data$(1)-backup true
-	docker run --name $(2)-centos$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
+	docker run --name $(2)-server$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
 	sleep 1
 endef
 
@@ -40,11 +40,15 @@ tangle: docs/index.org
 	$(call fix_tangle,schema/build.sh)
 
 build-server:
+	echo entered to build-server $(n) >> gen/test.log
 	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .
+	echo cc-ldap-server$(n) was built >> gen/test.log
 	docker run --name $(name)-data$(n) -v /data busybox true || true
-	docker run --name $(name)-centos$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
+	docker run --name $(name)-server$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
+	echo cc-ldap-server$(n) was run >> gen/test.log
 	sleep 7
 	$(call create_backup,$(n),$(name))
+	echo cc-ldap-server$(n) backup was created >> gen/test.log
 
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
@@ -53,13 +57,13 @@ build-client:
 
 start:
 	echo entered to start $(n) $(k) >> gen/test.log
-	docker ps -a | grep $(name)-centos$(n) > /dev/null || make build-server n=$(n)
-	docker start $(name)-centos$(n)
+	docker ps -a | grep $(name)-server$(n) > /dev/null || make build-server n=$(n)
+	docker start $(name)-server$(n)
 	echo server$(k) built >> gen/test.log
 	sleep 1
-	make build-client n=$(n) server=$(name)-centos$(k)
+	make build-client n=$(n) server=$(name)-server$(k)
 	echo client$(n) built >> gen/test.log
-	make build-schema server=$(name)-centos$(n)
+	make build-schema server=$(name)-server$(n)
 	echo schema created >> gen/test.log
 	sleep 1
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
@@ -70,7 +74,7 @@ build-schema:
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))
-	python schema/test_schema.py $(call get_ip,$(name)-centos$(k)) $(ip) >> gen/test.log 2>&1
+	python schema/test_schema.py $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
 
 prepare_log:
 	@echo > gen/full.log
@@ -85,7 +89,7 @@ test:
 	@make -s clear >> gen/full.log 2>&1
 
 dclear:
-	docker rm -f $(name)-centos5
+	docker rm -f $(name)-server5
 	docker rm -f -v $(name)-data5
 	docker stop $(name)-client5
 	docker rm -f $(name)-client5
@@ -98,8 +102,8 @@ clear:
 	docker rm -f $(name)-client5 || true
 
 full-clear:
-	docker rm -f -v $(name)-centos6 || true
-	docker rm -f -v $(name)-centos5 || true
+	docker rm -f -v $(name)-server6 || true
+	docker rm -f -v $(name)-server5 || true
 
 	docker rm $(name)-data6 || true
 	docker rm $(name)-data5 || true

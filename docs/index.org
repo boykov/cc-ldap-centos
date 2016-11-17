@@ -31,8 +31,8 @@
 
 | *Шлюз, docker host* | 172.17.0.1      |
 | *Серверы каталогов* |                 |
-|                     | cc-ldap-centos5 |
-|                     | cc-ldap-centos6 |
+|                     | cc-ldap-server5 |
+|                     | cc-ldap-server6 |
 | *Клиентские машины* |                 |
 |                     | cc-ldap-client5 |
 |                     | cc-ldap-client6 |

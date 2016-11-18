@@ -288,7 +288,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-postfix
 #+begin_src sh :exports none
-    kill -INT `cat /var/run/openldap/slapd.pid`
+    kill -INT `cat /var/run/openldap/slapd.pid` || true
     sleep 2
 
     mkdir /data/lib /data/etc
@@ -323,12 +323,12 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-slapd-conf5>>
 <<run-slapd-start5>>
 <<run-slapd-d>>
-<<schema2ldif>>
-<<run-slapd-start5>>
-<<run-modify>>
-<<add-front5>>
 <<run-postfix>>
 #+end_src
+# <<schema2ldif>>
+# <<run-slapd-start5>>
+# <<run-modify>>
+# <<add-front5>>
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
@@ -337,11 +337,12 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-slapd-conf6>>
 <<run-slapd-start6>>
 <<run-slapd-d>>
-<<schema2ldif>>
-<<run-slapd-start6>>
-<<run-modify>>
 <<run-postfix>>
 #+end_src
+# <<schema2ldif>>
+# <<run-slapd-start6>>
+# <<run-modify>>
+
 
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:

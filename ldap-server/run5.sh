@@ -19,7 +19,32 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+    mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
+    cp /root/slapd.conf /etc/openldap/slapd.conf
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /etc/openldap/slapd.conf
+    chown ldap. /etc/openldap/slapd.conf
+
+    diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
 # run-slapd-conf5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start5]]
+    service ldap start
+# run-slapd-start5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-d]]
+    sleep 3
+
+    kill -INT `cat /var/run/openldap/slapd.pid`
+    rm -rf /etc/openldap/slapd.d
+    oldpath=`pwd`
+    cd /etc/openldap
+    mkdir slapd.d
+    slaptest -f slapd.conf -F slapd.d
+    chown -R ldap:ldap slapd.d
+    chmod -R 0750 slapd.d
+    mv slapd.conf slapd.conf.bak
+    cd $oldpath
+# run-slapd-d ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema2ldif]]
     rm -rf /etc/openldap/slapd.d
     rm -f /etc/openldap/slapd.conf

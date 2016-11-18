@@ -141,6 +141,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+    mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
+    cp /root/slapd.conf /etc/openldap/slapd.conf
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /etc/openldap/slapd.conf
+    chown ldap. /etc/openldap/slapd.conf
+
+    diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
 #+end_src
 #+caption: Добавление схем для *5/2.3*
 #+begin_src sh :exports code :noweb yes
@@ -177,6 +185,22 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+end_src
 
+#+name: run-slapd-d
+#+begin_src sh :exports none
+    sleep 3
+
+    kill -INT `cat /var/run/openldap/slapd.pid`
+    rm -rf /etc/openldap/slapd.d
+    oldpath=`pwd`
+    cd /etc/openldap
+    mkdir slapd.d
+    slaptest -f slapd.conf -F slapd.d
+    chown -R ldap:ldap slapd.d
+    chmod -R 0750 slapd.d
+    mv slapd.conf slapd.conf.bak
+    cd $oldpath
+#+end_src
+
 Конфигурация *5/2.3* поставляется со схемами только в *schema*
 формате, а *6/2.4* - как в *schema*, так и в *ldif* формате. Файл
 *sudo.schema* доступен только в *schema* формате. С помощью скрипта
@@ -204,6 +228,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+    cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
+    ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
+    # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /etc/openldap/slapd.conf
+    chown ldap. /etc/openldap/slapd.conf
+    rm -rf /etc/openldap/slapd.d
+
+    diff /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf > /gen/slapd.obsolete.diff || true
 #+end_src
 
 После перезапуска, для *5/2.3*
@@ -282,6 +314,8 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-prefix>>
 <<run-db-config5>>
 <<run-slapd-conf5>>
+<<run-slapd-start5>>
+<<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start5>>
 <<run-modify>>
@@ -293,6 +327,8 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-prefix>>
 <<run-db-config6>>
 <<run-slapd-conf6>>
+<<run-slapd-start6>>
+<<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start6>>
 <<run-modify>>

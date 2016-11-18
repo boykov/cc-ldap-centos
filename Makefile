@@ -46,7 +46,7 @@ build-server:
 	docker run --name $(name)-data$(n) -v /data busybox true || true
 	docker run --name $(name)-server$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	echo cc-ldap-server$(n) was run >> gen/test.log
-	sleep 7
+	sleep 10
 	$(call create_backup,$(n),$(name))
 	echo cc-ldap-server$(n) backup was created >> gen/test.log
 

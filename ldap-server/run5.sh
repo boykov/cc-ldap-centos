@@ -15,10 +15,12 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chown ldap. /var/lib/ldap/DB_CONFIG
 
 # run-db-config5 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf5]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema-prepare5]]
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+# schema-prepare5 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf5]]
     mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
     cp /root/slapd.conf /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)

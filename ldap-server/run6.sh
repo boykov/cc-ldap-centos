@@ -15,10 +15,12 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chown ldap. /var/lib/ldap/DB_CONFIG
 
 # run-db-config6 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf6]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema-prepare6]]
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+# schema-prepare6 ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf6]]
     cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705

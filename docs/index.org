@@ -136,11 +136,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 или готовый каталог *slapd.d*.
 
 Общая схема БД LDAP, в том числе, содержит раздел *cn=schema*, куда подключаются дополнительные специфические схемы.  Добавим необходимые схемы (не включенные в поставку *OpenLDAP*), для *5/2.3*
-#+name: run-slapd-conf5
+#+name: schema-prepare5
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+#+end_src
+#+name: run-slapd-conf5
+#+begin_src sh :exports none
     mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
     cp /root/slapd.conf /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
@@ -152,12 +155,12 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+caption: Добавление схем для *5/2.3*
 #+begin_src sh :exports code :noweb yes
-<<run-slapd-conf5>>
+<<schema-prepare5>>
 #+end_src
 и для *6/2.4*
 #+caption: Добавление схем для *6/2.4*
 #+begin_src sh :exports code :noweb yes
-<<run-slapd-conf6>>
+<<schema-prepare6>>
 #+end_src
 
 #+name: run-slapd-start5
@@ -223,11 +226,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports none
     service slapd start
 #+end_src
-#+name: run-slapd-conf6
+#+name: schema-prepare6
 #+begin_src sh :exports none
     cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
+#+end_src
+#+name: run-slapd-conf6
+#+begin_src sh :exports none
     cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
@@ -313,6 +319,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config5>>
+<<schema-prepare5>>
 <<run-slapd-conf5>>
 <<run-slapd-start5>>
 <<run-slapd-d>>
@@ -326,6 +333,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-server/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<run-prefix>>
 <<run-db-config6>>
+<<schema-prepare6>>
 <<run-slapd-conf6>>
 <<run-slapd-start6>>
 <<run-slapd-d>>

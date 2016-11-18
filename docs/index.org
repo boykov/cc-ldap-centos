@@ -343,6 +343,74 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # <<run-slapd-start6>>
 # <<run-modify>>
 
+** Предпочтительный способ настройки схемы БД LDAP
+:PROPERTIES:
+:CUSTOM_ID: configure-slapd-conf
+:ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
+:END:
+
+В предыдущем разделе продемонстрирован способ настройки схемы,
+используя только *ldif* формат. Однако, на практике может оказаться
+предпочтительным не подготавливать тщательно нужную начальную
+конфигурацию с помощью файлов *startup-config.ldif* и *slapd.ldif*, а
+воспользоваться автоматической генерацией каталога *slapd.d* сервером
+*OpenLDAP* на основе конфигурационных файлов. При этом, в схему
+прописывается множество дополнительных параметров.
+
+Внесем небольшие изменения в конфигурационный файл для *5/2.3*
+
+#+begin_html
+<div align="right">
+<a onclick="toggleDiv2('myContent',$(this));" class="fa fa-caret-right">/root/slapd.conf</a>
+</div>
+#+end_html
+#+HTML: <div id="myContent" style="display:none">
+#+caption: Конфигурационный файл для *5/2.3*
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/slapd.conf src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: </div>
+#+caption: Настройка *conf*-файла для *5/2.3*
+#+INCLUDE: ../gen/slapd.diff src diff
+и произведем первый запуск сервиса
+#+caption: Первый запуск сервиса для *5/2.3*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf5>>
+<<run-slapd-start5>>
+#+end_src
+Выполним аналогичные действия для *6/2.4*
+
+#+begin_html
+<div align="right">
+<a onclick="toggleDiv2('myContent2',$(this));" class="fa fa-caret-right">/root/slapd.conf.obsolete</a>
+</div>
+#+end_html
+#+HTML: <div id="myContent2" style="display:none">
+#+caption: Конфигурационный файл для *6/2.4*
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/slapd.conf.obsolete src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
+#+HTML: </div>
+#+caption: Настройка *conf*-файла для *6/2.4*
+#+INCLUDE: ../gen/slapd.obsolete.diff src diff
+
+#+caption: Первый запуск сервиса для *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-conf6>>
+<<run-slapd-start6>>
+#+end_src
+
+<<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
+#+caption: Преобразование к *cn=config* формату для *5/2.3* и *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-d>>
+#+end_src
+После перезапуска, для *5/2.3*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-start5>>
+#+end_src
+и для *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<run-slapd-start6>>
+#+end_src
+получаем сервисы, отличающиеся только настройками по умолчанию, поставляемыми из базовых репозиториев в файлах */etc/openldap/slapd.conf* (*5/2.3*) и */usr/share/openldap-servers/slapd.conf.obsolete* (*6/2.4*).
+
 
 * Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:

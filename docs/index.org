@@ -196,8 +196,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
-    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/startup-config.ldif
-    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/slapd.ldif
+    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/slapd.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
 #+end_src
@@ -225,16 +225,18 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 преобразуем необходимые схемы. Чтобы иметь доступ к серверу LDAP для
 конфигурирования схемы БД LDAP, пропишем пароль менеджера схемы
 *cn=Manager,cn=config*. Пользователь *rootdn* имеет права на чтение и
-запись для всего содержимого.  Используем "оффлайновую" утилиту
-*slapadd* для создания минимума конфигурационных настроек, позволяющих
-запустить сервер.
+запись для всего содержимого. Кроме того, добавим минимальные
+настройки для *monitor* и настроим базу *hdb*. Используем
+"оффлайновую" утилиту *slapadd* для создания минимума конфигурационных
+настроек, позволяющих запустить сервер.
 
 #+caption: Преобразование схем в *ldif* формат и задание начальной конфигурации
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *startup-config.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных
-#+INCLUDE: ../schema/startup-config.ldif src ldif
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
+#+name: slapd-ldif
+#+INCLUDE: ../schema/slapd.ldif src ldif
 
 #+name: run-slapd-start6
 #+begin_src sh :exports none
@@ -260,33 +262,27 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start6>>
 #+end_src
-получаем сервисы, отличающиеся только настройками схемы, содержащимися в исходных кодах разных версий *OpenLDAP*.
-Например, для конфигурации *5/2.3* требуется добавить настройки *frontend* базы, а для *6/2.4* эти настройки добавляются автоматически из исходного кода *OpenLDAP*, поскольку версия *2.4* официально поддерживает конфигурирование с помощью *slapadd* и *ldif* формат. Для версии *2.3* официально поддерживаемым является способ конфигурирования через *conf* файл. Кроме того, добавим минимальные настройки для *monitor* и настроим базу *hdb*. Все дальнейшие изменения уже осуществляются с помощью "онлайновых" утилит *ldapadd* и *ldapmodify*.
+получаем сервисы, отличающиеся только настройками схемы, содержащимися
+в исходных кодах разных версий *OpenLDAP*.  Например, для конфигурации
+*5/2.3* требуется добавить настройки *frontend* базы, а для *6/2.4*
+эти настройки добавляются автоматически из исходного кода *OpenLDAP*,
+поскольку версия *2.4* официально поддерживает конфигурирование с
+помощью *slapadd* и *ldif* формат. Для версии *2.3* официально
+поддерживаемым является способ конфигурирования через *conf*
+файл. Все дальнейшие изменения уже осуществляются с
+помощью "онлайновых" утилит *ldapadd* и *ldapmodify*.
 
 #+name: add-front5
 #+begin_src sh :exports none
+    sleep 2
+
     ldapadd -v -D cn=Manager,cn=config -f /root/front.ldif -x -w $LDAP_ROOT_PASSWORD || true
 #+end_src
 
-#+name: run-modify
-#+begin_src sh :exports none
-    sleep 2
-
-    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
-#+end_src
-
-#+caption: Начальное конфигурирование схемы БД LDAP для *5/2.3* и *6/2.4*
-#+begin_src sh :exports code :noweb yes
-<<run-modify>>
-#+end_src
 #+caption: Добавление *frontend* для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<add-front5>>
 #+end_src
-
-#+caption: *slapd.ldif*: конфигурирование базы данных *hdb* и включение мониторинга баз данных
-#+name: slapd-ldif
-#+INCLUDE: ../schema/slapd.ldif src ldif
 
 Специальная база данных *frontend* содержит настройки, которые применяются глобально ко всем остальным базам данных. В нашем случае это база *hdb*.
 
@@ -360,7 +356,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 В предыдущем разделе продемонстрирован способ настройки схемы,
 используя только *ldif* формат. Однако, на практике может оказаться
 предпочтительным не подготавливать тщательно нужную начальную
-конфигурацию с помощью файлов *startup-config.ldif* и *slapd.ldif*, а
+конфигурацию с помощью файла *slapd.ldif*, а
 воспользоваться автоматической генерацией каталога *slapd.d* сервером
 *OpenLDAP* на основе конфигурационных файлов. При этом, в схему
 прописывается множество дополнительных параметров.
@@ -666,13 +662,12 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 #+end_src
 
 #+RESULTS:
-| *startup-config.ldif* | формирование корневой записи DIT и контейнера для наборов схем данных |
-| *slapd.ldif*          | конфигурирование базы данных *hdb* и включение мониторинга баз данных |
-| *front.ldif*          | добавление служебной базы данных *frontend* (только для *5/2.3*)      |
-| *domain.ldif*         | установка суффикса, менеджера и ACL для *hdb*                         |
-| *base.ldif*           | настройка корневого суффикса, менеджера и организационных единиц      |
-| *sudo.ldif*           | настройка организационной единицы *sudoers*                           |
-| *user.ldif*           | создание нового пользователя                                          |
+| *slapd.ldif*  | формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных |
+| *front.ldif*  | добавление служебной базы данных *frontend* (только для *5/2.3*)                                                                               |
+| *domain.ldif* | установка суффикса, менеджера и ACL для *hdb*                                                                                                  |
+| *base.ldif*   | настройка корневого суффикса, менеджера и организационных единиц                                                                               |
+| *sudo.ldif*   | настройка организационной единицы *sudoers*                                                                                                    |
+| *user.ldif*   | создание нового пользователя                                                                                                                   |
 
 ** Возможности LDAP{{{fa(star)}}}
 :PROPERTIES:

@@ -9,8 +9,8 @@ olcDatabase: hdb
 olcSuffix: dc=my-domain,dc=com
 olcRootDN: cn=Manager,dc=my-domain,dc=com
 olcDbDirectory:	/var/lib/ldap
-olcDbIndex: objectClass eq,pres
-olcDbIndex: ou,cn      eq,pres,sub
+olcDbIndex: objectClass                       eq,pres
+olcDbIndex: ou,cn,mail,surname,givenname      eq,pres,sub
 olcDbIndex: uidNumber,gidNumber,loginShell    eq,pres
-olcDbIndex: uid                     eq,pres,sub
-
+olcDbIndex: uid,memberUid                     eq,pres,sub
+olcDbIndex: nisMapName,nisMapEntry            eq,pres,sub

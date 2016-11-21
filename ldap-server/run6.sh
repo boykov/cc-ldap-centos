@@ -60,19 +60,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
-    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/startup-config.ldif
-    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/startup-config.ldif || true
+    sed -i "s+%LDAP_ROOT_PASSWORD%+${ROOT_PWD//+/\\+}+" /root/slapd.ldif
+    slapadd -b cn=config -F /etc/openldap/slapd.d -l /root/slapd.ldif || true
     chown -R ldap. /etc/openldap/slapd.d/
 
 # schema2ldif ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start6]]
     service slapd start
 # run-slapd-start6 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-modify]]
-    sleep 2
-
-    ldapadd -v -D cn=Manager,cn=config -f /root/slapd.ldif -x -w $LDAP_ROOT_PASSWORD || true
-# run-modify ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-postfix]]
     kill -INT `cat /var/run/openldap/slapd.pid` || true
     sleep 2

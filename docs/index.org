@@ -333,7 +333,6 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start5>>
-<<run-modify>>
 <<add-front5>>
 <<run-postfix>>
 #+end_src
@@ -347,7 +346,6 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 <<run-slapd-d>>
 <<schema2ldif>>
 <<run-slapd-start6>>
-<<run-modify>>
 <<run-postfix>>
 #+end_src
 

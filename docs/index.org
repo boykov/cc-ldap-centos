@@ -89,7 +89,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+end_src
 
-** Настройка базы данных HDB
+** Добавление файлов конфигурации базы данных HDB
 :PROPERTIES:
 :CUSTOM_ID: configure-hdb
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
@@ -118,6 +118,34 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 <<run-db-config6>>
 #+end_src
 Используем настройки без изменений в обеих конфигурациях.
+** Добавление файлов схем
+:PROPERTIES:
+:CUSTOM_ID: add-schemas
+:ID:       6638ce89-fc58-4610-aa0a-ab3ade7d3825
+:END:
+Общая схема БД LDAP, в том числе, содержит раздел *cn=schema*, куда подключаются дополнительные специфические схемы.  Подготовим необходимые файлы (не включенные в поставку *OpenLDAP*), для *5/2.3*
+#+name: schema-prepare5
+#+begin_src sh :exports none
+    cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    chown ldap. /etc/openldap/schema/sudo.schema
+
+#+end_src
+#+name: schema-prepare6
+#+begin_src sh :exports none
+    cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    chown ldap. /etc/openldap/schema/sudo.schema
+
+#+end_src
+#+caption: Добавление файлов схем для *5/2.3*
+#+begin_src sh :exports code :noweb yes
+<<schema-prepare5>>
+#+end_src
+и для *6/2.4*
+#+caption: Добавление файлов схем для *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<schema-prepare6>>
+#+end_src
+
 ** Предварительная настройка схемы БД LDAP
 :PROPERTIES:
 :CUSTOM_ID: configure-slapd
@@ -130,18 +158,13 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 использовать *ldif* формат. Конфигурация *6/2.4* поставляется с тремя
 вариантами базовых настроек, осуществляемых через файлы
 *slapd.conf.obsolete*, *slapd.ldif.example* и, доступным по умолчанию,
-предварительно сформированным каталогом *slapd.d*. Для обеих конфигураций
-будем создавать каталог *slapd.d* с нуля, используя *ldif* формат (то
-есть второй вариант - *slapd.ldif.example*), не применяя *.conf* файлы
-или готовый каталог *slapd.d*.
+предварительно сформированным каталогом *slapd.d*. Для обеих
+конфигураций будем создавать каталог *slapd.d* с нуля при помощи
+утилиты *slapadd*, используя *ldif* формат (то есть
+*slapd.ldif.example* вариант базовой
+настройки[fn::http://www.openldap.org/doc/admin24/quickstart.html]),
+не применяя *.conf* файлы или готовый каталог *slapd.d*.
 
-Общая схема БД LDAP, в том числе, содержит раздел *cn=schema*, куда подключаются дополнительные специфические схемы.  Добавим необходимые схемы (не включенные в поставку *OpenLDAP*), для *5/2.3*
-#+name: schema-prepare5
-#+begin_src sh :exports none
-    cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
-    chown ldap. /etc/openldap/schema/sudo.schema
-
-#+end_src
 #+name: run-slapd-conf5
 #+begin_src sh :exports none
     mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
@@ -152,15 +175,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chown ldap. /etc/openldap/slapd.conf
 
     diff /etc/openldap/slapd.conf.original /etc/openldap/slapd.conf > /gen/slapd.diff || true
-#+end_src
-#+caption: Добавление схем для *5/2.3*
-#+begin_src sh :exports code :noweb yes
-<<schema-prepare5>>
-#+end_src
-и для *6/2.4*
-#+caption: Добавление схем для *6/2.4*
-#+begin_src sh :exports code :noweb yes
-<<schema-prepare6>>
 #+end_src
 
 #+name: run-slapd-start5
@@ -225,12 +239,6 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+name: run-slapd-start6
 #+begin_src sh :exports none
     service slapd start
-#+end_src
-#+name: schema-prepare6
-#+begin_src sh :exports none
-    cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
-    chown ldap. /etc/openldap/schema/sudo.schema
-
 #+end_src
 #+name: run-slapd-conf6
 #+begin_src sh :exports none

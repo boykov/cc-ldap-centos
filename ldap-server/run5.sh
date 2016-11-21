@@ -15,7 +15,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chown ldap. /var/lib/ldap/DB_CONFIG
 
 # run-db-config5 ends here
-# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][schema-prepare5]]
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-schemas][schema-prepare5]]
     cp /usr/share/doc/sudo-1.7.2p1/schema.OpenLDAP /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 

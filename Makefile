@@ -40,7 +40,7 @@ tangle: docs/index.org
 	$(call fix_tangle,schema/build.sh)
 
 build-server:
-	echo entered to build-server $(n) >> gen/test.log
+	echo ..was entered to build-server $(n) >> gen/test.log
 	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .
 	echo cc-ldap-server$(n) was built >> gen/test.log
 	docker run --name $(name)-data$(n) -v /data busybox true || true
@@ -56,15 +56,15 @@ build-client:
 	docker run -d --name $(name)-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
 
 start:
-	echo entered to start $(n) $(k) >> gen/test.log
+	echo ..was entered to start $(n) $(k) >> gen/test.log
 	docker ps -a | grep $(name)-server$(n) > /dev/null || make build-server n=$(n)
 	docker start $(name)-server$(n)
-	echo server$(k) built >> gen/test.log
+	echo server$(k) was built >> gen/test.log
 	sleep 1
 	make build-client n=$(n) server=$(name)-server$(k)
-	echo client$(n) built >> gen/test.log
+	echo client$(n) was built >> gen/test.log
 	make build-schema server=$(name)-server$(n)
-	echo schema created >> gen/test.log
+	echo schema was created >> gen/test.log
 	sleep 1
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 

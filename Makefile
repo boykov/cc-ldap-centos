@@ -88,12 +88,6 @@ test:
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
 	@make -s clear >> gen/full.log 2>&1
 
-dclear:
-	docker rm -f $(name)-server5
-	docker rm -f -v $(name)-data5
-	docker stop $(name)-client5
-	docker rm -f $(name)-client5
-
 clear:
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))
@@ -105,8 +99,8 @@ full-clear:
 	docker rm -f -v $(name)-server6 || true
 	docker rm -f -v $(name)-server5 || true
 
-	docker rm $(name)-data6 || true
-	docker rm $(name)-data5 || true
+	docker rm -v $(name)-data6 || true
+	docker rm -v $(name)-data5 || true
 
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true

@@ -619,14 +619,16 @@ getent passwd username
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
 
-Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию клиента, отдельно настроим */etc/ldap.conf*. Для *5/2.3*
+Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию
+клиента, отдельно настроим */etc/ldap.conf*. Для *5/2.3*
 
 #+caption: Настройка клиента для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
 <<client5-run-sudoers>>
 #+end_src
-и для *6/2.4* (здесь дополнительно модифицируются файлы *nsswitch.conf* и *sudo-ldap.conf*)
+и для *6/2.4* (здесь дополнительно модифицируются файлы
+*nsswitch.conf*, *sudo-ldap.conf*, *nslcd.conf* и *pam_ldap.conf*)
 #+caption: Настройка клиента для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<client6-run-setup>>

@@ -673,31 +673,15 @@ getent passwd username
 :ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f
 :END:
 
-#+begin_html
-<a onclick="toggleDiv2('myContent-client5',$(this));" class="fa fa-caret-right">client5.diff</a>
-#+end_html
-#+HTML: <div id="myContent-client5" style="display:none">
 #+caption: Опции, выставляемые в файлах для *5/2.3* (а)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-44" :exports (when (eq org-export-current-backend 'odt) "none")
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-41"
 #+caption: Опции, выставляемые в файлах для *5/2.3* (б)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "44-74" :exports (when (eq org-export-current-backend 'odt) "none")
-#+caption: Опции, выставляемые в файлах для *5/2.3* (в)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "74-" :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "41-74"
 
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-client6',$(this));" class="fa fa-caret-right">client6.diff</a>
-#+end_html
-#+HTML: <div id="myContent-client6" style="display:none">
 #+caption: Опции, выставляемые в файлах для *6/2.4* (а)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "1-38" :exports (when (eq org-export-current-backend 'odt) "none")
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "1-38"
 #+caption: Опции, выставляемые в файлах для *6/2.4* (б)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "38-73" :exports (when (eq org-export-current-backend 'odt) "none")
-#+caption: Опции, выставляемые в файлах для *6/2.4* (в)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "73-117" :exports (when (eq org-export-current-backend 'odt) "none")
-#+caption: Опции, выставляемые в файлах для *6/2.4* (г)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "117-" :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "38-"
 
 * Схема БД LDAP{{{fa(star-half-o)}}}
 :PROPERTIES:

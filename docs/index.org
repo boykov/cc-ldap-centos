@@ -497,7 +497,14 @@ yum install -y openldap migrationtools sudo
 
 cp -R /etc /gen/etc5/etc
 
-opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
+opts="-N -x group \
+         -x group- \
+         -x shadow \
+         -x gshadow \
+         -x system-auth-ac \
+         -x authconfig \
+         -x passwd- \
+         -x passwd"
 
 #+end_src
 
@@ -506,8 +513,17 @@ opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
 
 cp -R /etc /gen/etc6/etc
 
-opts="-N -x fingerprint-auth-ac -x password-auth-ac \
--x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
+opts="-N -x fingerprint-auth-ac \
+         -x fingerprint-auth \
+         -x password-auth-ac \
+         -x password-auth \
+         -x smartcard-auth-ac \
+         -x smartcard-auth \
+         -x system-auth-ac \
+         -x S12nslcd \
+         -x K88nslcd \
+         -x authconfig \
+         "
 
 #+end_src
 

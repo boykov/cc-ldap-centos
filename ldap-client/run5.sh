@@ -3,7 +3,14 @@
 
 cp -R /etc /gen/etc5/etc
 
-opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
+opts="-N -x group \
+         -x group- \
+         -x shadow \
+         -x gshadow \
+         -x system-auth-ac \
+         -x authconfig \
+         -x passwd- \
+         -x passwd"
 
 # client5-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-setup]]

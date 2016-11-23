@@ -3,8 +3,17 @@
 
 cp -R /etc /gen/etc6/etc
 
-opts="-N -x fingerprint-auth-ac -x password-auth-ac \
--x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
+opts="-N -x fingerprint-auth-ac \
+         -x fingerprint-auth \
+         -x password-auth-ac \
+         -x password-auth \
+         -x smartcard-auth-ac \
+         -x smartcard-auth \
+         -x system-auth-ac \
+         -x S12nslcd \
+         -x K88nslcd \
+         -x authconfig \
+         "
 
 # client6-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-setup]]

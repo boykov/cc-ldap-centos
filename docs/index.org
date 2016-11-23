@@ -176,7 +176,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 первым способом. Дело в том, что при использовании первого способа в
 файлах каталога *slapd.d* присутствует большое количество
 дополнительных параметров (явно не указанных в файле *slapd.conf*), а
-при использовании второго - только те, которые явно прописываются в
+при использовании второго --- только те, которые явно прописываются в
 файле *slapd.ldif*. Хотя, здесь обнаружилось и небольшое исключение для записи *frontend*.
 
 #+caption: Поддержка способов настройки схемы БД LDAP различными версиями *OpenLDAP*
@@ -189,14 +189,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 Какой вариант настройки выбрать? Если требуется наличие тех
 дополнительных параметров, которые разработчики посчитали нужным
 включить в настройки по умолчанию, то выбирается первый способ
-настройки - основной. При этом, если выбирается *2.3* версия
+настройки --- основной. При этом, если выбирается *2.3* версия
 *OpenLDAP*, то используются *slapd.conf* файл и утилита *slaptest*. А
 если *2.4* версия, то можно в качестве равноценной альтернативы воспользоваться
 преварительно сформированным каталогом *slapd.d*.
 
 Если же потребуется тщательно настраивать конфигурацию с нуля,
 полностью контролируя все параметры, которые будут задействованы, то
-нужно воспользоваться вторым способом - дополнительным.
+нужно воспользоваться вторым способом --- дополнительным.
 
 ** Предварительная настройка схемы БД LDAP
 :PROPERTIES:
@@ -325,7 +325,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 
 Конфигурация *5/2.3* поставляется со схемами только в *schema*
-формате, а *6/2.4* - как в *schema*, так и в *ldif* формате. Файл
+формате, а *6/2.4* --- как в *schema*, так и в *ldif* формате. Файл
 *sudo.schema* доступен только в *schema* формате. С помощью скрипта
 *2.5-schema-ldif.sh*[fn::https://github.com/boykov/cc-ldap-centos/blob/master/ldap-server/2.5-schema-ldif.sh]
 преобразуем необходимые схемы. Чтобы иметь доступ к серверу LDAP для
@@ -372,7 +372,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 в исходных кодах разных версий *OpenLDAP*.  Например, для конфигурации
 *5/2.3* требуется добавить настройки *frontend* базы, а для *6/2.4*
 эти настройки добавляются автоматически из исходного кода *OpenLDAP*
-(что, кстати говоря, несколько нарушает прозрачность - появляется то,
+(что, кстати говоря, несколько нарушает прозрачность --- появляется то,
 что явно не указано в *slapd.ldif* файле). Вероятно, это потому, что версия
 *2.4* официально поддерживает конфигурирование с помощью *slapadd* и
 *ldif* формат. Для версии *2.3* официально поддерживаемым является
@@ -468,6 +468,15 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 - Описание всех опций, выставляемых в этих файлах.
 #+end_quote
 
+Рассмотрим три задачи, возникающие при настройке аутентификации
+пользователей при помощи LDAP. Чтобы провести аутентификацию
+пользователя необходимо, чтобы клиентский хост имел
+право на чтение пользовательских данных на сервере LDAP. Для этого
+потребуется обеспечить механизм аутентификации клиентского хоста при
+помощи LDAP. Далее следует основная задача --- это, собственно, настройка
+аутентификации пользователей в системе при помощи LDAP. И, наконец,
+вспомогательная задача аутентификации пользователя с повышением прав.
+
 ** Требуемые пакеты
 :PROPERTIES:
 :CUSTOM_ID: client-packages
@@ -495,7 +504,14 @@ yum install -y openldap migrationtools sudo
 
 cp -R /etc /gen/etc5/etc
 
-opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
+opts="-N -x group \
+         -x group- \
+         -x shadow \
+         -x gshadow \
+         -x system-auth-ac \
+         -x authconfig \
+         -x passwd- \
+         -x passwd"
 
 #+end_src
 
@@ -504,8 +520,17 @@ opts="-N -x group -x shadow -x gshadow -x system-auth-ac -x passwd"
 
 cp -R /etc /gen/etc6/etc
 
-opts="-N -x fingerprint-auth-ac -x password-auth-ac \
--x smartcard-auth-ac -x system-auth-ac -x S12nslcd -x K88nslcd"
+opts="-N -x fingerprint-auth-ac \
+         -x fingerprint-auth \
+         -x password-auth-ac \
+         -x password-auth \
+         -x smartcard-auth-ac \
+         -x smartcard-auth \
+         -x system-auth-ac \
+         -x S12nslcd \
+         -x K88nslcd \
+         -x authconfig \
+         "
 
 #+end_src
 
@@ -617,16 +642,53 @@ getent passwd username
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
 
-Модифицируем с помощью *authconfig* и *echo*-команд конфигурацию
-клиента, отдельно настроим */etc/ldap.conf*. Для *5/2.3*
+Осуществим необходимую модификацию *PAM* (Pluggable Authentication
+Modules), добавив библиотеку *pam_ldap.so* и дополнительные настройки,
+обеспечивающие поддержку механизма аутентификации средствами LDAP. Это
+можно сделать при помощи утилиты *authconfig*. В случае конфигурации
+*5/2.3* основные изменения будут внесены в файлы:
+
+- *nsswitch.conf* --- файл с настройками системных баз данных (в
+  т.ч. порядка их просмотра) для диспетчера службы имен. Можно
+  указывать спецификации службы, такие как *files*, *ldap*.
+- */etc/ldap.conf* --- конфигурационный файл для *pam_ldap*.
+- */etc/openldap/ldap.conf* --- конфигурационный файл для установки
+  общесистемных настроек ldap-клиентов.
+- *system-auth* --- назначением этого файла является
+  обеспечение общей конфигурации для всех приложений и сервисов,
+  вызывающих библиотеку *PAM*.
+
+Отдельно укажем параметр *sudoers_base* и параметры *binddn* и
+*bindpw* в настройках для *pam_ldap*.
 
 #+caption: Настройка клиента для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
 <<client5-run-sudoers>>
 #+end_src
-и для *6/2.4* (здесь дополнительно модифицируются файлы
-*nsswitch.conf*, *sudo-ldap.conf*, *nslcd.conf* и *pam_ldap.conf*)
+
+Для конфигурации *6/2.4*, кроме файлов *nsswitch.conf*,
+*/etc/openldap/ldap.conf* и */etc/pam.d/system-auth*, задействуются:
+
+- *nslcd.conf* --- конфигурационный файл для службы сервиса имен LDAP.
+- Файлы, аналогичные *system-auth*. Они содержат только модули,
+  которые выполняют аутентификацию с соответствующим видом
+  аутентификационных токенов. Файлы *fingerprint-auth* и
+  *smartcard-auth* нас не интересуют, а содержимое *password-auth*
+  полностью идентично содержимому *system-auth*.
+- *pam_ldap.conf* --- конфигурационный файл для *pam_ldap*.
+- *sudo-ldap.conf* --- ldap-специфичная конфигурация для *sudo*. В
+  случае конфигурации *5/2.3* для этого использовался файл
+  */etc/ldap.conf*.
+
+Кроме того, приходится отдельно прописывать параметр *sudoers:* для
+*nsswitch.conf*, а в конфигурации *5/2.3* он уже появляется после
+установки пакетов, еще до запуска *authconfig*. Для настройки *sudo*
+дополнительно указываются параметры *uri* и *base*, поскольку файл
+теперь другой --- *sudo-ldap.conf*. А параметры *binddn* и *bindpw*
+необходимо указать в 3х файлах: *nslcd.conf*, *pam_ldap.conf* и
+*sudo-ldap.conf*.
+
 #+caption: Настройка клиента для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<client6-run-setup>>
@@ -641,27 +703,13 @@ getent passwd username
 
 Файлы, которые были модифицированы [[#client-commands][настройками]] в случае *5/2.3*
 
-#+begin_html
-<div align="right">
-<a onclick="toggleDiv2('myContent-client5-files',$(this));" class="fa fa-caret-down">client5-files.diff</a>
-</div>
-#+end_html
-#+HTML: <div id="myContent-client5-files" style="display:true">
 #+caption: Список измененных файлов для *5/2.3*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5-files.diff src diff
-#+HTML: </div>
 
 и в случае *6/2.4*
 
-#+begin_html
-<div align="right">
-<a onclick="toggleDiv2('myContent-client6-files',$(this));" class="fa fa-caret-down">client6-files.diff</a>
-</div>
-#+end_html
-#+HTML: <div id="myContent-client6-files" style="display:true">
 #+caption: Список измененных файлов для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
-#+HTML: </div>
 
 ** Описание опций
 :PROPERTIES:
@@ -669,21 +717,15 @@ getent passwd username
 :ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f
 :END:
 
-#+begin_html
-<a onclick="toggleDiv2('myContent-client5',$(this));" class="fa fa-caret-right">client5.diff</a>
-#+end_html
+#+caption: Опции, выставляемые в файлах для *5/2.3* (а)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-41"
+#+caption: Опции, выставляемые в файлах для *5/2.3* (б)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "41-74"
 
-#+HTML: <div id="myContent-client5" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
-
-#+begin_html
-<br/><a onclick="toggleDiv2('myContent-client6',$(this));" class="fa fa-caret-right">client6.diff</a>
-#+end_html
-
-#+HTML: <div id="myContent-client6" style="display:none">
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :exports (when (eq org-export-current-backend 'odt) "none")
-#+HTML: </div>
+#+caption: Опции, выставляемые в файлах для *6/2.4* (а)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "1-38"
+#+caption: Опции, выставляемые в файлах для *6/2.4* (б)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "38-"
 
 * Схема БД LDAP{{{fa(star-half-o)}}}
 :PROPERTIES:
@@ -754,8 +796,8 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 доменного имени *dc=mercury,dc=febras,dc=net*, определим менеджера
 домена *cn=Manager,dc=mercury,dc=febras,dc=net* и его пароль.  Также,
 добавим в *domain.ldif* правила доступа к атрибутам *userPassword* и
-*shadowLastChange*: для менеджера домена и владельца записи -- write и
-для неавторизованного пользователя -- auth.
+*shadowLastChange*: для менеджера домена и владельца записи --- write и
+для неавторизованного пользователя --- auth.
 
 Далее, [[base-ldif][пропишем]] необходимые атрибуты, начиная с корневого узла *dn:
 dc=mercury,dc=febras,dc=net*, добавим подразделения *people*, *groups*
@@ -842,9 +884,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 быть получена из контекста автоматически. С другой стороны, такая
 форма записи "говорит сама за себя": уникальное имя полностью
 определяет место объекта в БД, являясь одновременно как описательной
-(по аналогии с *SQL Data Definition Language*) - при использовании
+(по аналогии с *SQL Data Definition Language*) --- при использовании
 *ldapsearch*, так и модфицирующей (*SQL Data Manipulation Language*)
-конструкцией - в случае использования утилит *ldapadd/slapadd* или
+конструкцией --- в случае использования утилит *ldapadd/slapadd* или
 *ldapmodify/slapmodify*.
 
 Далее, приходится дублировать одинаковые для всех записей пользователя
@@ -858,7 +900,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 В случае гибкой работы с настройками *shadow* полей, такой текстовый
 интерфейс начнет приносить ощутимые проблемы, т.к., например, для
 полей *shadowLastChange* и *shadowMax* необходимо вычислять количество
-дней - а это уже явно требует автоматизации.
+дней --- а это уже явно требует автоматизации.
 
 Поле *userPassword* также требует аккуратного обращения: необходимо
 каким то образом применять шифрование пароля с помощью утилит

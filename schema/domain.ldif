@@ -15,9 +15,8 @@ olcRootPW: %LDAP_MANAGER_PASSWORD%
 
 dn: olcDatabase={2}hdb,cn=config
 add: olcAccess
-olcAccess: {0}to attrs=userPassword,shadowLastChange,loginShell,gecos
+olcAccess: {0}to attrs=userPassword,shadowLastChange,loginShell
   by anonymous auth
-  by dn="cn=authenticator,dc=mercury,dc=febras,dc=net" auth
   by self write
   by * none
 olcAccess: {1}to dn.base="ou=people,dc=mercury,dc=febras,dc=net"

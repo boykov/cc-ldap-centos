@@ -1,11 +1,22 @@
-* used configurations
+* Used configurations
 
-[[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]]
+** Docker images
 
-See also
+[[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]], [[https://github.com/osixia/docker-phpLDAPadmin][docker-phpLDAPadmin]]
+
+* phpLDAPadmin's template
+
+User template's directory: =/var/www/phpldapadmin/templates/creation=
+
+* See also
+
+** Web interfaces
+
+|                                 | phpLDAPadmin        | FusionDirectory                    | LAM        |
 | demo versions of web interfaces | [[http://demo.phpldapadmin.org/RELEASE/htdocs/index.php][phpLDAPadmin demo]]   | [[http://demo.fusiondirectory.org/][fusiondirectory demo]]               | [[https://www.ldap-account-manager.org/lamcms/liveDemo][LAM demo]]   |
 | docker images of web interfaces | [[https://github.com/osixia/docker-phpLDAPadmin][osixia/phpldapadmin]] | [[https://github.com/m-creations/docker-fusiondirectory][m-creations/docker-fusiondirectory]] | [[https://github.com/aexo/docker-ldap-account-manager][aexoti/lam]] |
 
-* phpldapadmin's template:
+** Ansible OpenLDAP roles
 
-directory: /var/www/phpldapadmin/templates/creation
+[[https://github.com/kbrebanov/ansible-openldap][ansible-openldap]], [[https://github.com/debops/ansible-slapd][ansible-slapd]], [[https://github.com/bennojoy/openldap_server][openldap_server]]
+

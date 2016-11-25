@@ -81,3 +81,12 @@ ou: people
 
 EOF
 }
+
+function nosuchobject() {
+    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=people,dc=mercury,dc=febras,dc=net' || true
+}
+
+function nosuchobject_out() {
+cat <<EOF
+EOF
+}

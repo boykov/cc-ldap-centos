@@ -47,7 +47,7 @@ class SchemaTest(unittest.TestCase):
 
     def test_struct(self):
         output = self.script.struct(self.myExtraArg)
-        self.assertEqual(self.script.struct_out(), output[0:92] + "\n")
+        self.assertEqual(self.script.struct_out(), output)
 
     def test_structuralObjectClass(self):
         output = self.script.structuralObjectClass(self.myExtraArg)

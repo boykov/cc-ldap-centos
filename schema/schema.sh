@@ -47,13 +47,13 @@ EOF
 }
 
 function struct() {
-    ldapsearch -x -h $1 -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w root | grep structuralObjectClass
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w root | grep -o structuralObjectClass
 }
 
 function struct_out() {
 cat <<EOF
-structuralObjectClass: subentry
-attributeTypes: ( 2.5.21.9 NAME 'structuralObjectClass' DESC
+structuralObjectClass
+structuralObjectClass
 EOF
 }
 

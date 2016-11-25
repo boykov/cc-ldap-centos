@@ -5,6 +5,7 @@ import subprocess
 import unittest
 import os.path
 import sys
+import re
 
 class BashFunctionCaller(object):
     '''utilitary class to show some cool magic you can do in python'''
@@ -21,51 +22,37 @@ class BashFunctionCaller(object):
 
         return call_fun
 
+def create_tests(suite,arguments):
+    lines = open(os.path.join(os.path.dirname(__file__),schemash_path), 'r').readlines()
+    regexp = re.compile("function (((?!_out).)*)\(\)")
+    tests = [m.group(1) for m in [regexp.search(l) for l in lines] if m is not None]
+
+    defpat="""
+def %s(self):
+    output = self.script.%s(*self.myExtraArg)
+    self.assertEqual(self.script.%s(),output)
+"""
+
+    for t in tests:
+        tname = "test_" + t
+        tout = t + "_out"
+        exec(defpat % (tname, t, tout))
+        setattr(SchemaTest,tname, eval(tname))
+        suite.addTest(SchemaTest(tname, arguments))
+
 class SchemaTest(unittest.TestCase):
     def __init__(self, testName, extraArg):
         super(SchemaTest, self).__init__(testName)
         self.myExtraArg = extraArg
 
     def setUp(self):
-        self.script = BashFunctionCaller("../schema/schema.sh")
+        self.script = BashFunctionCaller(schemash_path)
 
-    def test_modify(self):
-        output = self.script.modify(self.myExtraArg)
-        self.assertEqual(self.script.modify_out(), output)
-
-    def test_login(self):
-        output = self.script.login(self.myExtraArg)
-        self.assertEqual(self.script.login_out(), output)
-
-    def test_password(self):
-        output = self.script.password(self.myExtraArg)
-        self.assertEqual(self.script.password_out(), output)
-
-    def test_ssh(self):
-        output = self.script.ssh(self.myExtraArg)
-        self.assertEqual(self.script.ssh_out(), output)
-
-    def test_struct(self):
-        output = self.script.struct(self.myExtraArg)
-        self.assertEqual(self.script.struct_out(), output)
-
-    def test_structuralObjectClass(self):
-        output = self.script.structuralObjectClass(self.myExtraArg)
-        self.assertEqual(self.script.structuralObjectClass_out(), output)
-
-    def test_anonymous(self):
-        output = self.script.anonymous(self.myExtraArg)
-        self.assertEqual(self.script.anonymous_out(), output)
-
-# call your test
+schemash_path = "schema.sh"
 clientIP = sys.argv.pop()
 serverIP = sys.argv.pop()
+arguments = [serverIP, clientIP]
+# call your test
 suite = unittest.TestSuite()
-suite.addTest(SchemaTest('test_password',serverIP))
-suite.addTest(SchemaTest('test_modify',serverIP))
-suite.addTest(SchemaTest('test_login',serverIP))
-suite.addTest(SchemaTest('test_ssh',clientIP))
-suite.addTest(SchemaTest('test_struct',serverIP))
-suite.addTest(SchemaTest('test_structuralObjectClass',serverIP))
-suite.addTest(SchemaTest('test_anonymous',serverIP))
+create_tests(suite,arguments)
 unittest.TextTestRunner(verbosity=2).run(suite)

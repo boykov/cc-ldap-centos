@@ -1,5 +1,14 @@
 #!/bin/bash
 
+function password() {
+    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
+}
+
+function password_out() {
+cat <<EOF
+EOF
+}
+
 function modify() {
     ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w 1 <<EOF
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
@@ -27,17 +36,8 @@ loginShell: /bin/sh
 EOF
 }
 
-function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
-}
-
-function password_out() {
-cat <<EOF
-EOF
-}
-
 function ssh() {
-    sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$1 sudo ls /root/Dockerfile5 2> /dev/null || true
+    sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
 }
 
 function ssh_out() {

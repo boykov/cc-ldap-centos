@@ -12,6 +12,13 @@ shadowMax: 99999
 shadowWarning: 7
 loginShell: /bin/bash
 uidNumber: 1050
-gidNumber: 1030
+gidNumber: 1050
 homeDirectory: /home/webminder
 gecos: User Name
+
+dn: cn=username,ou=groups,dc=mercury,dc=febras,dc=net
+objectClass: posixGroup
+objectClass: top
+cn: username
+gidNumber: 1050
+

@@ -7,6 +7,7 @@ cn: wheel
 objectClass: posixGroup
 objectClass: top
 gidNumber: 1030
+memberUid: username
 
 dn: cn=admins,ou=sudoers,dc=mercury,dc=febras,dc=net
 objectClass: sudoRole

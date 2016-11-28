@@ -95,5 +95,15 @@ function nosuchobject_out() {
 cat <<EOF
 EOF
 }
+
+function getent() {
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
+}
+
+function getent_out() {
+cat <<EOF
+username:x:1050:1050:User Name:/home/webminder:/bin/sh
+EOF
+}
 # schemash-postfix ends here
 # schema\.sh:1 ends here

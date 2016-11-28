@@ -15,12 +15,14 @@ olcRootPW: %LDAP_MANAGER_PASSWORD%
 
 dn: olcDatabase={2}hdb,cn=config
 add: olcAccess
-olcAccess: {0}to attrs=userPassword,shadowLastChange,loginShell
-  by anonymous auth
+olcAccess: {0}to attrs=userPassword,shadowLastChange
   by self write
-  by * none
-olcAccess: {1}to dn.base="ou=public,dc=mercury,dc=febras,dc=net"
+  by * auth
+olcAccess: {1}to attrs=loginShell
+  by self write
+  by users read
+olcAccess: {2}to dn.base="ou=public,dc=mercury,dc=febras,dc=net"
   by * read
-olcAccess: {2}to *
+olcAccess: {3}to *
   by dn="cn=authenticator,dc=mercury,dc=febras,dc=net" read
   by * none

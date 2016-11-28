@@ -105,5 +105,15 @@ cat <<EOF
 username:x:1050:1050:User Name:/home/webminder:/bin/sh
 EOF
 }
+
+function homedir() {
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 ls /home 2> /dev/null || true
+}
+
+function homedir_out() {
+cat <<EOF
+webminder
+EOF
+}
 # schemash-postfix ends here
 # schema\.sh:1 ends here

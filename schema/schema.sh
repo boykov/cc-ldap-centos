@@ -1,13 +1,27 @@
 #!/bin/bash
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-prefix]]
+
+function password() {
+    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+}
+
+function password_out() {
+cat <<EOF
+EOF
+}
 
 function modify() {
-    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w 1 <<EOF
+# schemash-prefix ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][modify-sh]]
+    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
 loginShell: /bin/sh
 -
 EOF
+# modify-sh ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-postfix]]
 }
 
 function modify_out() {
@@ -27,17 +41,8 @@ loginShell: /bin/sh
 EOF
 }
 
-function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
-}
-
-function password_out() {
-cat <<EOF
-EOF
-}
-
 function ssh() {
-    sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$1 sudo ls /root/Dockerfile5 2> /dev/null || true
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
 }
 
 function ssh_out() {
@@ -47,13 +52,13 @@ EOF
 }
 
 function struct() {
-    ldapsearch -x -h $1 -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w root | grep structuralObjectClass
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w root | grep -o structuralObjectClass
 }
 
 function struct_out() {
 cat <<EOF
-structuralObjectClass: subentry
-attributeTypes: ( 2.5.21.9 NAME 'structuralObjectClass' DESC
+structuralObjectClass
+structuralObjectClass
 EOF
 }
 
@@ -64,20 +69,41 @@ function structuralObjectClass() {
 function structuralObjectClass_out() {
 cat <<EOF
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
-structuralObjectClass: inetOrgPerson
+structuralObjectClass: account
 
 EOF
 }
 
 function anonymous() {
-    ldapsearch -x -h $1 -LLL -x -b 'ou=people,dc=mercury,dc=febras,dc=net'
+    ldapsearch -x -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
 }
 
 function anonymous_out() {
 cat <<EOF
-dn: ou=people,dc=mercury,dc=febras,dc=net
+dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
-ou: people
+ou: public
 
 EOF
 }
+
+function nosuchobject() {
+    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=people,dc=mercury,dc=febras,dc=net' || true
+}
+
+function nosuchobject_out() {
+cat <<EOF
+EOF
+}
+
+function getent() {
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
+}
+
+function getent_out() {
+cat <<EOF
+username:x:1050:1050:User Name:/home/webminder:/bin/sh
+EOF
+}
+# schemash-postfix ends here
+# schema\.sh:1 ends here

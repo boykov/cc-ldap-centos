@@ -38,6 +38,7 @@ tangle: docs/index.org
 	$(call fix_tangle,ldap-client/run6.sh)
 	$(call fix_tangle,ldap-client/run5.sh)
 	$(call fix_tangle,schema/build.sh)
+	$(call fix_tangle,schema/schema.sh)
 
 build-server:
 	echo ..was entered to build-server $(n) >> gen/test.log

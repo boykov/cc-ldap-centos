@@ -1,18 +1,24 @@
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
-cn: User Name
-userPassword: p@ssw0rd
 uid: username
-uidNumber: 1050
-loginShell: /bin/bash
-homeDirectory: /home/webminder
-gidNumber: 1030
+cn: User Name
+objectClass: account
 objectClass: posixAccount
+objectClass: top
 objectClass: shadowAccount
-objectClass: person
-objectClass: inetOrgPerson
-gecos: User Name
-sn: User Name
+userPassword: p@ssw0rd
 shadowLastChange: 17093
 shadowMin: 0
 shadowMax: 99999
 shadowWarning: 7
+loginShell: /bin/bash
+uidNumber: 1050
+gidNumber: 1050
+homeDirectory: /home/webminder
+gecos: User Name
+
+dn: cn=username,ou=groups,dc=mercury,dc=febras,dc=net
+objectClass: posixGroup
+objectClass: top
+cn: username
+gidNumber: 1050
+

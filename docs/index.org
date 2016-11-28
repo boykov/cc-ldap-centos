@@ -465,7 +465,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 Дальнейшая настройка схемы осуществляется в разделе [[#schema]].
 * Настройка аутентификации пользователей при помощи LDAP{{{fa(star-half-o)}}}
 :PROPERTIES:
-:CUSTOM_ID: authentification
+:CUSTOM_ID: authentication
 :ID:       49b5e2df-0c06-445a-ae9e-66bcd6cc9e40
 :END:
 

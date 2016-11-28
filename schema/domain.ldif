@@ -19,7 +19,7 @@ olcAccess: {0}to attrs=userPassword,shadowLastChange,loginShell
   by anonymous auth
   by self write
   by * none
-olcAccess: {1}to dn.base="ou=people,dc=mercury,dc=febras,dc=net"
+olcAccess: {1}to dn.base="ou=public,dc=mercury,dc=febras,dc=net"
   by * read
 olcAccess: {2}to *
   by dn="cn=authenticator,dc=mercury,dc=febras,dc=net" read

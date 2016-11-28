@@ -10,6 +10,10 @@ objectClass: organizationalRole
 cn: Manager
 description: Directory Manager
 
+dn: ou=public,dc=mercury,dc=febras,dc=net
+objectClass: organizationalUnit
+ou: public
+
 dn: ou=people,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: people

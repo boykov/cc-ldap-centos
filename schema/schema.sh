@@ -70,14 +70,14 @@ EOF
 }
 
 function anonymous() {
-    ldapsearch -x -h $1 -LLL -x -b 'ou=people,dc=mercury,dc=febras,dc=net'
+    ldapsearch -x -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
 }
 
 function anonymous_out() {
 cat <<EOF
-dn: ou=people,dc=mercury,dc=febras,dc=net
+dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
-ou: people
+ou: public
 
 EOF
 }

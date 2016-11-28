@@ -1,7 +1,8 @@
 #!/bin/bash
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-prefix]]
 
 function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
+    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 }
 
 function password_out() {
@@ -10,13 +11,17 @@ EOF
 }
 
 function modify() {
-    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w 1 <<EOF
+# schemash-prefix ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][modify-sh]]
+    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
 loginShell: /bin/sh
 -
 EOF
+# modify-sh ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-postfix]]
 }
 
 function modify_out() {
@@ -37,7 +42,7 @@ EOF
 }
 
 function ssh() {
-    sshpass -p 1 ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
 }
 
 function ssh_out() {
@@ -90,3 +95,5 @@ function nosuchobject_out() {
 cat <<EOF
 EOF
 }
+# schemash-postfix ends here
+# schema\.sh:1 ends here

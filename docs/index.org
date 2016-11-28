@@ -1061,6 +1061,118 @@ sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
 Dockerfile5  Dockerfile6  run5.sh  run6.sh
 #+end_src
 
+** schema.sh 							   :noexport:
+:PROPERTIES:
+:CUSTOM_ID: schema.sh
+:ID:       c5558d04-3427-49cf-925c-1966032e7e85
+:END:
+#+name: schemash-prefix
+#+begin_src sh :exports none
+
+function password() {
+    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+}
+
+function password_out() {
+cat <<EOF
+EOF
+}
+
+function modify() {
+#+end_src
+#+name: modify-sh
+#+begin_src sh :exports none
+    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
+dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+changetype: modify
+replace: loginShell
+loginShell: /bin/sh
+-
+EOF
+#+end_src
+#+name: schemash-postfix
+#+begin_src sh :exports none
+}
+
+function modify_out() {
+cat <<EOF
+modifying entry "uid=username,ou=people,dc=mercury,dc=febras,dc=net"
+
+EOF
+}
+
+function login() {
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
+}
+
+function login_out() {
+cat <<EOF
+loginShell: /bin/sh
+EOF
+}
+
+function ssh() {
+    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
+}
+
+function ssh_out() {
+cat <<EOF
+/root/Dockerfile5
+EOF
+}
+
+function struct() {
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,cn=config' -b 'cn=subschema' -s base + -w root | grep -o structuralObjectClass
+}
+
+function struct_out() {
+cat <<EOF
+structuralObjectClass
+structuralObjectClass
+EOF
+}
+
+function structuralObjectClass() {
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(uid=username)' structuralObjectClass -w manager
+}
+
+function structuralObjectClass_out() {
+cat <<EOF
+dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+structuralObjectClass: account
+
+EOF
+}
+
+function anonymous() {
+    ldapsearch -x -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
+}
+
+function anonymous_out() {
+cat <<EOF
+dn: ou=public,dc=mercury,dc=febras,dc=net
+objectClass: organizationalUnit
+ou: public
+
+EOF
+}
+
+function nosuchobject() {
+    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=people,dc=mercury,dc=febras,dc=net' || true
+}
+
+function nosuchobject_out() {
+cat <<EOF
+EOF
+}
+#+end_src
+
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/schema.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
+<<schemash-prefix>>
+<<modify-sh>>
+<<schemash-postfix>>
+#+end_src
+
 ** Стандартные команды администрирования пользователей в случае использования LDAP
 :PROPERTIES:
 :CUSTOM_ID: standard-commands
@@ -1072,12 +1184,13 @@ Dockerfile5  Dockerfile6  run5.sh  run6.sh
 
 #+caption: Изменение пароля пользователя с помощью утилиты *ldappasswd*
 #+begin_src sh
-ldappasswd -h $(ip) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s 1
+ldappasswd -h $(ip) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+end_src
 
-#+caption: Изменение значения *loginShell* с помощью утилиты *ldapmodify*
-#+name: modify-sh
-#+INCLUDE: ../schema/modify.sh src sh
+#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*, аутентификация проводится с использованием нового пароля
+#+begin_src sh :exports code :noweb yes
+<<modify-sh>>
+#+end_src
 
 ** Миграция пользователей и групп
 :PROPERTIES:

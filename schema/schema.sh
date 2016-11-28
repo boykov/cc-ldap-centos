@@ -64,7 +64,7 @@ function structuralObjectClass() {
 function structuralObjectClass_out() {
 cat <<EOF
 dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
-structuralObjectClass: inetOrgPerson
+structuralObjectClass: account
 
 EOF
 }

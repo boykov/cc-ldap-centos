@@ -41,7 +41,7 @@
 </attribute>
 <attribute id="uid">
 	<display>User ID</display>
-	<onchange>=autoFill(homeDirectory;/home/users/%uid%)</onchange>
+	<onchange>=autoFill(homeDirectory;/home/%uid%)</onchange>
 	<order>4</order>
 	<page>1</page>
 	<spacer>1</spacer>

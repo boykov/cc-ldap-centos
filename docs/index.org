@@ -358,7 +358,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -947,23 +947,23 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: *domain.ldif*: установка суффикса, менеджера базы *hdb* и его пароля, и ACL для базы *hdb*
+#+caption: *domain.ldif*: привязка суффикса, менеджера домена и его пароля, списка контроля доступа ACL к базе *hdb*
 #+name: domain-ldif
 #+INCLUDE: ../schema/domain.ldif src ldif
 
 Далее, пропишем (см. расп. [[base-ldif]]) необходимые атрибуты, начиная с
 корневого узла *dn: dc=mercury,dc=febras,dc=net*, добавим
-подразделения *people*, *groups* и *public*, а также пользователя
+подразделения *users*, *groups*, *system* и *public*, а также пользователя
 *authenticator*. Создадим подразделение *sudoers*, одну posix-группу
 *wheel* и сконфигурируем *sudoers* так, чтобы разрешить выполнение
 *sudo* команд без ввода пароля для членов этой группы
 (см. расп. [[sudo-ldif]]).
 
-#+caption: *base.ldif*: настройка корневого суффикса, менеджера, организационных единиц и пользователя *authenticator*
+#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*
 #+name: base-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
 
-#+caption: *sudo.ldif*: настройка организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
+#+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
 #+name: sudo-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
 
@@ -1046,12 +1046,14 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 работу со схемой БД LDAP.
 #+begin_html
 <div align="right">
-<a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">custom-ShadowAccount.xml</a>
+<a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">Файлы custom-*.xml</a>
 </div>
 #+end_html
 #+HTML: <div id="shadow" style="display:none">
 #+caption: xml-файл шаблона *User Account With Shadow* браузера схемы
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-ShadowAccount.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
+#+caption: xml-файл шаблона *Posix Group* браузера схемы
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-posixGroup.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 #+NAME:   fig:php01
@@ -1237,7 +1239,7 @@ EOF
 ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+end_src
 
-#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*, аутентификация проводится с использованием нового пароля
+#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*
 #+begin_src sh :exports code :noweb yes
 <<modify-sh>>
 #+end_src
@@ -1253,6 +1255,8 @@ ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/openldap/migration/migrate_group.pl /etc/group >> /gen/mercury.ldif
+sed -i "s|ou=People|ou=users|g" mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" mercury.ldif
 #+end_src
 
 #+caption: Миграция пользователей и групп для *6/2.4*
@@ -1260,11 +1264,13 @@ LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/migrationtools/migrate_group.pl /etc/group >> /gen/mercury.ldif
+sed -i "s|ou=People|ou=users|g" mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" mercury.ldif
 #+end_src
 
 #+begin_note
 Файл */etc/shadow* считывается утилитой *migrate_passwd.pl* при
-наличии достаточных прав доступа, класс *shadowAccount*, поля
+наличии прав доступа, класс *shadowAccount*, поля
 *shadowLastChange* и т.п. будут добавлены.
 #+end_note
 

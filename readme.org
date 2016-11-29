@@ -4,12 +4,6 @@
 
 [[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]], [[https://github.com/osixia/docker-phpLDAPadmin][docker-phpLDAPadmin]]
 
-* phpLDAPadmin's template
-
-User template's directory: =/var/www/phpldapadmin/templates/creation=
-
-* See also
-
 ** Web interfaces
 
 |                                 | phpLDAPadmin        | FusionDirectory                    | LAM        |

@@ -358,7 +358,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -560,7 +560,7 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
-echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
 #+end_src
@@ -574,13 +574,13 @@ echo uri ldap://$LDAP_SERVER/ >> /etc/sudo-ldap.conf
 echo base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_debug 0 >> /etc/sudo-ldap.conf
-echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
+echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo bindpw secret >> /etc/sudo-ldap.conf
 
-echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
+echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
 echo bindpw secret >> /etc/pam_ldap.conf
 
-echo binddn cn=authenticator,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
+echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
 
 /etc/init.d/nslcd stop
@@ -945,23 +945,23 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: *domain.ldif*: установка суффикса, менеджера базы *hdb* и его пароля, и ACL для базы *hdb*
+#+caption: *domain.ldif*: привязка суффикса, менеджера домена и его пароля, списка контроля доступа ACL к базе *hdb*
 #+name: domain-ldif
 #+INCLUDE: ../schema/domain.ldif src ldif
 
 Далее, пропишем (см. расп. [[base-ldif]]) необходимые атрибуты, начиная с
 корневого узла *dn: dc=mercury,dc=febras,dc=net*, добавим
-подразделения *people*, *groups* и *public*, а также пользователя
+подразделения *users*, *groups*, *system* и *public*, а также пользователя
 *authenticator*. Создадим подразделение *sudoers*, одну posix-группу
 *wheel* и сконфигурируем *sudoers* так, чтобы разрешить выполнение
 *sudo* команд без ввода пароля для членов этой группы
 (см. расп. [[sudo-ldif]]).
 
-#+caption: *base.ldif*: настройка корневого суффикса, менеджера, организационных единиц и пользователя *authenticator*
+#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*
 #+name: base-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
 
-#+caption: *sudo.ldif*: настройка организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
+#+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
 #+name: sudo-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
 
@@ -1044,12 +1044,14 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 работу со схемой БД LDAP.
 #+begin_html
 <div align="right">
-<a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">custom-ShadowAccount.xml</a>
+<a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">Файлы custom-*.xml</a>
 </div>
 #+end_html
 #+HTML: <div id="shadow" style="display:none">
 #+caption: xml-файл шаблона *User Account With Shadow* браузера схемы
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-ShadowAccount.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
+#+caption: xml-файл шаблона *Posix Group* браузера схемы
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-posixGroup.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 #+NAME:   fig:php01
@@ -1093,7 +1095,8 @@ Dockerfile5  Dockerfile6  run5.sh  run6.sh
 #+begin_src sh :exports none
 
 function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd -s p@ssw0rd
 }
 
 function password_out() {
@@ -1101,41 +1104,33 @@ cat <<EOF
 EOF
 }
 
-function modify() {
 #+end_src
 #+name: modify-sh
 #+begin_src sh :exports none
-    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
-dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+function modify() {
+    ldapmodify -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd <<EOF
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
 loginShell: /bin/sh
 -
 EOF
-#+end_src
-#+name: schemash-postfix
-#+begin_src sh :exports none
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
 }
 
 function modify_out() {
 cat <<EOF
-modifying entry "uid=username,ou=people,dc=mercury,dc=febras,dc=net"
+modifying entry "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
 
-EOF
-}
-
-function login() {
-    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
-}
-
-function login_out() {
-cat <<EOF
 loginShell: /bin/sh
 EOF
 }
+#+end_src
+#+name: schemash-postfix
+#+begin_src sh :exports none
 
 function ssh() {
-    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo ls /root/Dockerfile5 2> /dev/null || true
 }
 
 function ssh_out() {
@@ -1161,7 +1156,7 @@ function structuralObjectClass() {
 
 function structuralObjectClass_out() {
 cat <<EOF
-dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 structuralObjectClass: account
 
 EOF
@@ -1181,7 +1176,7 @@ EOF
 }
 
 function nosuchobject() {
-    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=people,dc=mercury,dc=febras,dc=net' || true
+    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' || true
 }
 
 function nosuchobject_out() {
@@ -1190,12 +1185,22 @@ EOF
 }
 
 function getent() {
-    sshpass -p new_p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
 }
 
 function getent_out() {
 cat <<EOF
 username:x:1050:1050:User Name:/home/webminder:/bin/sh
+EOF
+}
+
+function homedir() {
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 ls /home 2> /dev/null || true
+}
+
+function homedir_out() {
+cat <<EOF
+webminder
 EOF
 }
 #+end_src
@@ -1229,10 +1234,10 @@ EOF
 
 #+caption: Изменение пользователем своего пароля с помощью утилиты *ldappasswd*
 #+begin_src sh
-ldappasswd -h $(ip) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+end_src
 
-#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*, аутентификация проводится с использованием нового пароля
+#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*
 #+begin_src sh :exports code :noweb yes
 <<modify-sh>>
 #+end_src
@@ -1248,6 +1253,8 @@ ldappasswd -h $(ip) -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/openldap/migration/migrate_group.pl /etc/group >> /gen/mercury.ldif
+sed -i "s|ou=People|ou=users|g" mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" mercury.ldif
 #+end_src
 
 #+caption: Миграция пользователей и групп для *6/2.4*
@@ -1255,11 +1262,13 @@ LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/migrationtools/migrate_group.pl /etc/group >> /gen/mercury.ldif
+sed -i "s|ou=People|ou=users|g" mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" mercury.ldif
 #+end_src
 
 #+begin_note
 Файл */etc/shadow* считывается утилитой *migrate_passwd.pl* при
-наличии достаточных прав доступа, класс *shadowAccount*, поля
+наличии прав доступа, класс *shadowAccount*, поля
 *shadowLastChange* и т.п. будут добавлены.
 #+end_note
 

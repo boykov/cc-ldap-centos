@@ -1,4 +1,5 @@
 gen = /home/eab/git/cc/cc-ldap-centos/gen/
+misc = /home/eab/git/cc/cc-ldap-centos/misc/
 schema = /home/eab/git/cc/cc-ldap-centos/schema/
 LDAP_ROOT_PASSWORD=root
 LDAP_MANAGER_PASSWORD=manager
@@ -77,6 +78,16 @@ test-client:
 	$(eval ip = $(call get_ip,$(server)))
 	python schema/test_schema.py $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
 
+build-gui:
+	$(eval ip = $(call get_ip,$(server)))
+	docker run -p 8889:80 --name cc-ldap-gui -v $(misc):/misc --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS="#PYTHON2BASH:[{'$(ip)': [{'login': [{'bind_id': 'cn=Manager,dc=mercury,dc=febras,dc=net'}]}]}]" --detach osixia/phpldapadmin
+	sleep 1
+	docker exec -d cc-ldap-gui rm -r /var/www/phpldapadmin/templates/creation/
+	docker exec -d cc-ldap-gui mkdir /var/www/phpldapadmin/templates/creation/
+	docker exec -d cc-ldap-gui cp -f -r /misc/. /var/www/phpldapadmin/templates/creation/
+	docker exec -d cc-ldap-gui chown -R www-data:www-data /var/www/phpldapadmin/templates/creation/
+	echo ..phpLDAPadmin gui was built...use http://localhost:8889 to login >> gen/test.log
+
 prepare_log:
 	@echo > gen/full.log
 	@echo > gen/test.log
@@ -86,6 +97,7 @@ prepare_log:
 test:
 	@make -s prepare_log
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
+	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
 	@make -s clear >> gen/full.log 2>&1
 
@@ -95,6 +107,8 @@ clear:
 
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true
+
+	docker rm -f cc-ldap-gui || true
 
 full-clear:
 	docker rm -f -v $(name)-server6 || true

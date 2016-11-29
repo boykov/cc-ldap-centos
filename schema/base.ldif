@@ -14,9 +14,9 @@ dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: public
 
-dn: ou=people,dc=mercury,dc=febras,dc=net
+dn: ou=users,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
-ou: people
+ou: users
 
 dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit

@@ -1,4 +1,4 @@
-dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 uid: username
 cn: User Name
 objectClass: account

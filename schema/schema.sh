@@ -2,7 +2,7 @@
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-prefix]]
 
 function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 }
 
 function password_out() {
@@ -13,8 +13,8 @@ EOF
 function modify() {
 # schemash-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][modify-sh]]
-    ldapmodify -h $1 -x -D "uid=username,ou=people,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
-dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+    ldapmodify -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd <<EOF
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
 loginShell: /bin/sh
@@ -26,7 +26,7 @@ EOF
 
 function modify_out() {
 cat <<EOF
-modifying entry "uid=username,ou=people,dc=mercury,dc=febras,dc=net"
+modifying entry "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
 
 EOF
 }
@@ -68,7 +68,7 @@ function structuralObjectClass() {
 
 function structuralObjectClass_out() {
 cat <<EOF
-dn: uid=username,ou=people,dc=mercury,dc=febras,dc=net
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 structuralObjectClass: account
 
 EOF
@@ -88,7 +88,7 @@ EOF
 }
 
 function nosuchobject() {
-    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=people,dc=mercury,dc=febras,dc=net' || true
+    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' || true
 }
 
 function nosuchobject_out() {

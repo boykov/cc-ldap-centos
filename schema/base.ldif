@@ -22,7 +22,11 @@ dn: ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: groups
 
-dn: cn=authenticator,dc=mercury,dc=febras,dc=net
+dn: ou=system,dc=mercury,dc=febras,dc=net
+objectClass: organizationalUnit
+ou: system
+
+dn: cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net
 objectClass: person
 cn: authenticator
 sn: authenticator

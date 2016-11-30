@@ -903,6 +903,16 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
   - Управление системами: тонкие клиенты, десктопы, VDI, BYOD,
     серверы, VoIP, сетевые и мобильные устройства, узлы кластера
 
+** build.sh 							   :noexport:
+:PROPERTIES:
+:CUSTOM_ID: build.sh
+:ID:       5a8f20aa-fd6a-441f-9968-6ec191a52faa
+:END:
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/build.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
+<<build-schema>>
+<<add-user>>
+#+end_src
+
 ** Подготовка к тестированию аутентификации при помощи LDAP
 :PROPERTIES:
 :CUSTOM_ID: minimal-schema
@@ -942,10 +952,6 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<build-schema>>
 #+end_src
 
-#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/build.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
-<<build-schema>>
-<<add-user>>
-#+end_src
 
 #+caption: *domain.ldif*: привязка суффикса, менеджера домена и его пароля, списка контроля доступа ACL к базе *hdb*
 #+name: domain-ldif

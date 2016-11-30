@@ -16,4 +16,4 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f user.ldif
 
 # add-user ends here
-# Подготовка\ к\ тестированию\ аутентификации\ при\ помощи\ LDAP:1 ends here
+# build\.sh:1 ends here

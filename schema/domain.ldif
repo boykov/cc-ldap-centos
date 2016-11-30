@@ -24,5 +24,5 @@ olcAccess: {1}to attrs=loginShell
 olcAccess: {2}to dn.base="ou=public,dc=mercury,dc=febras,dc=net"
   by * read
 olcAccess: {3}to *
-  by dn="cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net" read
+  by dn="uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net" read
   by * none

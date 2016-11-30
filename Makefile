@@ -89,6 +89,12 @@ build-gui:
 	echo ..phpLDAPadmin gui was built...use http://localhost:8889 to login >> gen/test.log
 
 prepare_log:
+ifeq ($(CC_LDAP_CLEAR), true)
+	@echo CC_LDAP_CLEAR is true, state will be cleaned
+else
+	@echo CC_LDAP_CLEAR isn\'t true, state won\'t be cleaned, use \'make clear\'
+endif
+	@mkdir -p gen
 	@echo > gen/full.log
 	@echo > gen/test.log
 	@tail -f gen/test.log &
@@ -99,9 +105,12 @@ test:
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
 	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
+ifeq ($(CC_LDAP_CLEAR), true)
 	@make -s clear >> gen/full.log 2>&1
+endif
 
 clear:
+	echo -n cleaning was started.. >> gen/test.log
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))
 
@@ -109,6 +118,7 @@ clear:
 	docker rm -f $(name)-client5 || true
 
 	docker rm -f cc-ldap-gui || true
+	echo ..clients and gui were deleted, servers were recreated without schema >> gen/test.log
 
 full-clear:
 	docker rm -f -v $(name)-server6 || true

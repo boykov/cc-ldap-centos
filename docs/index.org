@@ -29,17 +29,22 @@
 
 Конфигурация используемых на нашем демо-стенде контейнеров:
 
-| Роль               | Имя контейнера | ОС         | Способ конфигурации *OpenLDAP* |
-|--------------------+----------------+------------+--------------------------------|
-| *Сервер каталогов* | server-ldif5   | *Centos 5* | *OpenLDAP 2.3* server, *ldif*  |
-| *Сервер каталогов* | server-ldif6   | *Centos 6* | *OpenLDAP 2.4* server, *ldif*  |
-| *Сервер каталогов* | server-conf5   | *Centos 5* | *OpenLDAP 2.3* server, *conf*  |
-| *Сервер каталогов* | server-conf6   | *Centos 6* | *OpenLDAP 2.4* server, *conf*  |
-| *Клиентский хост*  | client5        | *Centos 5* | *OpenLDAP 2.3* client          |
-| *Клиентский хост*  | client6        | *Centos 6* | *OpenLDAP 2.4* client          |
+| Роль               | Имя хоста    | ОС             | Конфигурация хоста            |
+|--------------------+--------------+----------------+-------------------------------|
+| *Docker Engine*    | kairos       | *Ubuntu 14.04* | *Docker version 1.12.3*       |
+|--------------------+--------------+----------------+-------------------------------|
+| *Сервер каталогов* | server-ldif5 | *CentOS 5*     | *OpenLDAP 2.3* server, *ldif* |
+| *Сервер каталогов* | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif* |
+| *Сервер каталогов* | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf* |
+| *Сервер каталогов* | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf* |
+| *Клиентский хост*  | client5      | *CentOS 5*     | *OpenLDAP 2.3* client         |
+| *Клиентский хост*  | client6      | *CentOS 6*     | *OpenLDAP 2.4* client         |
+| *Клиентский хост*  | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom  |
 
 #+begin_note
-Команды и конфигурационные файлы прошли проверку на работоспособность в тестовом программном окружении, доступном в проекте cc-ldap-centos[fn::https://github.com/boykov/cc-ldap-centos].
+Команды и конфигурационные файлы прошли проверку на работоспособность
+в тестовом программном окружении, доступном в проекте
+cc-ldap-centos[fn::https://github.com/boykov/cc-ldap-centos].
 #+end_note
 
 * Установка и настройка сервера OpenLDAP
@@ -59,6 +64,10 @@
 :CUSTOM_ID: install-openldap
 :ID:       cdb77a09-a1eb-4db8-ad05-e45c3b49418c
 :END:
+
+#+begin_quote
+Где работаем: контейнеры *server-.....*
+#+end_quote
 
 # #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
 
@@ -91,8 +100,13 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :CUSTOM_ID: configure-hdb
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
 :END:
+#+begin_quote
+Где работаем: контейнеры *server-.....*
+#+end_quote
 
-Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и файл конфигурации базы данных. Расположение образца файла настройки, в *5/2.3*
+Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и
+файл конфигурации базы данных. Расположение образца файла настройки, в
+*5/2.3*
 #+name: run-db-config5
 #+begin_src sh :exports none
     cp /etc/openldap/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
@@ -114,14 +128,27 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-db-config6>>
 #+end_src
-Используем настройки без изменений в обеих конфигурациях.
-** Добавление файлов схем
+Используем настройки без изменений в обеих конфигурациях. В подразделе
+[[#hdb-domain-config]] будет осуществлено связывание базы данных *HDB* и
+точки ветвления дерева DIT, соответствующей домену
+*dc=mercury,dc=febras,dc=net*.
+
+#+begin_tip
+В случае использования *OpenLDAP* версии *2.4* вместо базы данных
+*HDB* в качестве бэкенда можно использовать отображаемую в памяти базу
+данных *MDB*. Версия *2.3* не поддерживает *MDB*.
+#+end_tip
+
+** Добавление файлов схем данных
 :PROPERTIES:
 :CUSTOM_ID: add-schemas
 :ID:       6638ce89-fc58-4610-aa0a-ab3ade7d3825
 :END:
-Общая схема БД LDAP, в том числе, содержит раздел *cn=schema*, куда
-подключаются дополнительные специфические схемы.  Подготовим
+#+begin_quote
+Где работаем: контейнеры *server-.....*
+#+end_quote
+База данных LDAP содержит раздел *cn=schema*, куда
+подключаются дополнительные специфические схемы данных. Подготовим
 необходимые файлы (не включенные в поставку *OpenLDAP*), для *5/2.3*
 #+name: schema-prepare5
 #+begin_src sh :exports none
@@ -135,15 +162,30 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     chown ldap. /etc/openldap/schema/sudo.schema
 
 #+end_src
-#+caption: Добавление файлов схем для *5/2.3*
+#+caption: Добавление файлов схем данных для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<schema-prepare5>>
 #+end_src
 и для *6/2.4*
-#+caption: Добавление файлов схем для *6/2.4*
+#+caption: Добавление файлов схем данных для *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<schema-prepare6>>
 #+end_src
+
+В подразделе [[#create-sudoers]] для создания подразделения *sudoers*
+используется класс из файла *sudo.schema*.
+
+#+begin_note
+В данном руководстве слово "схема" используется в выражении /схема
+данных/, означающим файл с расширением *schema* или *ldif*, содержащий
+описание классов и атрибутов. Также, оно используется в выражении
+/схема базы данных LDAP/, т.е. для описания содержания, структуры и
+ограничений целостности базы данных LDAP. В литературе выражение
+/схема базы данных/ применительно к базе данных LDAP не встречается,
+оно применяется для реляционных баз данных. Кроме того, /"база данных
+LDAP"/ использует /базу данных *HDB*/ в качестве конечного хранилища
+данных.
+#+end_note
 
 ** Выбор варианта настройки схемы БД LDAP
 :PROPERTIES:
@@ -222,6 +264,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :CUSTOM_ID: configure-slapd-conf
 :ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
 :END:
+#+begin_quote
+Где работаем: контейнеры *server-conf.*
+#+end_quote
 
 Продемонстрируем первый способ настройки. Внесем небольшие
 изменения в конфигурационный файл для *5/2.3*
@@ -287,6 +332,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :CUSTOM_ID: configure-slapd
 :ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
 :END:
+#+begin_quote
+Где работаем: контейнеры *server-ldif.*
+#+end_quote
 
 Продемонстрируем второй способ настройки для обеих конфигураций.
 
@@ -350,7 +398,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 преобразуем необходимые схемы. Чтобы иметь доступ к серверу LDAP для
 конфигурирования схемы БД LDAP, пропишем пароль менеджера схемы
 *cn=Manager,cn=config*. Кроме того, добавим минимальные
-настройки для *monitor* и настроим базу *hdb*. Используем
+настройки для *monitor* и настроим базу *HDB*. Используем
 "оффлайновую" утилиту *slapadd* для создания минимума конфигурационных
 настроек, позволяющих запустить сервер.
 
@@ -358,7 +406,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для схем данных; конфигурирование базы данных *HDB* и подключение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -413,7 +461,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 Специальная база данных *frontend* содержит настройки, которые
 применяются глобально ко всем остальным базам данных. В нашем случае в
-наличии одна база *hdb* и никаких специальных настроек для *frontend*.
+наличии одна база *HDB* и никаких специальных настроек для *frontend*.
 
 #+caption: *front.ldif*: добавление служебной базы данных *frontend* (только для *5/2.3*)
 #+name: front-ldif
@@ -491,6 +539,9 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 :CUSTOM_ID: client-packages
 :ID:       a4da4894-117b-40b6-a6c7-1447f083d6e1
 :END:
+#+begin_quote
+Где работаем: контейнеры *client.*
+#+end_quote
 
 Для настройки клиентского подключения в *5/2.3* понадобятся следующие пакеты
 
@@ -560,7 +611,7 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
-echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
 #+end_src
@@ -574,13 +625,13 @@ echo uri ldap://$LDAP_SERVER/ >> /etc/sudo-ldap.conf
 echo base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo sudoers_debug 0 >> /etc/sudo-ldap.conf
-echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
+echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo bindpw secret >> /etc/sudo-ldap.conf
 
-echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
+echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
 echo bindpw secret >> /etc/pam_ldap.conf
 
-echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
+echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
 
 /etc/init.d/nslcd stop
@@ -650,13 +701,16 @@ getent passwd username
 :CUSTOM_ID: client-commands
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
+#+begin_quote
+Где работаем: контейнеры *client.*
+#+end_quote
 
 Воспользуемся утилитой *authconfig* для настройки аутентификации пользователей при помощи LDAP.
 
 В *5/2.3* приходится использовать параметр *enableshadow*, поскольку
 эта функциональность отключена по умолчанию. Отдельно укажем параметр
 *sudoers_base* и параметры *binddn* и *bindpw* в настройках для
-*pam_ldap* (см. также настроки для *authenticator* в разделе
+*pam_ldap* (см. также настроки для *authenticator* в подразделе
 [[#minimal-schema]]).
 
 #+caption: Настройка клиента для *5/2.3*
@@ -685,7 +739,7 @@ getent passwd username
 :ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
 :END:
 
-Файлы, которые были модифицированы настройками раздела [[#client-commands]] в случае *5/2.3*
+Файлы, которые были модифицированы настройками подраздела [[#client-commands]] в случае *5/2.3*
 
 - *nsswitch.conf* --- файл с настройками системных баз данных (в
   т.ч. порядка их просмотра) для диспетчера службы имен. Можно
@@ -727,54 +781,6 @@ getent passwd username
 :CUSTOM_ID: client-options
 :ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f
 :END:
-
-*** PAM: необходимые сведения
-:PROPERTIES:
-:ID:       e8f37bcc-b065-41f2-9398-80816656d325
-:END:
-Утилита *authconfig* осуществляет необходимую модификацию PAM
-(Pluggable Authentication Modules), добавляя библиотеку *pam_ldap.so*
-и дополнительные настройки, обеспечивающие поддержку механизма
-аутентификации средствами LDAP. PAM --- это стандартный интерфейс,
-который может работать как с локальными базами данных *files*, так и c
-базой *ldap*.
-
-С точки зрения PAM, аутентификация состоит из нескольких независимых задач[fn::http://www.intuit.ru/studies/courses/73/73/lecture/2202?page=2]:
-- *account* (управление учетными записями) --- описывает службу
-  проверки учетной записи, которая отвечает на вопросы: "есть ли
-  такая запись и не истек ли срок действия пароля?", "имеет ли
-  пользователь право доступа к запрошенному ресурсу?"
-- *auth* (управление аутентификацией) --- описывает службу проверки
-  идентичности пользователя. Эта служба реализована посредством
-  диалога между пользователем и программой аутентификации: "как тебя
-  зовут и какой у тебя пароль?".
-- *password* (управление паролями) --- описывает службу изменения
-  пароля; такая служба должна быть тесно связана со службой проверки
-  учетной записи. Например, по истечении срока действия пароля
-  система требует у пользователя новый пароль.
-- *session* (управление сессиями) --- описывает работы, которые
-  должны быть выполнены до того, как ресурс будет предоставлен, или
-  после того, как он будет освобожден (например, после разрыва
-  соединения между программой-клиентом и вызванной им
-  службой-сервером). Скажем, это может быть протоколирование начала
-  и конца соединения, монтирование домашнего каталога пользователя и
-  т.п.
-
-Определение поведения PAM в случае, если модуль примет решение об
-отказе в аутентификации (допустим, сочтет пароль неверным). Возможные
-варианты действий:
-- *requisite* --- отказ приводит к немедленному прекращению аутентификации;
-- *required* --- отказ приводит к тому, что PAM API возвращает ошибку,
-  но только после того, как будут вызваны все оставшиеся в стеке
-  модули (для этого приложения);
-- *sufficient* --- успешная аутентификация достаточна для
-  удовлетворения требований по аутентификации стека модулей (если
-  предыдущий модуль в стеке выдал отказ в аутентификации, то успех
-  аутентификации текущего модуля игнорируется);
-- *optional* --- успех или отказ в аутентификации с использованием
-  данного модуля имеет значение, только если это единственный модуль в
-  стеке, ассоциированном с данным приложением и типом аутентификации
-  (т.е. нет других *optional* модулей).
 
 *** Опции, связанные с conf-файлами для *5/2.3*
 :PROPERTIES:
@@ -829,6 +835,54 @@ getent passwd username
 #+caption: Опции, выставляемые файлах *system-auth*, *pam_ldap.conf* и *sudo-ldap.conf* для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "38-"
 
+*** Дополнительно. PAM: необходимые сведения
+:PROPERTIES:
+:ID:       e8f37bcc-b065-41f2-9398-80816656d325
+:END:
+Утилита *authconfig* осуществляет необходимую модификацию PAM
+(Pluggable Authentication Modules), добавляя библиотеку *pam_ldap.so*
+и дополнительные настройки, обеспечивающие поддержку механизма
+аутентификации средствами LDAP. PAM --- это стандартный интерфейс,
+который может работать как с локальными базами данных *files*, так и c
+базой *ldap*.
+
+С точки зрения PAM, аутентификация состоит из нескольких независимых задач[fn::http://www.intuit.ru/studies/courses/73/73/lecture/2202?page=2]:
+- *account* (управление учетными записями) --- описывает службу
+  проверки учетной записи, которая отвечает на вопросы: "есть ли
+  такая запись и не истек ли срок действия пароля?", "имеет ли
+  пользователь право доступа к запрошенному ресурсу?"
+- *auth* (управление аутентификацией) --- описывает службу проверки
+  идентичности пользователя. Эта служба реализована посредством
+  диалога между пользователем и программой аутентификации: "как тебя
+  зовут и какой у тебя пароль?".
+- *password* (управление паролями) --- описывает службу изменения
+  пароля; такая служба должна быть тесно связана со службой проверки
+  учетной записи. Например, по истечении срока действия пароля
+  система требует у пользователя новый пароль.
+- *session* (управление сессиями) --- описывает работы, которые
+  должны быть выполнены до того, как ресурс будет предоставлен, или
+  после того, как он будет освобожден (например, после разрыва
+  соединения между программой-клиентом и вызванной им
+  службой-сервером). Скажем, это может быть протоколирование начала
+  и конца соединения, монтирование домашнего каталога пользователя и
+  т.п.
+
+Определение поведения PAM в случае, если модуль примет решение об
+отказе в аутентификации (допустим, сочтет пароль неверным). Возможные
+варианты действий:
+- *requisite* --- отказ приводит к немедленному прекращению аутентификации;
+- *required* --- отказ приводит к тому, что PAM API возвращает ошибку,
+  но только после того, как будут вызваны все оставшиеся в стеке
+  модули (для этого приложения);
+- *sufficient* --- успешная аутентификация достаточна для
+  удовлетворения требований по аутентификации стека модулей (если
+  предыдущий модуль в стеке выдал отказ в аутентификации, то успех
+  аутентификации текущего модуля игнорируется);
+- *optional* --- успех или отказ в аутентификации с использованием
+  данного модуля имеет значение, только если это единственный модуль в
+  стеке, ассоциированном с данным приложением и типом аутентификации
+  (т.е. нет других *optional* модулей).
+
 * Схема БД LDAP
 :PROPERTIES:
 :CUSTOM_ID: schema
@@ -838,10 +892,11 @@ getent passwd username
 Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
 
-Использование только *ldif* (см. раздел см. раздел [[#configure-slapd]])
+Использование только *ldif* (см. подраздел [[#configure-slapd]])
 формата позволяет единообразно конфигурировать схему БД LDAP, начиная
-с корневой записи DIT (Directory Information Tree) *cn=config*
-(см. раздел [[#minimal-schema]]) и заканчивая листьями (см. разделы
+с корневой записи DIT (Directory Information Tree)
+*cn=config*(см. подраздел [[#minimal-schema]]), корневой записи домена
+(см. подраздел [[#root-domain]]) и заканчивая листьями (см. подразделы
 [[#new-user-ldap]], [[#add-users]]) этого дерева --- записями, содержащими
 нужную информацию:
 #+begin_src sh :exports results :results raw
@@ -861,17 +916,116 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 стартовая часть этого ряда конфигурационных файлов
 заменяется на *slapd.conf* (см. раздел [[#configure-slapd-conf]]).
 
+** build.sh 							   :noexport:
+:PROPERTIES:
+:CUSTOM_ID: build.sh
+:ID:       5a8f20aa-fd6a-441f-9968-6ec191a52faa
+:END:
+#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/build.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
+<<build-schema>>
+<<add-user>>
+#+end_src
+
+** Установка схемы базы данных LDAP
+:PROPERTIES:
+:CUSTOM_ID: minimal-schema
+:ID:       3446a07c-3649-4e85-84c1-044e78c340dc
+:END:
+#+begin_quote
+Где работаем: контейнеры *server-.....*
+#+end_quote
+
 В разделе [[#authentication]] перечислены три задачи, возникающие при
 настройке аутентификации пользователей при помощи LDAP, и
 продемонстрирована реализация клиентской части. Серверная часть ---
 схема БД LDAP --- должна обеспечивать поддержку данной
-функциональности. Нам потребуются два контейнера для хранения учетных
+функциональности. Нам потребуются контейнеры для хранения учетных
 данных пользователей и групп. Разрешим доступ к данным пользователей
-только для клиентских систем cо специальной учетной записью, запретим
-анонимный доступ. Добавим класс учетных записей пользователей,
-обладающих правами *sudo*.
+только для клиентских систем со специальной учетной записью, запретим
+анонимный доступ. Добавим тип учетных записей пользователей,
+обладающих разрешениями *sudo*.
 
-** Возможности LDAP
+Чтобы получить минимально работоспособный сервер LDAP, позволяющий
+осуществлять аутентификацию для клиентских систем, внесем необходимые
+изменения в схему.
+
+#+name: build-schema
+#+begin_src sh :exports none
+
+cd /schema
+
+cp domain.ldif domain+.ldif
+MANAGER_PWD=$(slappasswd -s $LDAP_MANAGER_PASSWORD)
+# Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
+sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" domain+.ldif
+ldapmodify -v -D cn=Manager,cn=config -f domain+.ldif -x -w $LDAP_ROOT_PASSWORD
+rm domain+.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
+#+end_src
+
+#+begin_src sh :exports code :noweb yes
+<<build-schema>>
+#+end_src
+
+** Связывание базы данных HDB с доменом и настройка ACL
+:PROPERTIES:
+:CUSTOM_ID: hdb-domain-config
+:ID:       d8a0d9fc-cb9b-46c3-b6f8-abd2f6766517
+:END:
+
+В подразделе [[#configure-hdb]] была подготовлена база данных
+*HDB*. Сконфигурируем (см. расп. [[domain-ldif]]) её для доменного имени
+*dc=mercury,dc=febras,dc=net*, определим менеджера домена
+*cn=Manager,dc=mercury,dc=febras,dc=net* и его пароль. Также, добавим
+правила доступа к атрибутам *userPassword* и *shadowLastChange*
+(см. подраздел [[#new-user-ldap]]): для владельца записи --- /write/ и для
+неавторизованного пользователя --- /auth/. Анонимный доступ будет разрешен только для
+заголовочной части записи подразделения *public*, но не для ее
+содержимого. Для доступа к записям пользователей и остальным атрибутам
+используем учетную запись *authenticator* (см. подраздел
+[[#client-commands]]).
+
+#+caption: *domain.ldif*: связывание суффикса, менеджера домена и его пароля с базой *HDB*; установка списка контроля доступа ACL
+#+name: domain-ldif
+#+INCLUDE: ../schema/domain.ldif src ldif
+
+** Создание корневой записи домена
+:PROPERTIES:
+:CUSTOM_ID: root-domain
+:ID:       98673b98-df88-4fb4-859f-9f8283c1346c
+:END:
+
+В подразделе [[#configure-slapd]] было продемонстрировано создание корневой
+записи дерева DIT средствами протокола *ldif* (эквивалентную настройку
+можно осуществить при помощи файла конфигурации *conf*, как это
+показано в подразделе [[#configure-slapd-conf]]). Теперь создадим корневую
+запись домена, добавим необходимые атрибуты (см. расп. [[base-ldif]]),
+корневой узел *dn: dc=mercury,dc=febras,dc=net*,
+подразделения *users*, *groups*, *system* и *public*, а также
+пользователя *authenticator*.
+
+#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*
+#+name: base-ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
+
+** Формирование подразделения sudoers
+:PROPERTIES:
+:CUSTOM_ID: create-sudoers
+:ID:       22a6415e-716f-4045-aab4-2535b7bdff12
+:END:
+
+Создадим подразделение *sudoers*, одну posix-группу *wheel* и
+сконфигурируем *sudoers* так, чтобы разрешить выполнение *sudo* команд
+без ввода пароля для членов этой группы (см. расп. [[sudo-ldif]]). Класс
+*sudoRole* содержится в файле *sudo.schema*, подключенном в подразделе
+[[#add-schemas]].
+
+#+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
+#+name: sudo-ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
+
+** Дополнительно. Возможности LDAP
 :PROPERTIES:
 :CUSTOM_ID: ldap-possibilities
 :ID:       4f9ddacc-3908-4cd1-b091-3f00c31aa8a7
@@ -901,70 +1055,6 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
   - Управление системами: тонкие клиенты, десктопы, VDI, BYOD,
     серверы, VoIP, сетевые и мобильные устройства, узлы кластера
 
-** Подготовка к тестированию аутентификации при помощи LDAP
-:PROPERTIES:
-:CUSTOM_ID: minimal-schema
-:ID:       3446a07c-3649-4e85-84c1-044e78c340dc
-:END:
-
-Чтобы получить минимально работоспособный сервер LDAP, позволяющий
-осуществлять аутентификацию для клиентских систем, внесем необходимые
-изменения в схему. В частности, сконфигурируем (см. расп. [[domain-ldif]])
-базу *hdb* для доменного имени *dc=mercury,dc=febras,dc=net*,
-определим менеджера домена *cn=Manager,dc=mercury,dc=febras,dc=net* и
-его пароль. Также, добавим в *domain.ldif* правила доступа к атрибутам
-*userPassword* и *shadowLastChange*: для владельца записи --- /write/
-и для неавторизованного пользователя --- /auth/. Значение атрибута
-*loginShell* установим для любого пользователя системы --- /read/, а
-для владельца --- /write/. Анонимный доступ будет разрешен только для
-заголовочной части записи подразделения *public*, но не для ее
-содержимого. Для доступа к записям пользователей и остальным атрибутам
-используем учетную запись *authenticator* (см. раздел
-[[#client-commands]]).
-
-#+name: build-schema
-#+begin_src sh :exports none
-
-cd /schema
-
-cp domain.ldif domain+.ldif
-MANAGER_PWD=$(slappasswd -s $LDAP_MANAGER_PASSWORD)
-# Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705
-sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" domain+.ldif
-ldapmodify -v -D cn=Manager,cn=config -f domain+.ldif -x -w $LDAP_ROOT_PASSWORD
-rm domain+.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
-#+end_src
-#+begin_src sh :exports code :noweb yes
-<<build-schema>>
-#+end_src
-
-#+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/build.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
-<<build-schema>>
-<<add-user>>
-#+end_src
-
-#+caption: *domain.ldif*: привязка суффикса, менеджера домена и его пароля, списка контроля доступа ACL к базе *hdb*
-#+name: domain-ldif
-#+INCLUDE: ../schema/domain.ldif src ldif
-
-Далее, пропишем (см. расп. [[base-ldif]]) необходимые атрибуты, начиная с
-корневого узла *dn: dc=mercury,dc=febras,dc=net*, добавим
-подразделения *users*, *groups*, *system* и *public*, а также пользователя
-*authenticator*. Создадим подразделение *sudoers*, одну posix-группу
-*wheel* и сконфигурируем *sudoers* так, чтобы разрешить выполнение
-*sudo* команд без ввода пароля для членов этой группы
-(см. расп. [[sudo-ldif]]).
-
-#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*
-#+name: base-ldif
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
-
-#+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
-#+name: sudo-ldif
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
-
 * Процесс добавления нового пользователя в систему
 :PROPERTIES:
 :CUSTOM_ID: new-user
@@ -983,6 +1073,9 @@ LDAP. Предложить CLI (или GUI WEB) интерфейс для вып
 :CUSTOM_ID: new-user-ldap
 :ID:       6e8437bc-7e1f-489a-9afb-44f3d67d49ab
 :END:
+#+begin_quote
+Где работаем: контейнеры *server-.....*
+#+end_quote
 
 Используем утилиту *ldapadd* для добавления записи пользователя в формате *ldif*
 
@@ -998,16 +1091,19 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 #+caption: *user.ldif*: создание нового пользователя, принадлежащего к группе *wheel*
 #+INCLUDE: "../schema/user.ldif" src ldif
 
-Полученные в разделе [[#add-users]] в результате миграции учетные записи
-пользователей кластера добавляются аналогично. Необходимая нам функциональность
-учетной записи пользователя определяется классами *posixAccount* и
-*shadowAccount*.
+Полученные в подразделе [[#add-users]] в результате миграции учетные записи
+пользователей кластера добавляются аналогично. Необходимая нам
+функциональность учетной записи пользователя определяется классами
+*posixAccount* и *shadowAccount*.
 
 ** Добавление пользователя с помощью GUI Web интерфейса
 :PROPERTIES:
 :CUSTOM_ID: new-user-php
 :ID:       6de9e6dc-04f2-429d-b22e-55caa2e270ee
 :END:
+#+begin_quote
+Где работаем: контейнер *gui*
+#+end_quote
 
 Как мы видели, добавление записи в БД LDAP с помощью *ldif*-файла
 сопровождается некоторым дублированием информации и мелкими
@@ -1027,7 +1123,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 изменения. Чуть большее неудобство таит в себе поле *gidNumber*,
 поскольку приходится узнавать и прописывать номер группы. Впрочем, при
 небольшом количестве групп, а тем более при наличии одной группы, это
-не является проблемой.
+не является проблемой. В нашем случае используется группа, номер
+*gidNumber* которой обычно совпадает с номером *uidNumber*
+пользователя, как это принято в Unix.
 
 В случае гибкой работы с настройками *shadow* полей, такой текстовый
 интерфейс начнет приносить ощутимые проблемы, т.к., например, для
@@ -1038,7 +1136,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 каким то образом применять шифрование пароля с помощью утилит
 *ldappasswd* или *slappasswd*.
 
-Эти и другие проблемы призван решить GUI интерфейс, который позволяет
+Эти и другие проблемы может решить GUI интерфейс, который позволяет
 с помощью доступных шаблонов и средств описания GUI, реализовывать
 нужную функциональность, в некоторых случаях значительно облегчая
 работу со схемой БД LDAP.
@@ -1054,8 +1152,8 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-posixGroup.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
-#+NAME:   fig:php01
-#+caption: Создание пользователя с использованием шаблона phpLDAPadmin
+#+NAME: fig:php01
+#+caption: Создание пользователя и его группы с использованием шаблона phpLDAPadmin
 [[./php01.png]]
 
 ** Тестирование клиентского подключения
@@ -1063,9 +1161,12 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :CUSTOM_ID: test-client
 :ID:       061371a3-a5d6-4fa2-9e15-2d8adef5caf0
 :END:
+#+begin_quote
+Где работаем: контейнеры *client.*
+#+end_quote
 
 Для проверки возможности аутентификации будем использовать запись
-(см. раздел [[#new-user-ldap]]) *username*. Протестируем подключение с
+ *username* (см. подраздел [[#new-user-ldap]]). Протестируем подключение с
 помощью команды
 #+begin_src sh
 getent passwd username
@@ -1075,6 +1176,10 @@ getent passwd username
 #+begin_src conf-colon
 username:x:1050:1050:User Name:/home/webminder:/bin/bash
 #+end_src
+
+#+begin_quote
+Где работаем: локальная сеть контейнеров
+#+end_quote
 
 Убедимся, что механизм *sudoers* задействован. Вывод команды
 #+begin_src sh
@@ -1108,7 +1213,7 @@ EOF
 #+name: modify-sh
 #+begin_src sh :exports none
 function modify() {
-    ldapmodify -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd <<EOF
+    ldapmodify -h $1 -x -D "cn=Manager,dc=mercury,dc=febras,dc=net" -w manager <<EOF
 dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
@@ -1221,7 +1326,11 @@ EOF
 *finger*, *chsh*, *chfn* и функциональности *.forward*.
 #+end_quote
 
-# В разделе [[#client-options]] было продемонстрировано расширение
+#+begin_quote
+Где работаем: любой хост в локальной сети контейнеров с установленными утилитами openldap-client
+#+end_quote
+
+# В подразделе [[#client-options]] было продемонстрировано расширение
 # функциональности PAM: в дополнение к локальной базе данных *files*
 # используется база данных *ldap*.
 # Привычные системному администратору утилиты не могут работать с
@@ -1232,12 +1341,16 @@ EOF
 # связи между собой и недостаточно просто записывать эквивалент
 # изменений, порождаемых этими утилитами, в БД LDAP.
 
+В подразделе [[#hdb-domain-config]]
+устанавливаются разрешения для полей *userPassword* и
+*shadowLastChange*, чтобы пользователь имел право на смену пароля.
+
 #+caption: Изменение пользователем своего пароля с помощью утилиты *ldappasswd*
 #+begin_src sh
 ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+end_src
 
-#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*
+#+caption: Изменение менеджером домена значения *loginShell* с помощью утилиты *ldapmodify*
 #+begin_src sh :exports code :noweb yes
 <<modify-sh>>
 #+end_src
@@ -1253,8 +1366,8 @@ ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/openldap/migration/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/openldap/migration/migrate_group.pl /etc/group >> /gen/mercury.ldif
-sed -i "s|ou=People|ou=users|g" mercury.ldif
-sed -i "s|ou=Group|ou=groups|g" mercury.ldif
+sed -i "s|ou=People|ou=users|g" /gen/mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" /gen/mercury.ldif
 #+end_src
 
 #+caption: Миграция пользователей и групп для *6/2.4*
@@ -1262,8 +1375,8 @@ sed -i "s|ou=Group|ou=groups|g" mercury.ldif
 LDAP_BASEDN=dc=mercury,dc=febras,dc=net
 /usr/share/migrationtools/migrate_passwd.pl /etc/passwd > /gen/mercury.ldif
 /usr/share/migrationtools/migrate_group.pl /etc/group >> /gen/mercury.ldif
-sed -i "s|ou=People|ou=users|g" mercury.ldif
-sed -i "s|ou=Group|ou=groups|g" mercury.ldif
+sed -i "s|ou=People|ou=users|g" /gen/mercury.ldif
+sed -i "s|ou=Group|ou=groups|g" /gen/mercury.ldif
 #+end_src
 
 #+begin_note

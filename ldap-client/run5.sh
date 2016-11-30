@@ -21,7 +21,7 @@ authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
-echo binddn cn=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
+echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
 # client5-run-sudoers ends here

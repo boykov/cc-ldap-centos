@@ -1116,7 +1116,7 @@ EOF
 #+name: modify-sh
 #+begin_src sh :exports none
 function modify() {
-    ldapmodify -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd <<EOF
+    ldapmodify -h $1 -x -D "cn=Manager,dc=mercury,dc=febras,dc=net" -w manager <<EOF
 dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell
@@ -1245,7 +1245,7 @@ EOF
 ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+end_src
 
-#+caption: Изменение пользователем значения *loginShell* с помощью утилиты *ldapmodify*
+#+caption: Изменение менеджером домена значения *loginShell* с помощью утилиты *ldapmodify*
 #+begin_src sh :exports code :noweb yes
 <<modify-sh>>
 #+end_src

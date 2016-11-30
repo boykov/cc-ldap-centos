@@ -14,7 +14,7 @@ EOF
 # schemash-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][modify-sh]]
 function modify() {
-    ldapmodify -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd <<EOF
+    ldapmodify -h $1 -x -D "cn=Manager,dc=mercury,dc=febras,dc=net" -w manager <<EOF
 dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
 changetype: modify
 replace: loginShell

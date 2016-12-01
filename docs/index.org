@@ -963,7 +963,7 @@ sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" domain+.ldif
 ldapmodify -v -D cn=Manager,cn=config -f domain+.ldif -x -w $LDAP_ROOT_PASSWORD
 rm domain+.ldif
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudoers.ldif
 #+end_src
 
 #+begin_src sh :exports code :noweb yes
@@ -1025,7 +1025,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 
 #+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
 #+name: sudo-ldif
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudoers.ldif src ldif
 
 ** Дополнительно. Возможности LDAP
 :PROPERTIES:

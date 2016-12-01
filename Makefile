@@ -129,3 +129,5 @@ full-clear:
 
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true
+
+	docker rm -f cc-ldap-gui || true

@@ -21,7 +21,7 @@ replace: loginShell
 loginShell: /bin/sh
 -
 EOF
-    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
 }
 
 function modify_out() {
@@ -76,6 +76,13 @@ cat <<EOF
 dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: public
+
+dn: uid=sendmail,ou=public,dc=mercury,dc=febras,dc=net
+uid: sendmail
+objectClass: inetLocalMailRecipient
+objectClass: account
+mailLocalAddress: username@mercury.febras.net
+mailRoutingAddress: username@localhost
 
 EOF
 }

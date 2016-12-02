@@ -22,3 +22,9 @@ objectClass: top
 cn: username
 gidNumber: 1050
 
+dn: uid=sendmail,ou=public,dc=mercury,dc=febras,dc=net
+uid: sendmail
+objectClass: inetLocalMailRecipient
+objectClass: account
+mailLocalAddress: username@mercury.febras.net
+mailRoutingAddress: username@localhost

@@ -103,6 +103,12 @@ endif
 test:
 	@make -s prepare_log
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
+	docker exec -d $(name)-client6 bash /root/hosts.sh
+	docker exec -d $(name)-client6 /etc/init.d/sendmail start
+	sleep 1
+	docker exec -d $(name)-client6 bash /root/sendmail.sh
+	sleep 1
+	grep forwarding gen/sendmail >> gen/test.log
 	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
 ifeq ($(CC_LDAP_CLEAR), true)
@@ -129,3 +135,5 @@ full-clear:
 
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true
+
+	docker rm -f cc-ldap-gui || true

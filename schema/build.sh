@@ -10,7 +10,7 @@ sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" domain+.ldif
 ldapmodify -v -D cn=Manager,cn=config -f domain+.ldif -x -w $LDAP_ROOT_PASSWORD
 rm domain+.ldif
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudoers.ldif
 # build-schema ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#new-user-ldap][add-user]]
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f user.ldif

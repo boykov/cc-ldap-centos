@@ -18,7 +18,7 @@ add: olcAccess
 olcAccess: {0}to attrs=userPassword,shadowLastChange
   by self write
   by * auth
-olcAccess: {1}to dn.base="ou=public,dc=mercury,dc=febras,dc=net"
+olcAccess: {1}to dn.subtree="ou=public,dc=mercury,dc=febras,dc=net"
   by * read
 olcAccess: {2}to *
   by dn="uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net" read

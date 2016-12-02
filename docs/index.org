@@ -29,17 +29,17 @@
 
 Конфигурация используемых на нашем демо-стенде контейнеров:
 
-| Роль               | Имя хоста    | ОС             | Конфигурация хоста            |
-|--------------------+--------------+----------------+-------------------------------|
-| *Docker Engine*    | kairos       | *Ubuntu 14.04* | *Docker version 1.12.3*       |
-|--------------------+--------------+----------------+-------------------------------|
-| *Сервер каталогов* | server-ldif5 | *CentOS 5*     | *OpenLDAP 2.3* server, *ldif* |
-| *Сервер каталогов* | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif* |
-| *Сервер каталогов* | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf* |
-| *Сервер каталогов* | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf* |
-| *Клиентский хост*  | client5      | *CentOS 5*     | *OpenLDAP 2.3* client         |
-| *Клиентский хост*  | client6      | *CentOS 6*     | *OpenLDAP 2.4* client         |
-| *Клиентский хост*  | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom  |
+| Роль                      | Имя хоста    | ОС             | Конфигурация хоста            |
+|---------------------------+--------------+----------------+-------------------------------|
+| *Docker Engine*           | kairos       | *Ubuntu 14.04* | *Docker version 1.12.3*       |
+|---------------------------+--------------+----------------+-------------------------------|
+| *Служба каталогов*        | server-ldif5 | *CentOS 5*     | *OpenLDAP 2.3* server, *ldif* |
+| *Служба каталогов*        | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif* |
+| *Служба каталогов*        | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf* |
+| *Служба каталогов*        | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf* |
+| *Клиент службы каталогов* | client5      | *CentOS 5*     | *OpenLDAP 2.3* client         |
+| *Клиент службы каталогов* | client6      | *CentOS 6*     | *OpenLDAP 2.4* client         |
+| *Клиент службы каталогов* | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom  |
 
 #+begin_note
 Команды и конфигурационные файлы прошли проверку на работоспособность
@@ -65,21 +65,21 @@ cc-ldap-centos[fn::https://github.com/boykov/cc-ldap-centos].
 :ID:       cdb77a09-a1eb-4db8-ad05-e45c3b49418c
 :END:
 
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-.....*
-#+end_quote
-
-# #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "6-7"
+#+end_verse
 
 Базовые репозитории дистрибутивов *CentOS 5* и *CentOS 6* содержат *2.3* и *2.4* версию *OpenLDAP*, соответственно. Выполнив стандартную установку
-# #+INCLUDE: "../ldap-server/Dockerfile" src dockerfile :lines "18-21"
-# #+begin_tip
-# Там, где это не вызывает недоразумений, иногда будет использоваться синтаксис Dockerfile. Например, предыдущая команда означает просто src_sh[:exports code]{yum -y install openldap-server openldap-clients}.
-# #+end_tip
-#+caption: Установка сервера *OpenLDAP* для *5/2.3* и *6/2.4*
-#+begin_src sh
-yum -y install openldap openldap-servers openldap-clients sudo
+
+#+begin_src sh :exports results :results org
+cat ../ldap-server/Dockerfile6 | grep openldap-servers | sed "s| \\&\\& \\\||g"
 #+end_src
+#+caption: Установка сервера *OpenLDAP* для *5/2.3* и *6/2.4*
+#+RESULTS:
+#+BEGIN_SRC org
+    yum -y install openldap openldap-servers openldap-clients sudo
+#+END_SRC
+
 получаем две конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае *CentOS 5/2.3 OpenLDAP* (*5/2.3*) и *slapd* в случае *CentOS 6/2.4 OpenLDAP* (*6/2.4*).
 
 #+name: run-prefix
@@ -100,11 +100,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 :CUSTOM_ID: configure-hdb
 :ID:       af4bb15a-67f0-4e1a-8ce6-18c118ff10cd
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-.....*
-#+end_quote
+#+end_verse
 
-Для запуска сервиса *ldap* (*slapd*) необходимо подготовить каталог и
+Для запуска сервиса *ldap* (*slapd*) необходимо подготовить директорию и
 файл конфигурации базы данных. Расположение образца файла настройки, в
 *5/2.3*
 #+name: run-db-config5
@@ -139,16 +139,18 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 данных *MDB*. Версия *2.3* не поддерживает *MDB*.
 #+end_tip
 
-** Добавление файлов схем данных
+** Добавление файлов наборов схем данных
 :PROPERTIES:
 :CUSTOM_ID: add-schemas
 :ID:       6638ce89-fc58-4610-aa0a-ab3ade7d3825
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-.....*
-#+end_quote
-База данных LDAP содержит раздел *cn=schema*, куда
-подключаются дополнительные специфические схемы данных. Подготовим
+#+end_verse
+Каталог LDAP имеет раздел *cn=schema*, содержащий все определения
+системной схемы данных, которые вкомилированы в *ldap* (*slapd*). Сюда
+же подключаются дополнительные специфические схемы данных,
+см. расп. [[slapd-ldif]]. Подготовим
 необходимые файлы (не включенные в поставку *OpenLDAP*), для *5/2.3*
 #+name: schema-prepare5
 #+begin_src sh :exports none
@@ -175,19 +177,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 В подразделе [[#create-sudoers]] для создания подразделения *sudoers*
 используется класс из файла *sudo.schema*.
 
-#+begin_note
-В данном руководстве слово "схема" используется в выражении /схема
-данных/, означающим файл с расширением *schema* или *ldif*, содержащий
-описание классов и атрибутов. Также, оно используется в выражении
-/схема базы данных LDAP/, т.е. для описания содержания, структуры и
-ограничений целостности базы данных LDAP. В литературе выражение
-/схема базы данных/ применительно к базе данных LDAP не встречается,
-оно применяется для реляционных баз данных. Кроме того, /"база данных
-LDAP"/ использует /базу данных *HDB*/ в качестве конечного хранилища
-данных.
-#+end_note
-
-** Выбор варианта настройки схемы БД LDAP
+** Выбор варианта настройки схемы каталога LDAP
 :PROPERTIES:
 :CUSTOM_ID: choose-setup
 :ID:       cb0ed9d0-14cc-4969-897d-a398e2f1ea65
@@ -195,39 +185,39 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 
 Конфигурация *6/2.4* поставляется с тремя вариантами базовых настроек,
 осуществляемых через файлы *slapd.conf.obsolete*, *slapd.ldif.example*
-и, доступным по умолчанию, предварительно сформированным каталогом
+и, доступной по умолчанию, предварительно сформированной директорией
 *slapd.d*. При этом, настройка с помощью файла *slapd.ldif.example*
 подразумевает использование утилиты *slapadd*, как это рекомендуется в
 разделе "быстрый старт"
 руководства[fn::http://pro-ldap.ru/tr/admin24/quickstart.html]. Конфигурация
 *5/2.3* по умолчанию настраивается только файлом *slapd.conf*,
-предварительно сформированный каталог *slapd.d* в формате *ldif*
+предварительно сформированная директория *slapd.d* в формате *ldif*
 отсутствует. Такой подход считается устаревшим,
 рекомендуется[fn::http://pro-ldap.ru/tr/admin24/slapdconf2.html#Converting%20old%20style%20slapd.conf%20file%20to%20cn=config%20format]
 использовать *ldif* формат и преобразовывать файл *slapd.conf*
-настройки в каталог *slapd.d* с помощью утилиты *slaptest*.
+настройки в директорию *slapd.d* с помощью утилиты *slaptest*.
 
 Все варианты настроек разделяются на два существенно различающихся
 способа. Первый способ включает в себя настройку с помощью *conf* файла
-(конвертация через *slaptest*) и предварительно сформированный каталог
+(конвертация через *slaptest*) и предварительно сформированную директорию
 *slapd.d* (только для версии *2.4*). Эти два варианта являются
 взаимозаменяемыми и формируют практически идентичные результирующие
-файлы каталога *slapd.d*. Второй способ заключается в использовании
+файлы директории *slapd.d*. Второй способ заключается в использовании
 файла *slapd.ldif* и утилиты *slapdd*. В этом случае, содержимое
-файлов каталога *slapd.d* существенно отличается, по сравнению с
+файлов директории *slapd.d* существенно отличается, по сравнению с
 первым способом. Дело в том, что при использовании первого способа в
-файлах каталога *slapd.d* присутствует большое количество
+файлах директории *slapd.d* присутствует большое количество
 дополнительных параметров (явно не указанных в файле *slapd.conf*), а
 при использовании второго --- только те, которые явно прописываются в
 файле *slapd.ldif*.
 # Хотя, здесь обнаружилось и небольшое исключение для записи *frontend*.
 
-#+caption: Поддержка способов настройки схемы БД LDAP различными версиями *OpenLDAP*
-| Способы настройки                               | поддержка *ldif*       | *2.3* | *2.4* |
-|-------------------------------------------------+------------------------+-------+-------|
-| Настройка с помощью файла *slapd.conf*          | конвертация *slaptest* | да    | да    |
-| Настройка с помощью файла *slapd.ldif*          | да                     | особо | особо |
-| Предварительно сформированный каталог *slapd.d* | да                     | нет   | да    |
+#+caption: Поддержка способов настройки схемы каталога LDAP различными версиями *OpenLDAP*
+| Способы настройки                                  | поддержка *ldif*       | *2.3* | *2.4* |
+|----------------------------------------------------+------------------------+-------+-------|
+| Настройка с помощью файла *slapd.conf*             | конвертация *slaptest* | да    | да    |
+| Настройка с помощью файла *slapd.ldif*             | да                     | особо | особо |
+| Предварительно сформированная директория *slapd.d* | да                     | нет   | да    |
 
 Какой вариант настройки выбрать? Если требуется наличие тех
 дополнительных параметров, которые разработчики посчитали нужным
@@ -235,11 +225,11 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 настройки --- основной. При этом, если выбирается
 *OpenLDAP 2.3*, то используются файл *slapd.conf* и утилита *slaptest*. А
 если версия *2.4*, то можно в качестве равноценной альтернативы воспользоваться
-предварительно сформированным каталогом *slapd.d*.
+предварительно сформированной директорией *slapd.d*.
 
 #+begin_note
-Первичный доступ к схемам LDAP, использующим только предварительно
-сформированный каталог *slapd.d* без *conf*-файла, осуществляется при
+Первичный доступ к каталогу LDAP, использующему только предварительно
+сформированную директорию *slapd.d* без *conf*-файла, осуществляется при
 помощи *ldapi* интерфейса, когда в качестве *rootdn* выступает
 системный пользователь *root* (при этом его *dn* выглядит как
 *gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth*). В случае
@@ -256,17 +246,17 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 # через *ldapmodify*, имитируя использование *ldapi*.
 
 Если же потребуется тщательно настраивать конфигурацию с нуля,
-полностью контролируя все параметры, которые будут задействованы, то
+полностью контролируя все параметры которые будут задействованы, то
 нужно воспользоваться вторым способом --- дополнительным.
 
-** Предварительная настройка схемы БД LDAP
+** Предварительная настройка схемы каталога LDAP
 :PROPERTIES:
 :CUSTOM_ID: configure-slapd-conf
 :ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-conf.*
-#+end_quote
+#+end_verse
 
 Продемонстрируем первый способ настройки. Внесем небольшие
 изменения в конфигурационный файл для *5/2.3*
@@ -308,8 +298,8 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 <<run-slapd-start6>>
 #+end_src
 
-<<convert>>Теперь для обеих конфигураций можно осуществить переход к *cn=config* формату и избавиться от *slapd.conf*
-#+caption: Преобразование к *cn=config* формату для *5/2.3* и *6/2.4*
+<<convert>>Теперь для обеих конфигураций можно осуществить переход к *ldif* формату и избавиться от *slapd.conf*
+#+caption: Преобразование к *ldif* формату для *5/2.3* и *6/2.4*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-d>>
 #+end_src
@@ -327,14 +317,14 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 */usr/share/openldap-servers/slapd.conf.obsolete* (*6/2.4*).
 
 Дальнейшая настройка схемы осуществляется в разделе [[#schema]].
-** Дополнительно. Предварительная настройка схемы БД LDAP с помощью ldif формата
+** Дополнительно. Предварительная настройка схемы каталога LDAP с помощью ldif формата
 :PROPERTIES:
 :CUSTOM_ID: configure-slapd
-:ID:       fd3e3e26-d416-4cc5-9dfa-554caeaf7830
+:ID:       5e011bb7-7966-4613-8327-da484b6fd319
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-ldif.*
-#+end_quote
+#+end_verse
 
 Продемонстрируем второй способ настройки для обеих конфигураций.
 
@@ -395,8 +385,8 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 формате, а *6/2.4* --- как в *schema*, так и в *ldif* формате. Файл
 *sudo.schema* доступен только в *schema* формате. С помощью скрипта
 *2.5-schema-ldif.sh*[fn::https://github.com/boykov/cc-ldap-centos/blob/master/ldap-server/2.5-schema-ldif.sh]
-преобразуем необходимые схемы. Чтобы иметь доступ к серверу LDAP для
-конфигурирования схемы БД LDAP, пропишем пароль менеджера схемы
+преобразуем необходимые схемы. Чтобы иметь доступ к каталогу LDAP для
+конфигурирования схемы, пропишем пароль менеджера схемы
 *cn=Manager,cn=config*. Кроме того, добавим минимальные
 настройки для *monitor* и настроим базу *HDB*. Используем
 "оффлайновую" утилиту *slapadd* для создания минимума конфигурационных
@@ -406,7 +396,7 @@ LDAP"/ использует /базу данных *HDB*/ в качестве к
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для схем данных; конфигурирование базы данных *HDB* и подключение мониторинга баз данных
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *HDB* и подключение мониторинга баз данных
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -539,25 +529,35 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 :CUSTOM_ID: client-packages
 :ID:       a4da4894-117b-40b6-a6c7-1447f083d6e1
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *client.*
-#+end_quote
+#+end_verse
 
 Для настройки клиентского подключения в *5/2.3* понадобятся следующие пакеты
 
-#+caption: Установка клиента для *5/2.3*
-#+begin_src sh :exports code
-yum install -y openssh-server openldap-clients nss_ldap authconfig
-yum install -y openldap openldap-servers sudo
+#+begin_src sh :exports results :results org
+cat ../ldap-client/Dockerfile5 | grep openldap | sed "s|RUN ||g"
 #+end_src
+
+#+caption: Установка клиента для *5/2.3*
+#+RESULTS:
+#+BEGIN_SRC org
+yum install -y openssh-server openldap-clients nss_ldap authconfig
+yum install -y openldap openldap-servers finger sudo
+#+END_SRC
 
 Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для *6/2.4* выполним
 
-#+caption: Установка клиента для *6/2.4*
-#+begin_src sh :exports code
-yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
-yum install -y openldap migrationtools sudo
+#+begin_src sh :exports results :results org
+cat ../ldap-client/Dockerfile6 | grep openldap | sed "s|RUN ||g"
 #+end_src
+
+#+caption: Установка клиента для *6/2.4*
+#+RESULTS:
+#+BEGIN_SRC org
+yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
+yum install -y openldap migrationtools finger sudo
+#+END_SRC
 
 #+name: client5-run-prefix
 #+begin_src sh :exports none
@@ -701,9 +701,9 @@ getent passwd username
 :CUSTOM_ID: client-commands
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *client.*
-#+end_quote
+#+end_verse
 
 Воспользуемся утилитой *authconfig* для настройки аутентификации пользователей при помощи LDAP.
 
@@ -883,38 +883,75 @@ getent passwd username
   стеке, ассоциированном с данным приложением и типом аутентификации
   (т.е. нет других *optional* модулей).
 
-* Схема БД LDAP
+* Схема каталога LDAP
 :PROPERTIES:
 :CUSTOM_ID: schema
 :ID:       b64d7c36-b2b3-49ac-9620-d7c94eb9ea31
 :END:
 #+begin_quote
-Необходимо разработать схему БД LDAP, предназначенную для хранения учетных данных пользователей кластера.
+Необходимо разработать схему каталога LDAP, предназначенную для хранения учетных данных пользователей кластера.
 #+end_quote
 
-Использование только *ldif* (см. подраздел [[#configure-slapd]])
-формата позволяет единообразно конфигурировать схему БД LDAP, начиная
-с корневой записи DIT (Directory Information Tree)
-*cn=config*(см. подраздел [[#minimal-schema]]), корневой записи домена
-(см. подраздел [[#root-domain]]) и заканчивая листьями (см. подразделы
-[[#new-user-ldap]], [[#add-users]]) этого дерева --- записями, содержащими
+Использование только *ldif* формата позволяет единообразно
+конфигурировать схему каталога LDAP, начиная с корневой записи DIT
+(Directory Information Tree) *cn=config*, включающей точку ветвления
+*cn=schema,cn=config*, которая содержит наборы схем данных
+(см. подраздел [[#configure-slapd]]), переходя к корневой записи домена
+(см. подраздел [[#root-domain]]) и заканчивая листьями этого дерева
+(см. подразделы [[#new-user-ldap]], [[#add-users]]) --- записями, содержащими
 нужную информацию:
 #+begin_src sh :exports results :results raw
 grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/:/|/g" | sed "s/^/|/"
 #+end_src
 
 #+RESULTS:
-| *slapd.ldif*   | формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *hdb* и подключение мониторинга баз данных        |
-| *front.ldif*   | добавление служебной базы данных *frontend* (только для *5/2.3*)                                                                                      |
-| *domain.ldif*  | установка суффикса, менеджера базы *hdb* и его пароля, и ACL для базы *hdb*                                                                           |
-| *base.ldif*    | настройка корневого суффикса, менеджера, организационных единиц и пользователя *authenticator*                                                        |
-| *sudo.ldif*    | настройка организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo* |
-| *user.ldif*    | создание нового пользователя, принадлежащего к группе *wheel*                                                                                         |
-| *mercury.ldif* | пример результата миграции пользователей и групп с помощью утилит *migrationtools*                                                                    |
+| *slapd.ldif*   | формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *HDB* и подключение мониторинга баз данных       |
+| *front.ldif*   | добавление служебной базы данных *frontend* (только для *5/2.3*)                                                                                     |
+| *domain.ldif*  | связывание суффикса, менеджера домена и его пароля с базой *HDB*; установка списка контроля доступа ACL                                              |
+| *base.ldif*    | создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*                                                         |
+| *sudoers.ldif* | создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo* |
+| *user.ldif*    | создание нового пользователя, принадлежащего к группе *wheel*                                                                                        |
+| *mercury.ldif* | пример результата миграции пользователей и групп с помощью утилит *migrationtools*                                                                   |
 
 Если же используется *conf* формат, то надо иметь в виду, что
-стартовая часть этого ряда конфигурационных файлов
+первый файл из этого ряда конфигурационных файлов
 заменяется на *slapd.conf* (см. раздел [[#configure-slapd-conf]]).
+
+#+begin_note
+В данном руководстве слово "схема" используется в выражении /набор
+схем данных/ (см. подраздел [[#add-schemas]]), означающим файл с
+расширением *schema* или *ldif*, содержащий "низкоуровневое" описание
+классов, атрибутов, синтаксисов атрибута и правил соответствия. Также,
+оно используется в выражении /схема каталога LDAP/, т.е. для
+"высокоуровнего" описания содержания, структуры и ограничений
+целостности каталога LDAP, по аналогии с выражением /схема базы
+данных/, применимым для реляционных баз данных. Возможности схемы
+каталога LDAP определяются подключенными наборами схем данных. Можно
+сказать, что /схема каталога LDAP/ --- это полное описание каталога
+LDAP с помощью *ldif* формата. При этом, граница между схемой каталога
+и пользовательскими данными, которые также хранятся в *ldif* формате,
+становится условной. Кроме того, каталог LDAP использует /базу данных
+*HDB*/ в качестве хранилища данных.
+#+end_note
+
+В таблице [[tab:schema-examples]] приведены примеры использования классов
+и атрибутов схемы каталога LDAP. В данном разделе осуществляется
+"высокоуровневая" разработка схемы каталога LDAP в *ldif* формате,
+предназначенная для хранения учетных данных пользователей
+кластера. Подключаются только указанные наборы схем данных,
+разрабатывать дополнительные "низкоуровневые" наборы схем данных нет
+необходимости.
+
+#+name: tab:schema-examples
+#+caption: Примеры наборов схем данных, классов, атрибутов и их использования
+| Набор схем данных    | Классы                        | Атрибуты                 | Примеры использования               |
+|----------------------+-------------------------------+--------------------------+-------------------------------------|
+| openldap hardcoded   | top, olcDatabaseConfig        | uid, cn, olcSchemaDN     | slapd.ldif, domain.ldif, front.ldif |
+| core.schema          | dcObject, organizationalRole  | dc, sn                   | base.ldif                           |
+| cosine.schema        | simpleSecurityObject, account | userPassword             | base.ldif                           |
+| inetorgperson.schema | inetOrgPerson                 | employeeNumber           |                                     |
+| nis.schema           | posixAccount, posixGroup      | homeDirectory, gidNumber | user.ldif, mercury.ldif             |
+| sudo.schema          | sudoRole                      | sudoUser                 | sudoers.ldif                        |
 
 ** build.sh 							   :noexport:
 :PROPERTIES:
@@ -926,19 +963,19 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 <<add-user>>
 #+end_src
 
-** Установка схемы базы данных LDAP
+** Настройка каталога LDAP
 :PROPERTIES:
 :CUSTOM_ID: minimal-schema
 :ID:       3446a07c-3649-4e85-84c1-044e78c340dc
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-.....*
-#+end_quote
+#+end_verse
 
 В разделе [[#authentication]] перечислены три задачи, возникающие при
 настройке аутентификации пользователей при помощи LDAP, и
 продемонстрирована реализация клиентской части. Серверная часть ---
-схема БД LDAP --- должна обеспечивать поддержку данной
+каталог LDAP --- должна обеспечивать поддержку данной
 функциональности. Нам потребуются контейнеры для хранения учетных
 данных пользователей и групп. Разрешим доступ к данным пользователей
 только для клиентских систем со специальной учетной записью, запретим
@@ -947,7 +984,7 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 
 Чтобы получить минимально работоспособный сервер LDAP, позволяющий
 осуществлять аутентификацию для клиентских систем, внесем необходимые
-изменения в схему.
+изменения в схему каталога.
 
 #+name: build-schema
 #+begin_src sh :exports none
@@ -961,7 +998,7 @@ sed -i "s+%LDAP_MANAGER_PASSWORD%+${MANAGER_PWD//+/\\+}+" domain+.ldif
 ldapmodify -v -D cn=Manager,cn=config -f domain+.ldif -x -w $LDAP_ROOT_PASSWORD
 rm domain+.ldif
 ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f base.ldif
-ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudo.ldif
+ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD -f sudoers.ldif
 #+end_src
 
 #+begin_src sh :exports code :noweb yes
@@ -997,7 +1034,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :END:
 
 В подразделе [[#configure-slapd]] было продемонстрировано создание корневой
-записи дерева DIT средствами протокола *ldif* (эквивалентную настройку
+записи дерева DIT средствами формата *ldif* (эквивалентную настройку
 можно осуществить при помощи файла конфигурации *conf*, как это
 показано в подразделе [[#configure-slapd-conf]]). Теперь создадим корневую
 запись домена, добавим необходимые атрибуты (см. расп. [[base-ldif]]),
@@ -1021,9 +1058,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 *sudoRole* содержится в файле *sudo.schema*, подключенном в подразделе
 [[#add-schemas]].
 
-#+caption: *sudo.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
+#+caption: *sudoers.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
 #+name: sudo-ldif
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudo.ldif src ldif
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudoers.ldif src ldif
 
 ** Дополнительно. Возможности LDAP
 :PROPERTIES:
@@ -1073,9 +1110,9 @@ LDAP. Предложить CLI (или GUI WEB) интерфейс для вып
 :CUSTOM_ID: new-user-ldap
 :ID:       6e8437bc-7e1f-489a-9afb-44f3d67d49ab
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *server-.....*
-#+end_quote
+#+end_verse
 
 Используем утилиту *ldapadd* для добавления записи пользователя в формате *ldif*
 
@@ -1101,9 +1138,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :CUSTOM_ID: new-user-php
 :ID:       6de9e6dc-04f2-429d-b22e-55caa2e270ee
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнер *gui*
-#+end_quote
+#+end_verse
 
 Как мы видели, добавление записи в БД LDAP с помощью *ldif*-файла
 сопровождается некоторым дублированием информации и мелкими
@@ -1139,7 +1176,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 Эти и другие проблемы может решить GUI интерфейс, который позволяет
 с помощью доступных шаблонов и средств описания GUI, реализовывать
 нужную функциональность, в некоторых случаях значительно облегчая
-работу со схемой БД LDAP.
+работу со схемой каталога LDAP.
 #+begin_html
 <div align="right">
 <a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">Файлы custom-*.xml</a>
@@ -1161,9 +1198,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :CUSTOM_ID: test-client
 :ID:       061371a3-a5d6-4fa2-9e15-2d8adef5caf0
 :END:
-#+begin_quote
+#+begin_verse
 Где работаем: контейнеры *client.*
-#+end_quote
+#+end_verse
 
 Для проверки возможности аутентификации будем использовать запись
  *username* (см. подраздел [[#new-user-ldap]]). Протестируем подключение с
@@ -1177,16 +1214,16 @@ getent passwd username
 username:x:1050:1050:User Name:/home/webminder:/bin/bash
 #+end_src
 
-#+begin_quote
+#+begin_verse
 Где работаем: локальная сеть контейнеров
-#+end_quote
+#+end_verse
 
 Убедимся, что механизм *sudoers* задействован. Вывод команды
 #+begin_src sh
 sshpass -p p@ssw0rd ssh -t username@$(ip) sudo ls /root
 #+end_src
 демонстрирует, что пользователь *username* успешно прочитал содержимое
-каталога *root* с помощью *sudo*
+директории *root* с помощью *sudo*
 #+begin_src raw
 Dockerfile5  Dockerfile6  run5.sh  run6.sh
 #+end_src
@@ -1326,9 +1363,9 @@ EOF
 *finger*, *chsh*, *chfn* и функциональности *.forward*.
 #+end_quote
 
-#+begin_quote
+#+begin_verse
 Где работаем: любой хост в локальной сети контейнеров с установленными утилитами openldap-client
-#+end_quote
+#+end_verse
 
 # В подразделе [[#client-options]] было продемонстрировано расширение
 # функциональности PAM: в дополнение к локальной базе данных *files*
@@ -1345,15 +1382,41 @@ EOF
 устанавливаются разрешения для полей *userPassword* и
 *shadowLastChange*, чтобы пользователь имел право на смену пароля.
 
+#+begin_src sh :exports results :results code sh
+sed -n "/^function password() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d' | sed '$d'
+#+end_src
+
 #+caption: Изменение пользователем своего пароля с помощью утилиты *ldappasswd*
-#+begin_src sh
-ldappasswd -h $(ip) -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+#+RESULTS:
+#+BEGIN_SRC sh
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
+#+END_SRC
+
+#+begin_src sh :exports results :results code sh
+sed -n "/^function modify() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d'
 #+end_src
 
 #+caption: Изменение менеджером домена значения *loginShell* с помощью утилиты *ldapmodify*
-#+begin_src sh :exports code :noweb yes
-<<modify-sh>>
+#+RESULTS:
+#+BEGIN_SRC sh
+    ldapmodify -h $1 -x -D "cn=Manager,dc=mercury,dc=febras,dc=net" -w manager <<EOF
+dn: uid=username,ou=users,dc=mercury,dc=febras,dc=net
+changetype: modify
+replace: loginShell
+loginShell: /bin/sh
+-
+EOF
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
+#+END_SRC
+
+#+begin_src sh :exports results :results value pp
+sed -n "/^function modify_out() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d' | sed '1d' | sed '$d'
 #+end_src
+
+#+RESULTS:
+: modifying entry "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
+: 
+: loginShell: /bin/sh
 
 ** Миграция пользователей и групп
 :PROPERTIES:

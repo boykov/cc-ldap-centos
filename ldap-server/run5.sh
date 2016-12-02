@@ -87,4 +87,4 @@ rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
-# Дополнительно\.\ Предварительная\ настройка\ схемы\ БД\ LDAP\ с\ помощью\ ldif\ формата:1 ends here
+# Дополнительно\.\ Предварительная\ настройка\ схемы\ каталога\ LDAP\ с\ помощью\ ldif\ формата:1 ends here

@@ -68,7 +68,7 @@ start:
 	make build-schema server=$(name)-server$(n)
 	echo schema was created >> gen/test.log
 	sleep 1
-	docker exec -d $(name)-client$(n) bash /root/hosts.sh
+	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n)
 	sleep 3
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 

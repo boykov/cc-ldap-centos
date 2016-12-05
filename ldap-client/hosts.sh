@@ -18,7 +18,7 @@ echo pwcheck_method:pam > /etc/sasl2/Sendmail.conf
 
 cp /root/smpwd /etc/mail/ldap-secret
 cp /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak
-cp -f /root/sendmail6.mc /etc/mail/sendmail.mc
+cp -f /root/sendmail$1.mc /etc/mail/sendmail.mc
 m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf
 /etc/init.d/sendmail start
 sleep 1

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -f /gen/sendmail
+
 line=$(head -n 1 /etc/hosts)
 ip=$(echo $line | awk '{print $1}')
 line2=$(echo $line | awk '{print $2}')
@@ -18,3 +20,10 @@ cp /root/smpwd /etc/mail/ldap-secret
 cp /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak
 cp -f /root/sendmail6.mc /etc/mail/sendmail.mc
 m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf
+/etc/init.d/sendmail start
+sleep 1
+
+echo test | sendmail -v username@localhost
+echo forwarding test: it works!  | sendmail -v username@mercury.febras.net
+sleep 1
+cat /var/mail/username > /gen/sendmail

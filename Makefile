@@ -68,11 +68,7 @@ start:
 	make build-schema server=$(name)-server$(n)
 	echo schema was created >> gen/test.log
 	sleep 1
-	rm -f gen/sendmail
 	docker exec -d $(name)-client$(n) bash /root/hosts.sh
-	docker exec -d $(name)-client$(n) /etc/init.d/sendmail start
-	sleep 1
-	docker exec -d $(name)-client$(n) bash /root/sendmail.sh
 	sleep 3
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 

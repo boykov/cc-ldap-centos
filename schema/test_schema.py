@@ -51,7 +51,8 @@ class SchemaTest(unittest.TestCase):
 schemash_path = "schema.sh"
 clientIP = sys.argv.pop()
 serverIP = sys.argv.pop()
-arguments = [serverIP, clientIP]
+containerName = sys.argv.pop()
+arguments = [serverIP, clientIP, containerName]
 # call your test
 suite = unittest.TestSuite()
 create_tests(suite,arguments)

@@ -76,7 +76,7 @@ build-schema:
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))
-	python schema/test_schema.py $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
+	python schema/test_schema.py $(name)-server$(k) $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
 
 build-gui:
 	$(eval ip = $(call get_ip,$(server)))

@@ -65,7 +65,7 @@ dnl #
 dnl # This allows sendmail to use a keyfile that is shared with OpenLDAP's
 dnl # slapd, which requires the file to be readble by group ldap
 dnl #
-define(`confLDAP_DEFAULT_SPEC', ` -h 172.17.0.2 -b ou=users,dc=mercury,dc=febras,dc=net -d uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net -P/etc/mail/ldap-secret')
+define(`confLDAP_DEFAULT_SPEC', ` -b ou=users,dc=mercury,dc=febras,dc=net -d uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net -P/etc/mail/ldap-secret')
 LDAPROUTE_DOMAIN(`mercury.febras.net')
 FEATURE(`ldap_routing')
 dnl define(`confDONT_BLAME_SENDMAIL', `groupreadablekeyfile')dnl

@@ -109,5 +109,15 @@ cat <<EOF
 webminder
 EOF
 }
+
+function sendmail() {
+    grep forwarding gen/sendmail
+}
+
+function sendmail_out() {
+cat <<EOF
+forwarding test: it works!
+EOF
+}
 # schemash-postfix ends here
 # schema\.sh:1 ends here

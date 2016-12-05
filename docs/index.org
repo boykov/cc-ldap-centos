@@ -1348,6 +1348,16 @@ cat <<EOF
 webminder
 EOF
 }
+
+function sendmail() {
+    grep forwarding gen/sendmail
+}
+
+function sendmail_out() {
+cat <<EOF
+forwarding test: it works!
+EOF
+}
 #+end_src
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/schema/schema.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes

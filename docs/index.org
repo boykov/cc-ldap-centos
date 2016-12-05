@@ -1316,13 +1316,6 @@ dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: public
 
-dn: uid=sendmail,ou=public,dc=mercury,dc=febras,dc=net
-uid: sendmail
-objectClass: inetLocalMailRecipient
-objectClass: account
-mailLocalAddress: username@mercury.febras.net
-mailRoutingAddress: username@localhost
-
 EOF
 }
 

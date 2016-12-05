@@ -68,6 +68,8 @@ start:
 	make build-schema server=$(name)-server$(n)
 	echo schema was created >> gen/test.log
 	sleep 1
+	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n)
+	sleep 3
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 
 build-schema:
@@ -76,7 +78,7 @@ build-schema:
 
 test-client:
 	$(eval ip = $(call get_ip,$(server)))
-	python schema/test_schema.py $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
+	python schema/test_schema.py $(name)-server$(k) $(call get_ip,$(name)-server$(k)) $(ip) >> gen/test.log 2>&1
 
 build-gui:
 	$(eval ip = $(call get_ip,$(server)))
@@ -103,12 +105,6 @@ endif
 test:
 	@make -s prepare_log
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
-	docker exec -d $(name)-client6 bash /root/hosts.sh
-	docker exec -d $(name)-client6 /etc/init.d/sendmail start
-	sleep 1
-	docker exec -d $(name)-client6 bash /root/sendmail.sh
-	sleep 1
-	grep forwarding gen/sendmail || true >> gen/test.log
 	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
 ifeq ($(CC_LDAP_CLEAR), true)

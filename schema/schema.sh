@@ -77,22 +77,16 @@ dn: ou=public,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: public
 
-dn: uid=sendmail,ou=public,dc=mercury,dc=febras,dc=net
-uid: sendmail
-objectClass: inetLocalMailRecipient
-objectClass: account
-mailLocalAddress: username@mercury.febras.net
-mailRoutingAddress: username@localhost
-
 EOF
 }
 
-function nosuchobject() {
-    ldapsearch -x -h $1 -LLL -x -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' || true
+function denied() {
+    docker exec $3 slapacl -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' "gecos/read" 2>&1
 }
 
-function nosuchobject_out() {
+function denied_out() {
 cat <<EOF
+read access to gecos: DENIED
 EOF
 }
 
@@ -113,6 +107,16 @@ function homedir() {
 function homedir_out() {
 cat <<EOF
 webminder
+EOF
+}
+
+function sendmail() {
+    grep forwarding gen/sendmail
+}
+
+function sendmail_out() {
+cat <<EOF
+forwarding test: it works!
 EOF
 }
 # schemash-postfix ends here

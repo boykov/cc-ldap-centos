@@ -1,24 +1,20 @@
 #!/bin/bash
 
 rm -f /gen/sendmail
+cp /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak
 
-line=$(head -n 1 /etc/hosts)
-ip=$(echo $line | awk '{print $1}')
-line2=$(echo $line | awk '{print $2}')
-ln=$(tail -n 1 /etc/hosts)
-ln2=$(echo $ln | awk '{print $2}')
-
-cp /etc/hosts /etc/hosts.tmp
-sed -i '$d' /etc/hosts.tmp
-cp /etc/hosts.tmp /etc/hosts
-
-echo "$ip $ln2.localdomain $line2.localdomain $ln2 $line2" >> /etc/hosts
+# fix sendmail timeout
+ip_name=$(tail -n 1 /etc/hosts)
+name=$(echo $ip_name | awk '{print $2}')
+cat /etc/hosts | sed '$d' > /etc/hosts
+echo "127.0.0.1 $name.localdomain $name" >> /etc/hosts
 
 echo pwcheck_method:pam > /etc/sasl2/Sendmail.conf
 
-cp /root/smpwd /etc/mail/ldap-secret
-cp /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak
+echo $2 > /etc/mail/ldap-secret
+
 cp -f /root/sendmail$1.mc /etc/mail/sendmail.mc
+diff /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak > /gen/sendmail.diff
 m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf
 /etc/init.d/sendmail start
 sleep 1

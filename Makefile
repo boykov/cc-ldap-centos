@@ -3,6 +3,7 @@ misc = /home/eab/git/cc/cc-ldap-centos/misc/
 schema = /home/eab/git/cc/cc-ldap-centos/schema/
 LDAP_ROOT_PASSWORD=root
 LDAP_MANAGER_PASSWORD=manager
+AUTHENTICATOR_PASSWORD=secret
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 name=cc-ldap
 
@@ -68,7 +69,7 @@ start:
 	make build-schema server=$(name)-server$(n)
 	echo schema was created >> gen/test.log
 	sleep 1
-	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n)
+	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n) $(AUTHENTICATOR_PASSWORD)
 	sleep 3
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 

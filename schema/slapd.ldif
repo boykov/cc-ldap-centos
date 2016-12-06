@@ -19,6 +19,7 @@ include: file:///etc/openldap/schema/cosine.ldif
 include: file:///etc/openldap/schema/inetorgperson.ldif
 include: file:///etc/openldap/schema/nis.ldif
 include: file:///etc/openldap/schema/sudo.ldif
+include: file:///etc/openldap/schema/misc.ldif
 
 dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig

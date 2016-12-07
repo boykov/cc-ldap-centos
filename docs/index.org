@@ -24,6 +24,7 @@
 | [[http://www.zytrax.com/books/ldap/][LDAP for Rocket Scientists]]                                                                                            | [[http://pro-ldap.ru/tr/zytrax/][LDAP для ученых-ракетчиков]]              |
 | [[http://itdavid.blogspot.ru/2012/05/howto-centos-6.html][HOWTO : CentOS 6.2 OpenLDAP 2.4 Setup ]]                                                                                | [[http://pro-ldap.ru/books/openldap-ubuntu-in-practice/][OpenLDAP и Ubuntu на практике]]           |
 | [[https://www.packtpub.com/networking-and-servers/mastering-openldap-configuring-securing-and-integrating-directory-services][Matt Butcher. *Mastering OpenLDAP: Configuring, Securing and Integrating Directory Services*. Packt Publishing, 2007.]] |                                         |
+| [[http://shop.oreilly.com/product/9781565924918.do][Gerald Carter. LDAP system administration. O'Reilly Media, 2003.]]                                                      |                                         |
 | [[http://www.linux-pam.org/Linux-PAM-html/Linux-PAM_SAG.html][The Linux-PAM System Administrators' Guide]]                                                                            |                                         |
 # | [[cite:butcher2007mastering]]                   |                                         |
 
@@ -538,7 +539,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 Для настройки клиентского подключения в *5/2.3* понадобятся следующие пакеты
 
 #+begin_src sh :exports results :results org
-cat ../ldap-client/Dockerfile5 | grep openldap | sed "s|RUN ||g"
+cat ../ldap-client/Dockerfile5 | grep "openldap\|sendmail" | sed "s|RUN ||g"
 #+end_src
 
 #+caption: Установка клиента для *5/2.3*
@@ -546,12 +547,13 @@ cat ../ldap-client/Dockerfile5 | grep openldap | sed "s|RUN ||g"
 #+BEGIN_SRC org
 yum install -y openssh-server openldap-clients nss_ldap authconfig
 yum install -y openldap openldap-servers finger sudo
+yum install -y sendmail sendmail-cf
 #+END_SRC
 
 Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для *6/2.4* выполним
 
 #+begin_src sh :exports results :results org
-cat ../ldap-client/Dockerfile6 | grep openldap | sed "s|RUN ||g"
+cat ../ldap-client/Dockerfile6 | grep "openldap\|sendmail" | sed "s|RUN ||g"
 #+end_src
 
 #+caption: Установка клиента для *6/2.4*
@@ -559,6 +561,7 @@ cat ../ldap-client/Dockerfile6 | grep openldap | sed "s|RUN ||g"
 #+BEGIN_SRC org
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
 yum install -y openldap migrationtools finger sudo
+yum install -y sendmail sendmail-cf
 #+END_SRC
 
 #+name: client5-run-prefix
@@ -954,6 +957,8 @@ LDAP с помощью *ldif* формата. При этом, граница м
 | inetorgperson.schema | inetOrgPerson                 | employeeNumber           |                                     |
 | nis.schema           | posixAccount, posixGroup      | homeDirectory, gidNumber | user.ldif, mercury.ldif             |
 | sudo.schema          | sudoRole                      | sudoUser                 | sudoers.ldif                        |
+| misc.schema          | inetLocalMailRecipient        | mailRoutingAddress       | user.ldif                           |
+
 
 ** build.sh 							   :noexport:
 :PROPERTIES:

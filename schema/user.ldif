@@ -14,7 +14,7 @@ shadowWarning: 7
 loginShell: /bin/bash
 uidNumber: 1050
 gidNumber: 1050
-homeDirectory: /home/webminder
+homeDirectory: /home/username
 gecos: User Name
 mailLocalAddress: username@mercury.febras.net
 mailRoutingAddress: username@localhost

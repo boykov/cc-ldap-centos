@@ -96,7 +96,7 @@ function getent() {
 
 function getent_out() {
 cat <<EOF
-username:x:1050:1050:User Name:/home/webminder:/bin/sh
+username:x:1050:1050:User Name:/home/username:/bin/sh
 EOF
 }
 
@@ -106,7 +106,7 @@ function homedir() {
 
 function homedir_out() {
 cat <<EOF
-webminder
+username
 EOF
 }
 

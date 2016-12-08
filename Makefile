@@ -85,7 +85,7 @@ build-gui:
 	$(eval ip = $(call get_ip,$(server)))
 	docker run -p 8889:80 --name cc-ldap-gui -v $(misc):/misc --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS="#PYTHON2BASH:[{'$(ip)': [{'login': [{'bind_id': 'cn=Manager,dc=mercury,dc=febras,dc=net'}]}]}]" --detach osixia/phpldapadmin
 	sleep 1
-	docker exec -d cc-ldap-gui rm -r /var/www/phpldapadmin/templates/creation/
+	docker exec -d cc-ldap-gui mv /var/www/phpldapadmin/templates/creation /var/www/phpldapadmin/templates/creation.bak
 	docker exec -d cc-ldap-gui mkdir /var/www/phpldapadmin/templates/creation/
 	docker exec -d cc-ldap-gui cp -f -r /misc/. /var/www/phpldapadmin/templates/creation/
 	docker exec -d cc-ldap-gui chown -R www-data:www-data /var/www/phpldapadmin/templates/creation/

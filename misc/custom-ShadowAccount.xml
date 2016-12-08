@@ -90,5 +90,20 @@
       <order>11</order>
       <page>1</page>
     </attribute>
+    <attribute id="gecos">
+      <display>GECOS</display>
+      <order>12</order>
+      <page>1</page>
+    </attribute>
+    <attribute id="mailLocalAddress">
+      <display>Mail Local Address</display>
+      <order>13</order>
+      <page>1</page>
+    </attribute>
+    <attribute id="mailRoutingAddress">
+      <display>Mail Routingg Address</display>
+      <order>14</order>
+      <page>1</page>
+    </attribute>
   </attributes>
 </template>

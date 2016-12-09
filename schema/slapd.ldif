@@ -39,17 +39,17 @@ olcDbIndex: uidNumber,gidNumber,loginShell    eq,pres
 olcDbIndex: uid,memberUid                     eq,pres,sub
 olcDbIndex: nisMapName,nisMapEntry            eq,pres,sub
 
-dn: cn=module,cn=config
+dn: cn=module{0},cn=config
 objectClass: olcModuleList
 olcModulePath: /usr/lib64/openldap
-cn: module
+cn: module{0}
 olcModuleLoad: ppolicy.la
 
-dn: olcOverlay=ppolicy,olcDatabase=hdb,cn=config
+dn: olcOverlay=ppolicy,olcDatabase={2}hdb,cn=config
 objectClass: olcOverlayConfig
 objectClass: olcPPolicyConfig
 olcOverlay: ppolicy
-olcPPolicyDefault: cn=passwordDefault,ou=policies,dc=mercury,dc=febras,dc=net
+olcPPolicyDefault: cn=passwordDefault,ou=policies,dc=my-domain,dc=com
 olcPPolicyHashCleartext: FALSE
 olcPPolicyUseLockout: FALSE
 olcPPolicyForwardUpdates: FALSE

@@ -20,6 +20,7 @@ include: file:///etc/openldap/schema/inetorgperson.ldif
 include: file:///etc/openldap/schema/nis.ldif
 include: file:///etc/openldap/schema/sudo.ldif
 include: file:///etc/openldap/schema/misc.ldif
+include: file:///etc/openldap/schema/ppolicy.ldif
 
 dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig
@@ -37,3 +38,18 @@ olcDbIndex: ou,cn,mail,surname,givenname      eq,pres,sub
 olcDbIndex: uidNumber,gidNumber,loginShell    eq,pres
 olcDbIndex: uid,memberUid                     eq,pres,sub
 olcDbIndex: nisMapName,nisMapEntry            eq,pres,sub
+
+dn: cn=module,cn=config
+objectClass: olcModuleList
+olcModulePath: /usr/lib64/openldap
+cn: module
+olcModuleLoad: ppolicy.la
+
+dn: olcOverlay=ppolicy,olcDatabase=hdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: cn=passwordDefault,ou=policies,dc=mercury,dc=febras,dc=net
+olcPPolicyHashCleartext: FALSE
+olcPPolicyUseLockout: FALSE
+olcPPolicyForwardUpdates: FALSE

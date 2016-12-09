@@ -354,7 +354,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
     oldpath=`pwd`
     cd /etc/openldap/schema
-    SCHEMAD=`pwd` SCHEMAS='core.schema cosine.schema inetorgperson.schema nis.schema sudo.schema misc.schema' /root/2.5-schema-ldif.sh
+    SCHEMAD=`pwd` SCHEMAS='core.schema cosine.schema inetorgperson.schema nis.schema sudo.schema misc.schema ppolicy.schema' /root/2.5-schema-ldif.sh
     cp -R /etc/openldap/schema /gen/schema
     cd $oldpath
 

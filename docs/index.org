@@ -397,7 +397,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<schema2ldif>>
 #+end_src
-#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *HDB* и подключение мониторинга баз данных
+#+caption: *slapd.ldif*: формирование корневой записи DIT и контейнера для наборов схем данных; конфигурирование базы данных *HDB*, подключение мониторинга баз данных и загрузка модуля *ppolicy*
 #+name: slapd-ldif
 #+INCLUDE: ../schema/slapd.ldif src ldif
 
@@ -958,6 +958,8 @@ LDAP с помощью *ldif* формата. При этом, граница м
 | nis.schema           | posixAccount, posixGroup      | homeDirectory, gidNumber | user.ldif, mercury.ldif             |
 | sudo.schema          | sudoRole                      | sudoUser                 | sudoers.ldif                        |
 | misc.schema          | inetLocalMailRecipient        | mailRoutingAddress       | user.ldif                           |
+| ppolicy.schema       | pwdPolicy                     | pwdAttribute             | base.ldif                           |
+
 
 
 ** build.sh 							   :noexport:
@@ -1022,15 +1024,16 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 *HDB*. Сконфигурируем (см. расп. [[domain-ldif]]) её для доменного имени
 *dc=mercury,dc=febras,dc=net*, определим менеджера домена
 *cn=Manager,dc=mercury,dc=febras,dc=net* и его пароль. Также, добавим
-правила доступа к атрибутам *userPassword* и *shadowLastChange*
-(см. подраздел [[#new-user-ldap]]): для владельца записи --- /write/ и для
-неавторизованного пользователя --- /auth/. Анонимный доступ будет разрешен только для
-заголовочной части записи подразделения *public*, но не для ее
-содержимого. Для доступа к записям пользователей и остальным атрибутам
-используем учетную запись *authenticator* (см. подраздел
-[[#client-commands]]).
+правила доступа к атрибуту *userPassword* (см. подраздел
+[[#new-user-ldap]]): для владельца записи --- /write/ и для
+неавторизованного пользователя --- /auth/. Для атрибута
+*shadowLastChange*: владелец и *authentificator* имеют право на запись
+/write/. Анонимный доступ будет разрешен только для заголовочной части
+записи подразделения *public*, но не для ее содержимого. Для доступа к
+записям пользователей и остальным атрибутам используем учетную запись
+*authenticator* (см. подраздел [[#client-commands]]).
 
-#+caption: *domain.ldif*: связывание суффикса, менеджера домена и его пароля с базой *HDB*; установка списка контроля доступа ACL
+#+caption: *domain.ldif*: связывание суффикса, менеджера домена и его пароля с базой *HDB*; установка списка контроля доступа ACL  и привязка модуля *ppolicy* к *passwordDefault*
 #+name: domain-ldif
 #+INCLUDE: ../schema/domain.ldif src ldif
 
@@ -1049,7 +1052,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 подразделения *users*, *groups*, *system* и *public*, а также
 пользователя *authenticator*.
 
-#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*
+#+caption: *base.ldif*: создание суффикса, менеджера домена, организационных единиц, учетной записи *authenticator* и настроек *passwordDefaults*
 #+name: base-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/base.ldif src ldif
 
@@ -1110,6 +1113,9 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 пользователя в систему, использующего аутентификацию посредством
 LDAP. Предложить CLI (или GUI WEB) интерфейс для выполнения данной
 операции. Ориентироваться на использование в ОС *CentOS 5/6*.
+
+Предложить LDAP-варианты для команд *passwd*, *useradd*, *usermod*,
+*finger*, *chsh*, *chfn* и функциональности *.forward*.
 #+end_quote
 
 ** Добавление пользователя с помощью CLI интерфейса
@@ -1135,8 +1141,8 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 #+caption: *user.ldif*: создание нового пользователя, принадлежащего к группе *wheel*
 #+INCLUDE: "../schema/user.ldif" src ldif
 
-Полученные в подразделе [[#add-users]] в результате миграции учетные записи
-пользователей кластера добавляются аналогично. Необходимая нам
+Полученные (см. подраздел [[#add-users]]) в результате миграции учетные
+записи пользователей кластера добавляются аналогично. Необходимая
 функциональность учетной записи пользователя определяется классами
 *posixAccount* и *shadowAccount*.
 
@@ -1389,31 +1395,16 @@ EOF
 :CUSTOM_ID: standard-commands
 :ID:       84d40fcf-c285-40e6-9f13-11685889a085
 :END:
-#+begin_quote
-Предложить LDAP-варианты для команд *passwd*, *useradd*, *usermod*,
-*finger*, *chsh*, *chfn* и функциональности *.forward*.
-#+end_quote
 
 #+begin_verse
 Где работаем: любой хост в локальной сети контейнеров с установленными утилитами openldap-client
 #+end_verse
 
-# В подразделе [[#client-options]] было продемонстрировано расширение
-# функциональности PAM: в дополнение к локальной базе данных *files*
-# используется база данных *ldap*.
-# Привычные системному администратору утилиты не могут работать с
-# базой данных *ldap* напрямую. Хотя бы потому, что невозможно
-# обеспечить взаимооднозначное соответствие между plain-текст файлами
-# *passwd*, *group*, *shadow* и *sudoers* и записями в БД LDAP: как и
-# в любой базе данных, записи могут быть вовлечены в более сложные
-# связи между собой и недостаточно просто записывать эквивалент
-# изменений, порождаемых этими утилитами, в БД LDAP.
-
 В подразделе [[#hdb-domain-config]]
 устанавливаются разрешения для полей *userPassword* и
 *shadowLastChange*, чтобы пользователь имел право на смену пароля.
 
-#+begin_src sh :exports results :results code sh
+#+begin_src sh :exports none :results code sh
 sed -n "/^function password() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d' | sed '$d'
 #+end_src
 
@@ -1422,6 +1413,14 @@ sed -n "/^function password() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d
 #+BEGIN_SRC sh
     ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+END_SRC
+
+#+begin_warning
+При использовании утилиты *ldappasswd* изменения атрибута
+*shadowLastChange* не происходит. Его необходимо задавать отдельно с
+помощью утилиты *ldapmodify*. В случае применения утилиты *passwd*,
+атрибут *shadowLastChange* корректно обновляется в LDAP (благодаря
+действиям PAM) при наличии соответствующих прав доступа на запись.
+#+end_warning
 
 #+begin_src sh :exports results :results code sh
 sed -n "/^function modify() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d'
@@ -1437,7 +1436,7 @@ replace: loginShell
 loginShell: /bin/sh
 -
 EOF
-    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
 #+END_SRC
 
 #+begin_src sh :exports results :results value pp
@@ -1448,6 +1447,16 @@ sed -n "/^function modify_out() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '
 : modifying entry "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
 : 
 : loginShell: /bin/sh
+
+#+caption: Замещение стандартных команд в случае использования LDAP
+| Утилита    | Работает с LDAP | Примечание                                                     |
+| *passwd*   | *Да*            |                                                                |
+| *useradd*  | Нет             | *ldapadd*, атрибуты классов *posixAccount*, *shadowAccount*    |
+| *usermod*  | Нет             | *ldapmodify*, атрибуты классов *posixAccount*, *shadowAccount* |
+| *finger*   | *Да*            |                                                                |
+| *chsh*     | Нет             | *ldapmodify*, атрибут *loginShell*                             |
+| *chfn*     | Нет             | *ldapmodify*, атрибут *gecos*                                  |
+| *.forward* | *Да*            | атрибут *mailRoutingAddress* класса *inetLocalMailRecipient*   |
 
 ** Миграция пользователей и групп
 :PROPERTIES:

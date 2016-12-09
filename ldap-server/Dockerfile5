@@ -17,6 +17,7 @@ VOLUME [ "/data" ]
 
 RUN yum -y update && \
     yum -y install openldap openldap-servers openldap-clients sudo && \
+    yum -y install openldap-servers-overlays && \
     yum clean all
 
 COPY ldap-server/. /root

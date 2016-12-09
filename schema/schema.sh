@@ -103,12 +103,12 @@ username:x:1050:1050:User Name:/home/username:/bin/sh
 EOF
     if [ "$3" == "cc-ldap-server6" ]; then
 cat <<EOF
-username:*::0:99999:7:::0
+username:*:17093:0:99999:7:::0
 EOF
     fi
     if [ "$3" == "cc-ldap-server5" ]; then
 cat <<EOF
-username:*::0:99999:7:::
+username:*:17093:0:99999:7:::
 EOF
     fi
 }

@@ -32,3 +32,15 @@ objectClass: simpleSecurityObject
 uid: authenticator
 description: Used for authentication to LDAP
 userPassword: secret
+
+dn: ou=policies,dc=mercury,dc=febras,dc=net
+ou: policies
+objectClass: organizationalUnit
+
+dn: cn=passwordDefault,ou=policies,dc=mercury,dc=febras,dc=net
+objectClass: pwdPolicy
+objectClass: person
+objectClass: top
+cn: passwordDefault
+sn: passwordDefault
+pwdAttribute: userPassword

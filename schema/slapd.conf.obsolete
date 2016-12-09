@@ -48,7 +48,7 @@ argsfile	/var/run/openldap/slapd.args
 # moduleload memberof.la
 # moduleload pbind.la
 # moduleload pcache.la
-# moduleload ppolicy.la
+moduleload ppolicy.la
 # moduleload refint.la
 # moduleload retcode.la
 # moduleload rwm.la
@@ -142,3 +142,6 @@ index nisMapName,nisMapEntry            eq,pres,sub
 #replica host=ldap-1.example.com:389 starttls=critical
 #     bindmethod=sasl saslmech=GSSAPI
 #     authcId=host/ldap-master.example.com@EXAMPLE.COM
+
+overlay ppolicy
+ppolicy_default "cn=passwordDefault,ou=policies,dc=mercury,dc=febras,dc=net"

@@ -2,12 +2,14 @@
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#schema.sh][schemash-prefix]]
 
 function password() {
-    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
-    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd -s p@ssw0rd
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
+    ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w new_p@ssw0rd -s p@ssw0rd "uid=username,ou=users,dc=mercury,dc=febras,dc=net"
+    ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' '(shadowLastChange=*)' -w manager | grep shadowLastChange
 }
 
 function password_out() {
 cat <<EOF
+shadowLastChange: 17093
 EOF
 }
 
@@ -96,7 +98,7 @@ function getent() {
 
 function getent_out() {
 cat <<EOF
-username:x:1050:1050:User Name:/home/webminder:/bin/sh
+username:x:1050:1050:User Name:/home/username:/bin/sh
 EOF
 }
 
@@ -106,7 +108,7 @@ function homedir() {
 
 function homedir_out() {
 cat <<EOF
-webminder
+username
 EOF
 }
 

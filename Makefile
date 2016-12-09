@@ -3,6 +3,7 @@ misc = /home/eab/git/cc/cc-ldap-centos/misc/
 schema = /home/eab/git/cc/cc-ldap-centos/schema/
 LDAP_ROOT_PASSWORD=root
 LDAP_MANAGER_PASSWORD=manager
+AUTHENTICATOR_PASSWORD=secret
 LDAP_BASEDN = "dc=mercury,dc=febras,dc=net"
 name=cc-ldap
 
@@ -68,7 +69,7 @@ start:
 	make build-schema server=$(name)-server$(n)
 	echo schema was created >> gen/test.log
 	sleep 1
-	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n)
+	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n) $(AUTHENTICATOR_PASSWORD)
 	sleep 3
 	make test-client server=$(name)-client$(n) k=$(k) >> gen/test.log
 
@@ -84,7 +85,7 @@ build-gui:
 	$(eval ip = $(call get_ip,$(server)))
 	docker run -p 8889:80 --name cc-ldap-gui -v $(misc):/misc --env PHPLDAPADMIN_HTTPS=false --env PHPLDAPADMIN_LDAP_HOSTS="#PYTHON2BASH:[{'$(ip)': [{'login': [{'bind_id': 'cn=Manager,dc=mercury,dc=febras,dc=net'}]}]}]" --detach osixia/phpldapadmin
 	sleep 1
-	docker exec -d cc-ldap-gui rm -r /var/www/phpldapadmin/templates/creation/
+	docker exec -d cc-ldap-gui mv /var/www/phpldapadmin/templates/creation /var/www/phpldapadmin/templates/creation.bak
 	docker exec -d cc-ldap-gui mkdir /var/www/phpldapadmin/templates/creation/
 	docker exec -d cc-ldap-gui cp -f -r /misc/. /var/www/phpldapadmin/templates/creation/
 	docker exec -d cc-ldap-gui chown -R www-data:www-data /var/www/phpldapadmin/templates/creation/

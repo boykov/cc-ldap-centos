@@ -6,8 +6,6 @@ objectClass: posixAccount
 objectClass: top
 objectClass: shadowAccount
 objectClass: inetLocalMailRecipient
-mailLocalAddress: username@mercury.febras.net
-mailRoutingAddress: username@localhost
 userPassword: p@ssw0rd
 shadowLastChange: 17093
 shadowMin: 0
@@ -16,8 +14,10 @@ shadowWarning: 7
 loginShell: /bin/bash
 uidNumber: 1050
 gidNumber: 1050
-homeDirectory: /home/webminder
+homeDirectory: /home/username
 gecos: User Name
+mailLocalAddress: username@mercury.febras.net
+mailRoutingAddress: username@localhost
 
 dn: cn=username,ou=groups,dc=mercury,dc=febras,dc=net
 objectClass: posixGroup

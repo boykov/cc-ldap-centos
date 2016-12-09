@@ -30,7 +30,7 @@ def create_tests(suite,arguments):
     defpat="""
 def %s(self):
     output = self.script.%s(*self.myExtraArg)
-    self.assertEqual(self.script.%s(),output)
+    self.assertEqual(self.script.%s(*self.myExtraArg),output)
 """
 
     for t in tests:

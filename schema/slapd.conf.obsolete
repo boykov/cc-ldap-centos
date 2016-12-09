@@ -144,4 +144,4 @@ index nisMapName,nisMapEntry            eq,pres,sub
 #     authcId=host/ldap-master.example.com@EXAMPLE.COM
 
 overlay ppolicy
-ppolicy_default "cn=passwordDefault,ou=policies,dc=mercury,dc=febras,dc=net"
+ppolicy_default "cn=passwordDefault,ou=policies,dc=my-domain,dc=com

@@ -94,12 +94,23 @@ EOF
 
 function getent() {
     sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent shadow username 2> /dev/null || true
 }
 
 function getent_out() {
 cat <<EOF
 username:x:1050:1050:User Name:/home/username:/bin/sh
 EOF
+    if [ "$3" == "cc-ldap-server6" ]; then
+cat <<EOF
+username:*:17093:0:99999:7:::0
+EOF
+    fi
+    if [ "$3" == "cc-ldap-server5" ]; then
+cat <<EOF
+username:*:17093:0:99999:7:::
+EOF
+    fi
 }
 
 function homedir() {

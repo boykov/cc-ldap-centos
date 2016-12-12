@@ -22,7 +22,7 @@ define recreate_server
 	docker rm -f -v $(2)-server$(1)
 	docker rm -f -v $(2)-data$(1)
 	docker run --name $(2)-data$(1) -v /data data$(1)-backup true
-	docker run --name $(2)-server$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
+	docker run -p 888$(1):80  --name $(2)-server$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
 	sleep 1
 endef
 
@@ -47,7 +47,7 @@ build-server:
 	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .
 	echo cc-ldap-server$(n) was built >> gen/test.log
 	docker run --name $(name)-data$(n) -v /data busybox true || true
-	docker run --name $(name)-server$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
+	docker run -p 888$(n):80 --name $(name)-server$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	echo cc-ldap-server$(n) was run >> gen/test.log
 	sleep 10
 	$(call create_backup,$(n),$(name))

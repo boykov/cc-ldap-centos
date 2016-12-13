@@ -70,7 +70,7 @@ EOF
 }
 
 function anonymous() {
-    ldapsearch -x -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
+    ldapsearch -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
 }
 
 function anonymous_out() {

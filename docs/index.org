@@ -70,18 +70,51 @@ cc-ldap-centos[fn::https://github.com/boykov/cc-ldap-centos].
 Где работаем: контейнеры *server-.....*
 #+end_verse
 
-Базовые репозитории дистрибутивов *CentOS 5* и *CentOS 6* содержат *2.3* и *2.4* версию *OpenLDAP*, соответственно. Выполнив стандартную установку
+Базовые репозитории дистрибутивов *CentOS 5* и *CentOS 6* содержат
+*2.3* и *2.4* версию *OpenLDAP*, соответственно. Выполнив стандартную
+установку
 
 #+begin_src sh :exports results :results org
 cat ../ldap-server/Dockerfile6 | grep openldap-servers | sed "s| \\&\\& \\\||g"
+cat ../ldap-server/Dockerfile6 | grep php-ldap | sed "s|RUN |    |g"
 #+end_src
 #+caption: Установка сервера *OpenLDAP* для *5/2.3* и *6/2.4*
 #+RESULTS:
 #+BEGIN_SRC org
     yum -y install openldap openldap-servers openldap-clients sudo
+    yum -y install php php-ldap wget
 #+END_SRC
 
-получаем две конфигурации, различающиеся в некоторых деталях. Например, название сервиса: *ldap* в случае *CentOS 5/2.3 OpenLDAP* (*5/2.3*) и *slapd* в случае *CentOS 6/2.4 OpenLDAP* (*6/2.4*).
+#+begin_src sh :exports none :results org
+cat ../ldap-server/Dockerfile5 | grep overlays | sed "s| \\&\\& \\\||g"
+cat ../ldap-server/Dockerfile5 | grep fedora | sed "s|RUN |    |g"
+cat ../ldap-server/Dockerfile5 | grep "rpm -i" | sed "s|RUN |    |g"
+#+end_src
+
+#+caption: Установка дополнительных пакетов для *5/2.3*
+#+BEGIN_SRC org
+    yum -y install openldap-servers-overlays
+    wget http://dl.fedoraproject.org/pub/epel/5/i386/phpldapadmin-1.2.3-1.el5.noarch.rpm
+    rpm -i phpldapadmin-1.2.3-1.el5.noarch.rpm
+#+END_SRC
+
+#+begin_src sh :exports none :results org
+cat ../ldap-server/Dockerfile6 | grep fedora | sed "s|RUN |    |g"
+cat ../ldap-server/Dockerfile6 | grep "rpm -i" | sed "s|RUN |    |g"
+#+end_src
+
+#+caption: Установка дополнительных пакетов для *6/2.4*
+#+BEGIN_SRC org
+    wget http://dl.fedoraproject.org/pub/epel/6/i386/phpldapadmin-1.2.3-2.el6.noarch.rpm
+    rpm -i phpldapadmin-1.2.3-2.el6.noarch.rpm
+#+END_SRC
+
+
+
+получаем две конфигурации, различающиеся в некоторых
+деталях. Например, название сервиса: *ldap* в случае *CentOS 5/2.3
+OpenLDAP* (*5/2.3*) и *slapd* в случае *CentOS 6/2.4 OpenLDAP*
+(*6/2.4*).
 
 #+name: run-prefix
 #+begin_src sh :exports none
@@ -94,6 +127,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 	exit
     fi
 
+    sed -i "s|$servers->setValue('login','attr','uid');|// $servers->setValue('login','attr','uid');|g" /etc/phpldapadmin/config.php
+    sed -i "s|  Allow from 127.0.0.1|  Allow from 127.0.0.1 172.17.0.1|g" /etc/httpd/conf.d/phpldapadmin.conf
 #+end_src
 
 ** Добавление файлов конфигурации базы данных HDB
@@ -471,6 +506,7 @@ fi
 rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
 rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
+service httpd start
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
@@ -1318,7 +1354,7 @@ EOF
 }
 
 function anonymous() {
-    ldapsearch -x -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
+    ldapsearch -h $1 -LLL -x -b 'ou=public,dc=mercury,dc=febras,dc=net'
 }
 
 function anonymous_out() {

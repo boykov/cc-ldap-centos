@@ -9,6 +9,8 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 	exit
     fi
 
+    sed -i "s|$servers->setValue('login','attr','uid');|// $servers->setValue('login','attr','uid');|g" /etc/phpldapadmin/config.php
+    sed -i "s|  Allow from 127.0.0.1|  Allow from 127.0.0.1 172.17.0.1|g" /etc/httpd/conf.d/phpldapadmin.conf
 # run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-hdb][run-db-config6]]
     cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
@@ -80,6 +82,7 @@ fi
 rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
 rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
+service httpd start
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
 # Дополнительно\.\ Предварительная\ настройка\ схемы\ каталога\ LDAP\ с\ помощью\ ldif\ формата:1 ends here

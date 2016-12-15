@@ -44,7 +44,8 @@
       <display>Password Last Changed (in days since 01 Jan 1970)</display>
       <order>4</order>
       <spacer>1</spacer>
-      <value>=php.Function(date;dmY)</value>
+      <!-- <value>=php.Function(date;dmY)</value> -->
+      <value>0</value>
     </attribute>
     <attribute id="shadowMin">
       <display>Password may be changed (days before)</display>

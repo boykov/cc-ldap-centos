@@ -12,6 +12,7 @@ echo "127.0.0.1 $name.localdomain $name" >> /etc/hosts
 echo pwcheck_method:pam > /etc/sasl2/Sendmail.conf
 
 echo $2 > /etc/mail/ldap-secret
+chmod 600 /etc/mail/ldap-secret
 
 cp -f /root/sendmail$1.mc /etc/mail/sendmail.mc
 diff /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak > /gen/sendmail.diff

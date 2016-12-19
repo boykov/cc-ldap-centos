@@ -37,6 +37,10 @@ echo bindpw secret >> /etc/pam_ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
 
+chmod 600 /etc/sudo-ldap.conf
+chmod 600 /etc/pam_ldap.conf
+chmod 600 /etc/nslcd.conf
+
 /etc/init.d/nslcd stop
 rm /var/run/nslcd/*
 /etc/init.d/nslcd start

@@ -30,17 +30,17 @@
 
 Конфигурация используемых на нашем демо-стенде контейнеров:
 
-| Роль                      | Имя хоста    | ОС             | Конфигурация хоста            |
-|---------------------------+--------------+----------------+-------------------------------|
-| *Docker Engine*           | kairos       | *Ubuntu 14.04* | *Docker version 1.12.3*       |
-|---------------------------+--------------+----------------+-------------------------------|
-| *Служба каталогов*        | server-ldif5 | *CentOS 5*     | *OpenLDAP 2.3* server, *ldif* |
-| *Служба каталогов*        | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif* |
-| *Служба каталогов*        | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf* |
-| *Служба каталогов*        | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf* |
-| *Клиент службы каталогов* | client5      | *CentOS 5*     | *OpenLDAP 2.3* client         |
-| *Клиент службы каталогов* | client6      | *CentOS 6*     | *OpenLDAP 2.4* client         |
-| *Клиент службы каталогов* | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom  |
+| Роль                      | Имя хоста    | ОС             | Конфигурация хоста                                          |
+|---------------------------+--------------+----------------+-------------------------------------------------------------|
+| *Docker Engine*           | kairos       | *Ubuntu 14.04* | *Docker 1.12.3*                                             |
+|---------------------------+--------------+----------------+-------------------------------------------------------------|
+| *Служба каталогов*        | server-ldif5 | *CentOS 5*     | *OpenLDAP 2.3* server, *ldif*; *phpLDAPadmin 1.2.3*, custom |
+| *Служба каталогов*        | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif*; *phpLDAPadmin 1.2.3*, custom |
+| *Служба каталогов*        | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf*; *phpLDAPadmin 1.2.3*, custom |
+| *Служба каталогов*        | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf*; *phpLDAPadmin 1.2.3*, custom |
+| *Клиент службы каталогов* | client5      | *CentOS 5*     | *OpenLDAP 2.3* client                                       |
+| *Клиент службы каталогов* | client6      | *CentOS 6*     | *OpenLDAP 2.4* client                                       |
+| *Клиент службы каталогов* | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom                                |
 
 #+begin_note
 Команды и конфигурационные файлы прошли проверку на работоспособность
@@ -265,13 +265,14 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+begin_note
 Первичный доступ к каталогу LDAP, использующему только предварительно
-сформированную директорию *slapd.d* без *conf*-файла, осуществляется при
-помощи *ldapi* интерфейса, когда в качестве *rootdn* выступает
+сформированную директорию *slapd.d* без *conf*-файла, осуществляется
+при помощи *ldapi* интерфейса, когда в качестве *rootdn* выступает
 системный пользователь *root* (при этом его *dn* выглядит как
 *gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth*). В случае
 использования *conf*-файла необходимо указать пароль для
 *rootdn*. Пользователь *rootdn* имеет права на чтение и запись для
-всего содержимого.
+всего содержимого. Знак "***" в ACL применяется ко всем записям, кроме
+записи *rootdn*.
 #+end_note
 # В случае *5/2.3* при использовании *-Y
 # EXTERNAL -H ldapi:///* флагов по мере отладки появляются ошибки *Can't
@@ -339,6 +340,16 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-d>>
 #+end_src
+
+#+begin_note
+Если не осуществлять переход к *ldif* формату, ограничившись *conf*
+файлом, необходимо либо все настройки файла *domain.ldif*
+(см. подраздел [[#hdb-domain-config]]) перенести в *conf* файл (записав их
+в формате *conf* файла), либо загружать их каждый раз при перезапуске
+сервиса. Использование *ldif* формата позволяет хранить все настройки
+в директории *slapd.d*.
+#+end_note
+
 После перезапуска, для *5/2.3*
 #+begin_src sh :exports code :noweb yes
 <<run-slapd-start5>>
@@ -536,7 +547,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 #+end_src
 
 Дальнейшая настройка схемы осуществляется в разделе [[#schema]].
-* Настройка аутентификации пользователей при помощи LDAP{{{fa(star-half-o)}}}
+* Настройка аутентификации пользователей при помощи LDAP
 :PROPERTIES:
 :CUSTOM_ID: authentication
 :ID:       49b5e2df-0c06-445a-ae9e-66bcd6cc9e40
@@ -653,6 +664,8 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
+chmod 600 /etc/ldap.conf
+
 #+end_src
 
 #+name: client6-run-sudoers
@@ -672,6 +685,10 @@ echo bindpw secret >> /etc/pam_ldap.conf
 
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
+
+chmod 600 /etc/sudo-ldap.conf
+chmod 600 /etc/pam_ldap.conf
+chmod 600 /etc/nslcd.conf
 
 /etc/init.d/nslcd stop
 rm /var/run/nslcd/*
@@ -735,7 +752,7 @@ getent passwd username
 <<client6-run-postfix>>
 #+end_src
 
-** Используемые команды{{{fa(star)}}}
+** Используемые команды
 :PROPERTIES:
 :CUSTOM_ID: client-commands
 :ID:       6e7a8278-7334-46f7-b289-07da7f2b6d14
@@ -772,7 +789,7 @@ getent passwd username
 <<client6-run-sudoers>>
 #+end_src
 
-** Изменяемые файлы{{{fa(star)}}}
+** Изменяемые файлы
 :PROPERTIES:
 :CUSTOM_ID: client-files
 :ID:       386e40de-d1f2-4dc8-994b-5870d4ec42fb
@@ -815,7 +832,7 @@ getent passwd username
 #+caption: Список измененных файлов для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6-files.diff src diff
 
-** Описание опций{{{fa(star)}}}
+** Описание опций
 :PROPERTIES:
 :CUSTOM_ID: client-options
 :ID:       a8dfad56-906c-45b6-9ef1-7d5a9cfa854f
@@ -1443,7 +1460,6 @@ sed -n "/^function password() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d
 #+end_src
 
 #+caption: Изменение пользователем своего пароля с помощью утилиты *ldappasswd*
-#+RESULTS:
 #+BEGIN_SRC sh
     ldappasswd -h $1 -x -D "uid=username,ou=users,dc=mercury,dc=febras,dc=net" -w p@ssw0rd -s new_p@ssw0rd
 #+END_SRC
@@ -1472,6 +1488,8 @@ loginShell: /bin/sh
 EOF
     ldapsearch -x -h $1 -LLL -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -b 'uid=username,ou=users,dc=mercury,dc=febras,dc=net' '(loginShell=*)' -w manager | grep loginShell
 #+END_SRC
+
+Значение *loginShell: /bin/bash*, указанное в файле *user.ldif*, изменилось на */bin/sh*:
 
 #+begin_src sh :exports results :results value pp
 sed -n "/^function modify_out() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d' | sed '1d' | sed '$d'

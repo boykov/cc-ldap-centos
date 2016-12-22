@@ -16,6 +16,8 @@ opts="-N -x group \
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-setup]]
 authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+sed -i "s|pam_mkhomedir.so|pam_mkhomedir.so skel=/etc/skel umask=0077|g" /etc/pam.d/system-auth
 # client5-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-sudoers]]
 

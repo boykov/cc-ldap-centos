@@ -650,6 +650,8 @@ opts="-N -x fingerprint-auth-ac \
 #+begin_src sh :exports none
 authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+sed -i "s|pam_mkhomedir.so|pam_mkhomedir.so skel=/etc/skel umask=0077|g" /etc/pam.d/system-auth
 #+end_src
 
 #+name: client6-run-setup

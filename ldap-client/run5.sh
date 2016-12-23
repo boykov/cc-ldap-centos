@@ -26,7 +26,7 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
-chmod 600 /etc/ldap.conf
+# chmod 600 /etc/ldap.conf
 
 # client5-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-postfix]]

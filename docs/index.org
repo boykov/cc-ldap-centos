@@ -969,8 +969,8 @@ grep -i -h -e  "^#+caption.*\\.ldif" index.org | sed "s/#+caption://g" | sed "s/
 | *front.ldif*   | добавление служебной базы данных *frontend* (только для *5/2.3*)                                                                                     |
 | *domain.ldif*  | связывание суффикса, менеджера домена и его пароля с базой *HDB*; установка списка контроля доступа ACL                                              |
 | *base.ldif*    | создание суффикса, менеджера домена, организационных единиц и учетной записи *authenticator*                                                         |
-| *sudoers.ldif* | создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo* |
-| *user.ldif*    | создание нового пользователя, принадлежащего к группе *wheel*                                                                                        |
+| *sudoers.ldif* | создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *sudowheel*, включенной в группу администраторов *sudo* |
+| *user.ldif*    | создание нового пользователя, принадлежащего к группе *sudowheel*                                                                                        |
 | *mercury.ldif* | пример результата миграции пользователей и групп с помощью утилит *migrationtools*                                                                   |
 
 Если же используется *conf* формат, то надо иметь в виду, что
@@ -1117,13 +1117,13 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 :ID:       22a6415e-716f-4045-aab4-2535b7bdff12
 :END:
 
-Создадим подразделение *sudoers*, одну posix-группу *wheel* и
+Создадим подразделение *sudoers*, одну posix-группу *sudowheel* и
 сконфигурируем *sudoers* так, чтобы разрешить выполнение *sudo* команд
 без ввода пароля для членов этой группы (см. расп. [[sudo-ldif]]). Класс
 *sudoRole* содержится в файле *sudo.schema*, подключенном в подразделе
 [[#add-schemas]].
 
-#+caption: *sudoers.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *wheel*, включенной в группу администраторов *sudo*
+#+caption: *sudoers.ldif*: создание организационной единицы *sudoers*, добавление настроек по умолчанию для *sudo* и группы *sudowheel*, включенной в группу администраторов *sudo*
 #+name: sudo-ldif
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/sudoers.ldif src ldif
 
@@ -1193,7 +1193,7 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 <<add-user>>
 #+end_src
 
-#+caption: *user.ldif*: создание нового пользователя, принадлежащего к группе *wheel*
+#+caption: *user.ldif*: создание нового пользователя, принадлежащего к группе *sudowheel*
 #+INCLUDE: "../schema/user.ldif" src ldif
 
 Полученные (см. подраздел [[#add-users]]) в результате миграции учетные

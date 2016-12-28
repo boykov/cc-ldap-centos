@@ -2,7 +2,7 @@
 
 ** Docker images
 
-[[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]]
+[[https://github.com/Enalean/docker-ldap][docker-ldap]], [[https://github.com/lemonbar/docker-centos6-ssh][docker-centos6-ssh]], [[https://github.com/ustclug/docker-image/tree/master/ldap-ssh][ldap-ssh]], [[https://github.com/jirutka/ssh-ldap-pubkey][ssh-ldap-pubkey]]
 
 ** Web interfaces
 

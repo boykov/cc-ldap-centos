@@ -668,7 +668,12 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
-# chmod 600 /etc/ldap.conf
+chmod 600 /etc/ldap.conf
+
+sed -i "s|	positive-time-to-live	passwd		600|	positive-time-to-live	passwd		0|g" /etc/nscd.conf
+sed -i "s|	negative-time-to-live	passwd		20|	negative-time-to-live	passwd		0|g" /etc/nscd.conf
+
+/etc/init.d/nscd start
 
 #+end_src
 
@@ -1398,6 +1403,7 @@ EOF
 }
 
 function getent() {
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo /usr/sbin/nscd -i passwd 2> /dev/null || true
     sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
     sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent shadow username 2> /dev/null || true
 }
@@ -1429,6 +1435,7 @@ EOF
 }
 
 function sendmail() {
+    sleep 1
     grep forwarding gen/sendmail
 }
 

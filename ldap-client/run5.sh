@@ -26,7 +26,12 @@ echo sudoers_debug 0 >> /etc/ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo bindpw secret >> /etc/ldap.conf
 
-# chmod 600 /etc/ldap.conf
+chmod 600 /etc/ldap.conf
+
+sed -i "s|	positive-time-to-live	passwd		600|	positive-time-to-live	passwd		0|g" /etc/nscd.conf
+sed -i "s|	negative-time-to-live	passwd		20|	negative-time-to-live	passwd		0|g" /etc/nscd.conf
+
+/etc/init.d/nscd start
 
 # client5-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-postfix]]

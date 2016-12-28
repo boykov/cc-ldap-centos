@@ -16,6 +16,8 @@ opts="-N -x group \
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-setup]]
 authconfig --enableshadow --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
+
+sed -i "s|pam_mkhomedir.so|pam_mkhomedir.so skel=/etc/skel umask=0077|g" /etc/pam.d/system-auth
 # client5-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-sudoers]]
 
@@ -25,6 +27,11 @@ echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap
 echo bindpw secret >> /etc/ldap.conf
 
 chmod 600 /etc/ldap.conf
+
+sed -i "s|	positive-time-to-live	passwd		600|	positive-time-to-live	passwd		0|g" /etc/nscd.conf
+sed -i "s|	negative-time-to-live	passwd		20|	negative-time-to-live	passwd		0|g" /etc/nscd.conf
+
+/etc/init.d/nscd start
 
 # client5-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client5-run-postfix]]

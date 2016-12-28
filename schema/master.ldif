@@ -1,0 +1,55 @@
+# Mastering OpenLDAP book
+#################################################
+# ACLs
+# These are ACLs for the first database section
+# of the slapd.conf file found in this directory
+#################################################
+##
+
+## Restrict by IP address:
+access to *
+by peername.ip=127.0.0.1 none break
+by peername.ip=10.40.0.0%255.255.255.0 none break
+
+## Give Admins immediate write access:
+access to dn.subtree="dc=example,dc=com"
+by group/groupOfUniqueNames/uniqueMember="cn=LDAP
+Admins,ou=Groups,dc=example,dc=com" write
+by * none break
+
+## Grant access to passwords for auth, but allow users to change
+## their own.
+access to attrs=userPassword
+by anonymous auth
+by self write
+
+## This rule is needed by authz-regexp
+## (Note: Since uid is used in DN, user cannot change its own uid.)
+access to attrs=uid
+by anonymous read
+by users read
+
+## Don't let anyone modify OUs, employee num or employee type.
+access to attrs=ou,employeeNumber,employeeType by users read
+
+## Stop authentication account from reading anything else. This also
+## stops anonymous.
+access to *
+by dn.exact="uid=Authenticate,ou=System,dc=example,dc=com"
+none
+by users none break
+
+## Prevent DNs in ou=Users from seeing system accounts
+access to dn.subtree="ou=System,dc=example,dc=com"
+by dn.subtree="ou=Users,dc=example,dc=com" none
+by users read
+
+## Allow user to add subentries beneath its own record.
+access to dn.regex="^.*,uid=([^,]+),ou=Users,dc=example,dc=com$"
+by dn.exact,expand="uid=$1,ou=Users,dc=example,dc=com" write
+
+## The default rule: Allow DNs to modify their own records. Give
+## read access to everyone else.
+access to *
+by self write
+by users read

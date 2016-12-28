@@ -2,8 +2,8 @@ dn: ou=sudoers,dc=mercury,dc=febras,dc=net
 objectClass: organizationalUnit
 ou: sudoers
 
-dn: cn=wheel,ou=groups,dc=mercury,dc=febras,dc=net
-cn: wheel
+dn: cn=sudowheel,ou=groups,dc=mercury,dc=febras,dc=net
+cn: sudowheel
 objectClass: posixGroup
 objectClass: top
 gidNumber: 1030
@@ -16,7 +16,7 @@ cn: admins
 sudoCommand: ALL
 sudoRunAs: ALL
 sudoHost: ALL
-sudoUser: %wheel
+sudoUser: %sudowheel
 sudoOption: !authenticate
 
 dn: cn=defaults,ou=sudoers,dc=mercury,dc=febras,dc=net

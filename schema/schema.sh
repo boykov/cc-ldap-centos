@@ -93,6 +93,7 @@ EOF
 }
 
 function getent() {
+    sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo /usr/sbin/nscd -i passwd 2> /dev/null || true
     sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent passwd username 2> /dev/null || true
     sshpass -p p@ssw0rd ssh -o "GSSAPIAuthentication no" -o "UserKnownHostsFile /dev/null" -o StrictHostKeyChecking=no -o "VerifyHostKeyDNS no" -t username@$2 sudo getent shadow username 2> /dev/null || true
 }
@@ -124,6 +125,7 @@ EOF
 }
 
 function sendmail() {
+    sleep 1
     grep forwarding gen/sendmail
 }
 

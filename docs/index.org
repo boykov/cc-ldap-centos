@@ -586,7 +586,7 @@ exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 Для настройки клиентского подключения в *5/2.3* понадобятся следующие пакеты
 
 #+begin_src sh :exports results :results org
-cat ../ldap-client/Dockerfile5 | grep "openldap\|sendmail" | sed "s|RUN ||g"
+cat ../ldap-client/Dockerfile5 | grep "openldap\|sendmail\|libus" | sed "s|RUN ||g"
 #+end_src
 
 #+caption: Установка клиента для *5/2.3*
@@ -595,12 +595,13 @@ cat ../ldap-client/Dockerfile5 | grep "openldap\|sendmail" | sed "s|RUN ||g"
 yum install -y openssh-server openldap-clients nss_ldap authconfig
 yum install -y openldap openldap-servers finger sudo
 yum install -y sendmail sendmail-cf
+yum install -y libuser
 #+END_SRC
 
 Здесь также необходим пакет *openldap-servers*, поскольку утилиты для миграции пользователей содержатся в нем. Для *6/2.4* выполним
 
 #+begin_src sh :exports results :results org
-cat ../ldap-client/Dockerfile6 | grep "openldap\|sendmail" | sed "s|RUN ||g"
+cat ../ldap-client/Dockerfile6 | grep "openldap\|sendmail\|libus" | sed "s|RUN ||g"
 #+end_src
 
 #+caption: Установка клиента для *6/2.4*
@@ -609,6 +610,7 @@ cat ../ldap-client/Dockerfile6 | grep "openldap\|sendmail" | sed "s|RUN ||g"
 yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
 yum install -y openldap migrationtools finger sudo
 yum install -y sendmail sendmail-cf
+yum install -y libuser
 #+END_SRC
 
 #+name: client5-run-prefix
@@ -660,9 +662,19 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 #+end_src
 
+#+name: client-libuser
+#+begin_src sh :exports none
+sed -i "s|^modules = files shadow|modules = files shadow ldap|" /etc/libuser.conf
+sed -i "s|create_modules = files shadow|create_modules = ldap files shadow|" /etc/libuser.conf
+sed -i "s|# server = ldap|server = ldap://$LDAP_SERVER|" /etc/libuser.conf
+sed -i "s|# basedn = dc=example,dc=com|basedn = $LDAP_BASEDN|" /etc/libuser.conf
+sed -i "s|# userBranch = ou=People|userBranch = ou=users|" /etc/libuser.conf
+sed -i "s|# groupBranch = ou=Group|groupBranch = ou=groups|" /etc/libuser.conf
+sed -i "s|# binddn = cn=Manager,dc=example,dc=com|binddn = cn=Manager,dc=mercury,dc=febras,dc=net|" /etc/libuser.conf
+#+end_src
+
 #+name: client5-run-sudoers
 #+begin_src sh :exports none
-
 echo sudoers_base dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
 echo sudoers_debug 0 >> /etc/ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/ldap.conf
@@ -749,6 +761,7 @@ getent passwd username
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run5.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<client5-run-prefix>>
+<<client-libuser>>
 <<client5-run-setup>>
 <<client5-run-sudoers>>
 <<client5-run-postfix>>
@@ -756,6 +769,7 @@ getent passwd username
 
 #+begin_src sh :tangle ~/git/cc/cc-ldap-centos/ldap-client/run6.sh :comments noweb :shebang "#!/bin/bash" :exports none :noweb yes
 <<client6-run-prefix>>
+<<client-libuser>>
 <<client6-run-setup>>
 <<client6-run-sudoers>>
 <<client6-run-postfix>>
@@ -782,6 +796,11 @@ getent passwd username
 #+begin_src sh :exports code :noweb yes
 <<client5-run-setup>>
 <<client5-run-sudoers>>
+#+end_src
+
+#+caption: Настройка libuser для *5/2.3* и *6/2.4*
+#+begin_src sh :exports code :noweb yes
+<<client-libuser>>
 #+end_src
 
 Для *6/2.4* приходится отдельно прописывать параметр

@@ -9,7 +9,7 @@ RUN yum reinstall -y glibc-common
 RUN yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
 RUN yum install -y openldap migrationtools finger sudo
 RUN yum install -y sendmail sendmail-cf
-
+RUN yum install -y libuser
 
 #generate ssh key
 RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key

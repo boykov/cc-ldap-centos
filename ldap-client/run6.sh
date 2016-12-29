@@ -16,6 +16,15 @@ opts="-N -x fingerprint-auth-ac \
          "
 
 # client6-run-prefix ends here
+# [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-libuser]]
+sed -i "s|^modules = files shadow|modules = files shadow ldap|" /etc/libuser.conf
+sed -i "s|create_modules = files shadow|create_modules = ldap files shadow|" /etc/libuser.conf
+sed -i "s|# server = ldap|server = ldap://$LDAP_SERVER|" /etc/libuser.conf
+sed -i "s|# basedn = dc=example,dc=com|basedn = $LDAP_BASEDN|" /etc/libuser.conf
+sed -i "s|# userBranch = ou=People|userBranch = ou=users|" /etc/libuser.conf
+sed -i "s|# groupBranch = ou=Group|groupBranch = ou=groups|" /etc/libuser.conf
+sed -i "s|# binddn = cn=Manager,dc=example,dc=com|binddn = cn=Manager,dc=mercury,dc=febras,dc=net|" /etc/libuser.conf
+# client-libuser ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-setup]]
 authconfig --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update

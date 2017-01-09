@@ -834,6 +834,9 @@ getent passwd username
 - *system-auth* --- назначением этого файла является
   обеспечение общей конфигурации для всех приложений и сервисов,
   вызывающих библиотеку PAM.
+- *libuser.conf* --- файл с настройками стандартизованного интерфейса
+  для управления и администрирования аккаунтов пользователей и групп.
+- *nscd.conf* --- конфигурационный файл демона кеша сервиса имен.
 
 #+caption: Список измененных файлов для *5/2.3*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5-files.diff src diff
@@ -879,9 +882,22 @@ getent passwd username
 
 Файл *nsswitch.conf*. Для баз данных *passwd*, *shadow*, *group*,
 *netgroup* и *automount* добавляется спецификация службы *ldap*.
+#+begin_src sh :exports none :results org
+cat ../gen/client5.diff | grep -n "/etc/nscd.conf"
+cat ../gen/client5.diff | grep -n "/etc/pam.d/system-auth"
+#+end_src
 
-#+caption: Опции, выставляемые в файлах для *5/2.3* (а)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-41"
+#+RESULTS:
+#+BEGIN_SRC org
+42:/etc/nscd.conf
+71:/etc/pam.d/system-auth
+#+END_SRC
+
+#+caption: Опции, выставляемые в файлах */etc/ldap.conf*, *libuser.conf*  для *5/2.3* (а)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-42"
+
+#+caption: Опции, выставляемые в файлах *nscd.conf*, *nsswitch.conf*, */etc/openldap/ldap.conf* для *5/2.3* (б)
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "42-71"
 
 *** Опции, связанные с файлом system-auth для *5/2.3*
 :PROPERTIES:
@@ -898,7 +914,7 @@ getent passwd username
 #   - required *pam_unix.so*: игнорируются ошибки чтения shadow информации
 #   - sufficient *pam_succeed_if.so*:
 #+caption: Опции, выставляемые в файле *system-auth* для *5/2.3*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "41-74"
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "71-"
 
 *** Опции, связанные с conf-файлами для *6/2.4*
 :PROPERTIES:
@@ -908,8 +924,17 @@ getent passwd username
 В файлах *nslcd.conf*, *pam_ldap.conf* и *sudo-ldap.conf* дублируются
 стандартные опции.
 
-#+caption: Опции, выставляемые в файлах *nslcd.conf*, *nsswitch.conf* и */etc/openldap/ldap.conf* для *6/2.4*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "1-38"
+#+begin_src sh :exports none :results org
+cat ../gen/client6.diff | grep -n "/etc/pam.d/system-auth"
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+61:/etc/pam.d/system-auth
+#+END_SRC
+
+#+caption: Опции, выставляемые в файлах *libuser.conf*, *nslcd.conf*, *nsswitch.conf* и */etc/openldap/ldap.conf* для *6/2.4*
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "1-61"
 
 *** Опции, связанные с файлом system-auth для *6/2.4*
 :PROPERTIES:
@@ -917,7 +942,7 @@ getent passwd username
 :END:
 
 #+caption: Опции, выставляемые файлах *system-auth*, *pam_ldap.conf* и *sudo-ldap.conf* для *6/2.4*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "38-"
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client6.diff src diff :lines "61-"
 
 *** Дополнительно. PAM: необходимые сведения
 :PROPERTIES:
@@ -1561,14 +1586,23 @@ sed -n "/^function modify_out() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '
 : loginShell: /bin/sh
 
 #+caption: Замещение стандартных команд в случае использования LDAP
-| Утилита    | Работает с LDAP | Примечание                                                     |
-| *passwd*   | *Да*            |                                                                |
-| *useradd*  | Нет             | *ldapadd*, атрибуты классов *posixAccount*, *shadowAccount*    |
-| *usermod*  | Нет             | *ldapmodify*, атрибуты классов *posixAccount*, *shadowAccount* |
-| *finger*   | *Да*            |                                                                |
-| *chsh*     | Нет             | *ldapmodify*, атрибут *loginShell*                             |
-| *chfn*     | Нет             | *ldapmodify*, атрибут *gecos*                                  |
-| *.forward* | *Да*            | атрибут *mailRoutingAddress* класса *inetLocalMailRecipient*   |
+| Утилита         | Работает с LDAP | Примечание                                                                    |
+|-----------------+-----------------+-------------------------------------------------------------------------------|
+| *passwd*        | *Да*            |                                                                               |
+| *useradd*       | Нет             | *luseradd* или *ldapadd*, атрибуты классов *posixAccount*, *shadowAccount*    |
+| *usermod*       | Нет             | *lusermod* или *ldapmodify*, атрибуты классов *posixAccount*, *shadowAccount* |
+| *groupadd*      | Нет             | *lgroupadd* или *ldapadd*, атрибуты класса *posixGroup*                       |
+| *groupmod*      | Нет             | *lgroupmod* или *ldapmodify*, атрибуты класса *posixGroup*                    |
+| *finger*        | *Да*            |                                                                               |
+| *chsh*          | Нет             | *ldapmodify*, атрибут *loginShell*                                            |
+| *chfn*          | Нет             | *ldapmodify*, атрибут *gecos*                                                 |
+| файл *.forward* | Нет             | атрибут *mailRoutingAddress* класса *inetLocalMailRecipient*                  |
+
+#+begin_tip
+Утилиты *luseradd*, *lusermod*, *lgroupadd* и *lgroupmod* принадлежат
+библиотеке *libuser*, а утилиты *ldapadd* и *ldapmodify* содержатся в
+пакете *openldap-clients*.
+#+end_tip
 
 #+begin_note
 В файле */etc/nsswitch.conf* указывается порядок обращения к базам

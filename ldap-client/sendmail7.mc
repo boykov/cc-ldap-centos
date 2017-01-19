@@ -49,8 +49,8 @@ dnl # use LOGIN. Other mechanisms should be used if the connection is not
 dnl # guaranteed secure.
 dnl # Please remember that saslauthd needs to be running for AUTH. 
 dnl #
-dnl TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
-dnl define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
 dnl #
 dnl # Rudimentary information on creating certificates for sendmail TLS:
 dnl #     cd /etc/pki/tls/certs; make sendmail.pem
@@ -65,6 +65,9 @@ dnl #
 dnl # This allows sendmail to use a keyfile that is shared with OpenLDAP's
 dnl # slapd, which requires the file to be readble by group ldap
 dnl #
+define(`confLDAP_DEFAULT_SPEC', ` -w 3 -b ou=users,dc=mercury,dc=febras,dc=net -d uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net -P/etc/mail/ldap-secret')
+LDAPROUTE_DOMAIN(`mercury.febras.net')
+FEATURE(`ldap_routing')
 dnl define(`confDONT_BLAME_SENDMAIL', `groupreadablekeyfile')dnl
 dnl #
 dnl define(`confTO_QUEUEWARN', `4h')dnl

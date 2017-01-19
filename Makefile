@@ -60,13 +60,13 @@ build-client:
 
 start:
 	echo ..was entered to start $(n) $(k) >> gen/test.log
-	docker ps -a | grep $(name)-server$(n) > /dev/null || make build-server n=$(n)
-	docker start $(name)-server$(n)
+	docker ps -a | grep $(name)-server$(k) > /dev/null || make build-server n=$(k)
+	docker start $(name)-server$(k)
 	echo server$(k) was built >> gen/test.log
 	sleep 1
 	make build-client n=$(n) server=$(name)-server$(k)
 	echo client$(n) was built >> gen/test.log
-	make build-schema server=$(name)-server$(n)
+	make build-schema server=$(name)-server$(k)
 	echo schema was created >> gen/test.log
 	sleep 1
 	docker exec -d $(name)-client$(n) bash /root/hosts.sh $(n) $(AUTHENTICATOR_PASSWORD)

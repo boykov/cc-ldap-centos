@@ -1,0 +1,34 @@
+#Dockerfile
+FROM centos:centos7
+MAINTAINER Evgeny Boykov, artscan@list.ru
+
+#update yum repository and install openssh server
+RUN yum update -y
+# fix bug with locale
+RUN yum reinstall -y glibc-common
+RUN yum install -y openssh-server openldap-clients nss-pam-ldapd authconfig
+RUN yum install -y openldap migrationtools finger sudo
+RUN yum install -y sendmail sendmail-cf
+RUN yum install -y libuser
+
+#generate ssh key
+RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
+RUN ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
+RUN sed -ri 's/session    required     pam_loginuid.so/#session    required     pam_loginuid.so/g' /etc/pam.d/sshd
+RUN mkdir -p /root/.ssh && chown root.root /root && chmod 700 /root/.ssh
+
+#change root password to 123456
+RUN echo 'root:123456' | chpasswd
+
+#RUN curl https://git.oschina.net/feedao/Docker_shell/raw/start/ali-centos.sh | sh
+#ENV LANG en_US.UTF-8
+#ENV LC_ALL en_US.UTF-8
+
+EXPOSE 22
+COPY ldap-client/. /root
+
+RUN mkdir /gen
+
+CMD ["/root/run7.sh"]
+# CMD /usr/sbin/sshd -D
+#End

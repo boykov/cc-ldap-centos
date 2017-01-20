@@ -13,9 +13,6 @@ ENV DEBUG_LEVEL=256
 EXPOSE 389 636
 VOLUME [ "/data" ]
 
-# enable doc for docker centos6
-RUN sed -i '/nodocs/d' /etc/yum.conf
-
 # Update to last version
 
 RUN yum -y update && \

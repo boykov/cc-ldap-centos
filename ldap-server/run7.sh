@@ -18,7 +18,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 # run-db-config7 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#add-schemas][schema-prepare7]]
-    cp /usr/share/doc/sudo-1.8.6p3/schema.OpenLDAP /etc/openldap/schema/sudo.schema
+    cp /root/sudo.schema /etc/openldap/schema/sudo.schema
     chown ldap. /etc/openldap/schema/sudo.schema
 
 # schema-prepare7 ends here
@@ -33,7 +33,7 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
     diff /usr/share/openldap-servers/slapd.conf.obsolete /etc/openldap/slapd.conf > /gen/slapd.obsolete.diff || true
 # run-slapd-conf7 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-start7]]
-    service slapd start
+    exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL &
 # run-slapd-start7 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-d]]
     sleep 3
@@ -61,7 +61,7 @@ fi
 rm -rf /var/lib/ldap && ln -s /data/lib/ldap /var/lib/ldap
 rm -rf /etc/openldap && ln -s /data/etc/openldap /etc/openldap
 
-service httpd start
+# service httpd start
 exec /usr/sbin/slapd -h "ldap:/// ldaps:/// ldapi:///" -u ldap -d $DEBUG_LEVEL
 # run-postfix ends here
 # Дополнительно\.\ Предварительная\ настройка\ схемы\ каталога\ LDAP\ с\ помощью\ ldif\ формата:1 ends here

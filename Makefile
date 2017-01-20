@@ -22,7 +22,7 @@ define recreate_server
 	docker rm -f -v $(2)-server$(1)
 	docker rm -f -v $(2)-data$(1)
 	docker run --name $(2)-data$(1) -v /data data$(1)-backup true
-	docker run -p 888$(1):80 -p 389$(1):389 --name $(2)-server$(1) -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
+	docker run --privileged -p 888$(1):80 -p 389$(1):389 --name $(2)-server$(1) -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(schema):/schema -v $(gen):/gen --volumes-from $(2)-data$(1) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(2)-dev$(1) &
 	sleep 1
 endef
 
@@ -47,7 +47,7 @@ build-server:
 	docker build -f ldap-server/Dockerfile$(n) -t $(name)-dev$(n) .
 	echo cc-ldap-server$(n) was built >> gen/test.log
 	docker run --name $(name)-data$(n) -v /data busybox true || true
-	docker run -p 888$(n):80 -p 389$(n):389 --name $(name)-server$(n) -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
+	docker run --privileged -p 888$(n):80 -p 389$(n):389 --name $(name)-server$(n) -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(schema):/schema -v $(gen):/gen --volumes-from $(name)-data$(n) -e LDAP_ROOT_PASSWORD=$(LDAP_ROOT_PASSWORD) -e LDAP_MANAGER_PASSWORD=$(LDAP_MANAGER_PASSWORD) $(name)-dev$(n) &
 	echo cc-ldap-server$(n) was run >> gen/test.log
 	sleep 10
 	$(call create_backup,$(n),$(name))
@@ -56,7 +56,7 @@ build-server:
 build-client:
 	$(eval ip = $(call get_ip,$(server)))
 	docker build -f ldap-client/Dockerfile$(n) -t $(name)-cli$(n) .
-	docker run -d --name $(name)-client$(n) -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
+	docker run --privileged -d --name $(name)-client$(n) -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
 
 start:
 	echo ..was entered to start $(n) $(k) >> gen/test.log

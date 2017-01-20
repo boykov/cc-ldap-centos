@@ -105,6 +105,7 @@ endif
 
 test:
 	@make -s prepare_log
+	# @make -s start n=6 k=7 >> gen/full.log 2>&1
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
 	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
@@ -117,6 +118,7 @@ clear:
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))
 
+	docker rm -f $(name)-client7 || true
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true
 
@@ -124,12 +126,15 @@ clear:
 	echo ..clients and gui were deleted, servers were recreated without schema >> gen/test.log
 
 full-clear:
+	docker rm -f -v $(name)-server7 || true
 	docker rm -f -v $(name)-server6 || true
 	docker rm -f -v $(name)-server5 || true
 
+	docker rm -v $(name)-data7 || true
 	docker rm -v $(name)-data6 || true
 	docker rm -v $(name)-data5 || true
 
+	docker rm -f $(name)-client7 || true
 	docker rm -f $(name)-client6 || true
 	docker rm -f $(name)-client5 || true
 

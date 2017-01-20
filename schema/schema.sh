@@ -102,6 +102,11 @@ function getent_out() {
 cat <<EOF
 username:x:1050:1050:User Name:/home/username:/bin/sh
 EOF
+    if [ "$3" == "cc-ldap-server7" ]; then
+cat <<EOF
+username:*:17093:0:99999:7:::0
+EOF
+    fi
     if [ "$3" == "cc-ldap-server6" ]; then
 cat <<EOF
 username:*:17093:0:99999:7:::0

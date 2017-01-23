@@ -131,7 +131,7 @@ EOF
 
 function sendmail() {
     sleep 1
-    grep forwarding gen/sendmail
+    grep forwarding gen/sendmail || true
 }
 
 function sendmail_out() {

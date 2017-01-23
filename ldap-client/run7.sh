@@ -40,27 +40,13 @@ echo sudoers_debug 0 >> /etc/sudo-ldap.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/sudo-ldap.conf
 echo bindpw secret >> /etc/sudo-ldap.conf
 
-# echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/pam_ldap.conf
-# echo bindpw secret >> /etc/pam_ldap.conf
-
-echo ldap_version 3 >> /etc/nslcd.conf
-# echo filter passwd \(uid=*\) >>  /etc/nslcd.conf
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
 
 chmod 600 /etc/sudo-ldap.conf
-# chmod 600 /etc/pam_ldap.conf
 chmod 600 /etc/nslcd.conf
 
-# /etc/init.d/nslcd stop
-# rm /var/run/nslcd/*
-# /etc/init.d/nslcd start
-
-sed -i "s|	positive-time-to-live	passwd		600|	positive-time-to-live	passwd		0|g" /etc/nscd.conf
-sed -i "s|	negative-time-to-live	passwd		20|	negative-time-to-live	passwd		0|g" /etc/nscd.conf
-
-/usr/sbin/nscd &
-/usr/sbin/nslcd -d &
+/usr/sbin/nslcd &
 
 # client7-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client7-run-postfix]]

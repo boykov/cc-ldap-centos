@@ -1,6 +1,9 @@
 #!/bin/bash
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client7-run-prefix]]
 
+sleep 1
+sed -i "s|account    required     pam_nologin.so|# account    required     pam_nologin.so|" /etc/pam.d/sshd
+
 cp -R /etc /gen/etc7/etc
 
 opts="-N -x fingerprint-auth-ac \
@@ -46,7 +49,8 @@ echo bindpw secret >> /etc/nslcd.conf
 chmod 600 /etc/sudo-ldap.conf
 chmod 600 /etc/nslcd.conf
 
-/usr/sbin/nslcd &
+systemctl stop nslcd
+/usr/sbin/nslcd -d &
 
 # client7-run-sudoers ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client7-run-postfix]]

@@ -1,5 +1,5 @@
 #Dockerfile
-FROM centos:centos7
+FROM centos/systemd
 MAINTAINER Evgeny Boykov, artscan@list.ru
 
 #update yum repository and install openssh server
@@ -29,6 +29,6 @@ COPY ldap-client/. /root
 
 RUN mkdir /gen
 
-CMD ["/root/run7.sh"]
+CMD ["/usr/sbin/init"]
 # CMD /usr/sbin/sshd -D
 #End

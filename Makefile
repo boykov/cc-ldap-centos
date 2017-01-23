@@ -57,6 +57,9 @@ build-client:
 	$(eval ip = $(call get_ip,$(server)))
 	docker build -f ldap-client/Dockerfile$(n) -t $(name)-cli$(n) .
 	docker run --privileged -d --name $(name)-client$(n) -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v $(gen):/gen -e LDAP_SERVER=$(ip) -e LDAP_BASEDN=$(LDAP_BASEDN) $(name)-cli$(n)
+ifeq ($(n),7)
+	docker exec -d $(name)-client7 bash /root/run7.sh
+endif
 
 start:
 	echo ..was entered to start $(n) $(k) >> gen/test.log
@@ -105,7 +108,7 @@ endif
 
 test:
 	@make -s prepare_log
-	# @make -s start n=6 k=7 >> gen/full.log 2>&1
+	@make -s start n=7 k=7 >> gen/full.log 2>&1
 	@make -s start n=6 k=6 >> gen/full.log 2>&1
 	@make -s build-gui server=$(name)-server6 >> gen/full.log 2>&1
 	@make -s start n=5 k=5 >> gen/full.log 2>&1
@@ -115,6 +118,7 @@ endif
 
 clear:
 	echo -n cleaning was started.. >> gen/test.log
+	$(call recreate_server,7,$(name))
 	$(call recreate_server,6,$(name))
 	$(call recreate_server,5,$(name))
 

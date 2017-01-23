@@ -1,0 +1,7 @@
+[Unit]
+
+[Service]
+ExecStart=/root/run7.sh
+
+[Install]
+WantedBy=default.target

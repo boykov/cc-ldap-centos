@@ -26,6 +26,7 @@ olcAccess: {2}to dn.subtree="ou=public,dc=mercury,dc=febras,dc=net"
   by * read
 olcAccess: {3}to *
   by dn="uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net" read
+  by self read
   by * none
 
 dn: olcOverlay={0}ppolicy,olcDatabase={2}hdb,cn=config

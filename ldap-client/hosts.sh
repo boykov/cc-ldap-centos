@@ -17,8 +17,13 @@ chmod 600 /etc/mail/ldap-secret
 cp -f /root/sendmail$1.mc /etc/mail/sendmail.mc
 diff /etc/mail/sendmail.mc /etc/mail/sendmail.mc.bak > /gen/sendmail.diff
 m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf
-/etc/init.d/sendmail start
-sleep 1
+if [ $1 -eq 7 ]; then
+    systemctl restart sendmail
+    systemctl enable sendmail
+    sleep 3
+else
+    /etc/init.d/sendmail start
+fi
 
 echo test | sendmail -v username@localhost
 echo forwarding test: it works!  | sendmail -v username@mercury.febras.net

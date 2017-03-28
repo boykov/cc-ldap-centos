@@ -64,9 +64,9 @@ moduleload ppolicy.la
 # dummy test certificate which you can generate by running
 # /usr/libexec/openldap/generate-server-cert.sh. Your client software may balk
 # at self-signed certificates, however.
-TLSCACertificatePath /etc/openldap/certs
-TLSCertificateFile "\"OpenLDAP Server\""
-TLSCertificateKeyFile /etc/openldap/certs/password
+TLSCACertificateFile /etc/openldap/certs/ca-bundle.crt
+TLSCertificateFile /etc/openldap/certs/server.crt
+TLSCertificateKeyFile /etc/openldap/certs/server.key
 
 # Sample security restrictions
 #	Require integrity protection (prevent hijacking)

@@ -23,6 +23,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 # schema-prepare5 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf5]]
+    mkdir -p /etc/openldap/certs/
+    cp /root/server.key /root/server.crt /root/ca-bundle.crt /etc/openldap/certs/
+    chown ldap. /etc/openldap/certs/server.key /etc/openldap/certs/server.crt /etc/openldap/certs/ca-bundle.crt
+
     mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
     cp /root/slapd.conf /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)

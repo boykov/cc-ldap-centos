@@ -377,6 +377,10 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 #+name: run-slapd-conf5
 #+begin_src sh :exports none
+    mkdir -p /etc/openldap/certs/
+    cp /root/server.key /root/server.crt /root/ca-bundle.crt /etc/openldap/certs/
+    chown ldap. /etc/openldap/certs/server.key /etc/openldap/certs/server.crt /etc/openldap/certs/ca-bundle.crt
+
     mv /etc/openldap/slapd.conf /etc/openldap/slapd.conf.original
     cp /root/slapd.conf /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
@@ -453,6 +457,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 #+name: run-slapd-conf6
 #+begin_src sh :exports none
+    cp /root/server.key /root/server.crt /root/ca-bundle.crt /etc/openldap/certs/
+    chown ldap. /etc/openldap/certs/server.key /etc/openldap/certs/server.crt /etc/openldap/certs/ca-bundle.crt
+
     cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705

@@ -23,6 +23,9 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 
 # schema-prepare7 ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#configure-slapd][run-slapd-conf7]]
+    cp /root/server.key /root/server.crt /root/ca-bundle.crt /etc/openldap/certs/
+    chown ldap. /etc/openldap/certs/server.key /etc/openldap/certs/server.crt /etc/openldap/certs/ca-bundle.crt
+
     cp /root/slapd.conf.obsolete /etc/openldap/slapd.conf
     ROOT_PWD=$(slappasswd -s $LDAP_ROOT_PASSWORD)
     # Use bash variable substitution to escape special chars http://stackoverflow.com/a/14339705

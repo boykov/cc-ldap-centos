@@ -20,8 +20,8 @@ opts="-N -x fingerprint-auth-ac \
 
 # client7-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-libuser]]
-sed -i "s|^modules = files shadow|modules = files shadow ldap|" /etc/libuser.conf
-sed -i "s|create_modules = files shadow|create_modules = ldap files shadow|" /etc/libuser.conf
+sed -i "s|^modules = files shadow|modules = ldap|" /etc/libuser.conf
+sed -i "s|create_modules = files shadow|create_modules = ldap|" /etc/libuser.conf
 sed -i "s|# server = ldap|server = ldap://$LDAP_SERVER|" /etc/libuser.conf
 sed -i "s|# basedn = dc=example,dc=com|basedn = $LDAP_BASEDN|" /etc/libuser.conf
 sed -i "s|# userBranch = ou=People|userBranch = ou=users|" /etc/libuser.conf

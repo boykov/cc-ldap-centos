@@ -698,6 +698,7 @@ sed -i "s|	negative-time-to-live	passwd		20|	negative-time-to-live	passwd		0|g" 
 
 #+name: client6-run-sudoers
 #+begin_src sh :exports none
+echo "TLS_REQCERT allow" >> /etc/openldap/ldap.conf
 
 echo sudoers:  files ldap >> /etc/nsswitch.conf
 
@@ -713,6 +714,7 @@ echo bindpw secret >> /etc/pam_ldap.conf
 
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
+echo "tls_reqcert allow" >> /etc/nslcd.conf
 
 chmod 600 /etc/sudo-ldap.conf
 chmod 600 /etc/pam_ldap.conf

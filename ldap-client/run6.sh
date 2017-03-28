@@ -17,8 +17,8 @@ opts="-N -x fingerprint-auth-ac \
 
 # client6-run-prefix ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client-libuser]]
-sed -i "s|^modules = files shadow|modules = files shadow ldap|" /etc/libuser.conf
-sed -i "s|create_modules = files shadow|create_modules = ldap files shadow|" /etc/libuser.conf
+sed -i "s|^modules = files shadow|modules = ldap|" /etc/libuser.conf
+sed -i "s|create_modules = files shadow|create_modules = ldap|" /etc/libuser.conf
 sed -i "s|# server = ldap|server = ldap://$LDAP_SERVER|" /etc/libuser.conf
 sed -i "s|# basedn = dc=example,dc=com|basedn = $LDAP_BASEDN|" /etc/libuser.conf
 sed -i "s|# userBranch = ou=People|userBranch = ou=users|" /etc/libuser.conf
@@ -30,6 +30,7 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 # client6-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client6-run-sudoers]]
+echo "TLS_REQCERT allow" >> /etc/openldap/ldap.conf
 
 echo sudoers:  files ldap >> /etc/nsswitch.conf
 
@@ -45,6 +46,7 @@ echo bindpw secret >> /etc/pam_ldap.conf
 
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
+echo "tls_reqcert allow" >> /etc/nslcd.conf
 
 chmod 600 /etc/sudo-ldap.conf
 chmod 600 /etc/pam_ldap.conf

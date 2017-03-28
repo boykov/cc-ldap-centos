@@ -33,6 +33,7 @@ authconfig --enablemkhomedir --enableldap --enableldapauth \
 	   --ldapserver=$LDAP_SERVER --ldapbasedn=$LDAP_BASEDN --update
 # client7-run-setup ends here
 # [[file:~/git/cc/cc-ldap-centos/docs/index.org::#client-packages][client7-run-sudoers]]
+echo "TLS_REQCERT allow" >> /etc/openldap/ldap.conf
 
 echo sudoers:  files ldap >> /etc/nsswitch.conf
 
@@ -45,6 +46,7 @@ echo bindpw secret >> /etc/sudo-ldap.conf
 
 echo binddn uid=authenticator,ou=system,dc=mercury,dc=febras,dc=net >> /etc/nslcd.conf
 echo bindpw secret >> /etc/nslcd.conf
+echo "tls_reqcert allow" >> /etc/nslcd.conf
 
 chmod 600 /etc/sudo-ldap.conf
 chmod 600 /etc/nslcd.conf

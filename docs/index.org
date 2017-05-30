@@ -7,6 +7,7 @@
 # #+BIBLIOGRAPHY: /home/eab/git/lit/ldap.bib plain option:-d
 # #+HTML_HEAD: <style type="text/css">#content{ text-align: justify; }</style>
 # #+HTML_HEAD: <style type="text/css">#content{ -moz-hyphens: auto;-webkit-hyphens: auto;-ms-hyphens: auto; }</style>
+#+HTML_HEAD: <style> p {text-align: justify; } </style>
 
 * Введение
 :PROPERTIES:
@@ -906,7 +907,7 @@ cat ../gen/client5.diff | grep -n "/etc/pam.d/system-auth"
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "1-42"
 
 #+caption: Опции, выставляемые в файлах *nscd.conf*, *nsswitch.conf*, */etc/openldap/ldap.conf* для *5/2.3* (б)
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "42-71"
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "42-73"
 
 *** Опции, связанные с файлом system-auth для *5/2.3*
 :PROPERTIES:
@@ -923,7 +924,7 @@ cat ../gen/client5.diff | grep -n "/etc/pam.d/system-auth"
 #   - required *pam_unix.so*: игнорируются ошибки чтения shadow информации
 #   - sufficient *pam_succeed_if.so*:
 #+caption: Опции, выставляемые в файле *system-auth* для *5/2.3*
-#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "71-"
+#+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/client5.diff src diff :lines "73-"
 
 *** Опции, связанные с conf-файлами для *6/2.4*
 :PROPERTIES:

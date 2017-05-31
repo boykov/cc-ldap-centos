@@ -39,8 +39,10 @@
 | *Служба каталогов*        | server-ldif6 | *CentOS 6*     | *OpenLDAP 2.4* server, *ldif*; *phpLDAPadmin 1.2.3*, custom |
 | *Служба каталогов*        | server-conf5 | *CentOS 5*     | *OpenLDAP 2.3* server, *conf*; *phpLDAPadmin 1.2.3*, custom |
 | *Служба каталогов*        | server-conf6 | *CentOS 6*     | *OpenLDAP 2.4* server, *conf*; *phpLDAPadmin 1.2.3*, custom |
+| *Служба каталогов*        | server-conf7 | *CentOS 7*     | *OpenLDAP 2.4* server, *conf*;                              |
 | *Клиент службы каталогов* | client5      | *CentOS 5*     | *OpenLDAP 2.3* client                                       |
 | *Клиент службы каталогов* | client6      | *CentOS 6*     | *OpenLDAP 2.4* client                                       |
+| *Клиент службы каталогов* | client7      | *CentOS 7*     | *OpenLDAP 2.4* client                                       |
 | *Клиент службы каталогов* | gui          | *Debian 8*     | *phpLDAPadmin 1.2.3*, custom                                |
 
 #+begin_note

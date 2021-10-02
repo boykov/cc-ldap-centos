@@ -301,11 +301,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 Продемонстрируем первый способ настройки. Внесем небольшие
 изменения в конфигурационный файл для *5/2.3*
 
-#+begin_html
+#+begin_export html
 <div align="right">
 <a onclick="toggleDiv2('myContent',$(this));" class="fa fa-caret-right">/root/slapd.conf</a>
 </div>
-#+end_html
+#+end_export
 #+HTML: <div id="myContent" style="display:none">
 #+caption: Конфигурационный файл для *5/2.3*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/slapd.conf src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
@@ -320,11 +320,11 @@ if [ ! -f /data/lib/ldap/DB_CONFIG ]; then
 #+end_src
 Выполним аналогичные действия для *6/2.4*
 
-#+begin_html
+#+begin_export html
 <div align="right">
 <a onclick="toggleDiv2('myContent2',$(this));" class="fa fa-caret-right">/root/slapd.conf.obsolete</a>
 </div>
-#+end_html
+#+end_export
 #+HTML: <div id="myContent2" style="display:none">
 #+caption: Конфигурационный файл для *6/2.4*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/schema/slapd.conf.obsolete src conf-space :exports (when (eq org-export-current-backend 'odt) "none")
@@ -1336,11 +1336,11 @@ ldapadd -x -D 'cn=Manager,dc=mercury,dc=febras,dc=net' -w $LDAP_MANAGER_PASSWORD
 с помощью доступных шаблонов и средств описания GUI, реализовывать
 нужную функциональность, в некоторых случаях значительно облегчая
 работу со схемой каталога LDAP.
-#+begin_html
+#+begin_export html
 <div align="right">
 <a onclick="toggleDiv2('shadow',$(this));" class="fa fa-caret-right">Файлы custom-*.xml</a>
 </div>
-#+end_html
+#+end_export
 #+HTML: <div id="shadow" style="display:none">
 #+caption: xml-файл шаблона *User Account With Shadow* браузера схемы
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/misc/custom-ShadowAccount.xml src xml :exports (when (eq org-export-current-backend 'odt) "none")
@@ -1593,7 +1593,7 @@ EOF
 
 Значение *loginShell: /bin/bash*, указанное в файле *user.ldif*, изменилось на */bin/sh*:
 
-#+begin_src sh :exports results :results value pp
+#+begin_src sh :exports results :results pp
 sed -n "/^function modify_out() {/,/^}/p" ../schema/schema.sh | sed '1d' | sed '$d' | sed '1d' | sed '$d'
 #+end_src
 
@@ -1667,43 +1667,36 @@ sed -i "s|ou=Group|ou=groups|g" /gen/mercury.ldif
 #+caption: *mercury.ldif*: пример результата миграции пользователей и групп с помощью утилит *migrationtools*
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/mercury.ldif src ldif
 
-#+begin_html
+#+begin_export html
 <a onclick="toggleDiv2('myContent-passwd',$(this));" class="fa fa-caret-right">passwd.ldif</a>
-#+end_html
+#+end_export
 
 #+HTML: <div id="myContent-passwd" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 # do not need migrate centos 6 users
-# #+begin_html
+# #+begin_export html
 # <br/><a onclick="toggleDiv2('myContent-passwd6',$(this));" class="fa fa-caret-right">passwd6.ldif</a>
-# #+end_html
+# #+end_export
 
 # #+HTML: <div id="myContent-passwd6" style="display:none">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/passwd6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
 
-#+begin_html
+#+begin_export html
 <br/><a onclick="toggleDiv2('myContent-group',$(this));" class="fa fa-caret-right">group.ldif</a>
-#+end_html
+#+end_export
 
 #+HTML: <div id="myContent-group" style="display:none">
 #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 #+HTML: </div>
 
 # do not need migrate centos 6 users
-# #+begin_html
+# #+begin_export html
 # <br/><a onclick="toggleDiv2('myContent-group6',$(this));" class="fa fa-caret-right">group6.ldif</a>
-# #+end_html
+# #+end_export
 
 # #+HTML: <div id="myContent-group6" style="display:none">
 # #+INCLUDE: /home/eab/git/cc/cc-ldap-centos/gen/group6.ldif src ldif :exports (when (eq org-export-current-backend 'odt) "none")
 # #+HTML: </div>
-
-* Перевести аутентификацию пользователей кластера на использование LDAP
-:PROPERTIES:
-:CUSTOM_ID: cluster
-:ID:       db5bc4cf-74c3-40e0-b8b3-d57f3f32e338
-:END:
-
